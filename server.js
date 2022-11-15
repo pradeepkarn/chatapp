@@ -51,11 +51,11 @@ app.set('view engine', 'ejs')
 app.use(express.static('static'))
 app.use(express.urlencoded({extended:true}))
 
-app.use(session({
-  secret : 'Chatapp2328Session732htg678',
-  resave : true,
-  saveUninitialized : true
-}));
+// app.use(session({
+//   secret : 'Chatapp2328Session732htg678',
+//   resave : true,
+//   saveUninitialized : true
+// }));
 
 
 app.get("/",(req,res)=>{
@@ -68,7 +68,7 @@ res.render('login',{});
 
 app.post("/login",(req,res)=>{
 
-  
+
   res.render('login',{});
 })
 
