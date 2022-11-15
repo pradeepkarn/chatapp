@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 const http = require('http').createServer(app)
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 // const SOCKET_PORT = 8081
 
 http.listen(PORT, ()=>{
@@ -26,20 +26,6 @@ const io = require("socket.io")(http, {
 });
 
 
-
-// io.on('connection',(socket)=>{
-//     socket.on('new-user-joined',name=>{
-//         // console.log('new user', name)
-//         users[socket.id] = name;
-//         socket.broadcast.emit('user-joined', name)
-//     })
-
-//     socket.on('send',(msg)=>{
-//         // socket.broadcast.emit('receive',{message:message, name: users[socket.id]})
-//         socket.broadcast.emit('broadcast-message',msg)
-//     })
-// })
-
 const rooms = {}
 const users = {};
 
@@ -51,11 +37,6 @@ app.set('view engine', 'ejs')
 app.use(express.static('static'))
 app.use(express.urlencoded({extended:true}))
 
-// app.use(session({
-//   secret : 'Chatapp2328Session732htg678',
-//   resave : true,
-//   saveUninitialized : true
-// }));
 
 
 app.get("/",(req,res)=>{
