@@ -1,10 +1,10 @@
 const dotenv = require("dotenv");
 dotenv.config();
 module.exports = {
-    HOST: process.env.DB_HOST,
-    USER: process.env.DB_USER,
-    PASSWORD: process.env.DB_PASS,
-    DB: process.env.DB_NAME,
+    HOST: process.env.DB_HOST || "148.72.88.25",
+    USER: process.env.DB_USER || "node_learn",
+    PASSWORD: process.env.DB_PASS || "DSX-QT]sFF%s",
+    DB: process.env.DB_NAME || "node_learn",
     dialect: 'mysql',
     pool: {
         max: 5,
