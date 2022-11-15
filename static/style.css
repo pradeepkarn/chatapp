@@ -1,0 +1,22 @@
+.message__area{
+    height: 300px;
+    overflow-y: scroll;
+}
+.incoming{
+    float: left;
+    clear: both;
+    display: block;
+}
+.outgoing{
+    float: right;
+    clear: both;
+    display: block;
+}
+.message{
+    width: 24%;
+    padding: 10px;
+    margin: 17px 12px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+

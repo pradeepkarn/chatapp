@@ -1,0 +1,50 @@
+<<%- include('inc/header.ejs') %>
+<%- include('inc/nav.ejs') %>
+<%- include('inc/sidebar.ejs') %>
+<main id="main">
+    
+  <section style="min-height: 100vh;">
+    <div class="row">
+      <div class="col-md-6">
+        <form id="form" action="" method="post">
+          <div class="row">
+          <div class="col-8">
+            <input id="create-room" class="form-control" placeholder="Room Name" name="room" autocomplete="off" />
+          </div>
+          <div class="col-4">
+            <button class="btn btn-prime-grd">Create Room</button>
+          </div>
+          </div>
+        </form>
+      
+        <h3>Avalable Rooms</h3>
+        <div id="room-container">
+          <% Object.keys(rooms).forEach(room => { %>
+            <a href="/<%= room %>"><%= room %></a> <br>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+    
+  <script>
+    const socket = io()
+    
+    const roomContainer = document.getElementById('room-container')
+  
+    socket.on('room-created', room => {
+    // const roomElement = document.createElement('div')
+    // roomElement.innerText = room
+    const roomLink = document.createElement('a')
+    roomLink.href = `/${room}`
+    roomLink.innerText = room
+    // roomContainer.append(roomElement)
+    roomContainer.append(roomLink)
+    roomContainer.append(document.createElement('br'))
+  })
+  </script>
+</main>
+
+<%- include('inc/footer.ejs') %>
