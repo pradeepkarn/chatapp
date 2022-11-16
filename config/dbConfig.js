@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 module.exports = {
-    HOST: "199.192.24.175",
+    HOST: "127.0.0.1",
     USER: "root",
     PASSWORD: "NODE9572",
     DB: "node_learn",
