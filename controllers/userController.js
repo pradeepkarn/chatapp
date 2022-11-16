@@ -120,59 +120,46 @@ const logInViaToken = async (req,res)=>{
     
 }
 
-// const profileEdit = async (req,res)=>{
-//     let token = req.body.token
-//     const edit = req.body;
-//     if (token) {
-//         let user = await User.findOne({where : {token:token}})
-//         if (user) {
-//             //create response user
-//             const responeUser = {
-//                 id: user.id,
-//                 first_name: edit.first_name?edit.first_name:user.first_name,
-//                 last_name: edit.last_name?edit.last_name:user.last_name,
-//                 mobile: edit.mobile?edit.mobile:user.mobile,
-//                 image: edit.image?edit.image:user.image,
-//                 gender: edit.gender?edit.gender:user.gender,
-//                 dob: edit.dob?edit.dob:user.dob,
-//                 country: edit.country?edit.country:user.country,
-//             }
-//             //create response object
-//             const data = {status:true,msg:"User found",data:responeUser}
-//             //send data after success sign in
+const profileEdit = async (req,res)=>{
+    console.log("i am running")
+    let token = req.body.token
+    const edit = req.body;
+    if (token) {
+        let user = await User.findOne({where : {token:token}})
+        if (user) {
+            //create response user
+            const updateUserData = {
+                first_name: edit.first_name?edit.first_name:user.first_name,
+                last_name: edit.last_name?edit.last_name:user.last_name,
+                mobile: edit.mobile?edit.mobile:user.mobile,
+                image: edit.image?edit.image:user.image,
+                gender: edit.gender?edit.gender:user.gender,
+                dob: edit.dob?edit.dob:user.dob,
+                country: edit.country?edit.country:user.country,
+            }
+            //update user if not null
             
-
-
-//             const user = await User.update(signUpData);
-//             if (user) {
-//                 const data = {status:true,msg:"Signup success",data:signUpData}
-//                 res.status(200).send(data)
-//             }else{
-//                 const data = {status:false,msg:"Signup failed",data:null}
-//                 res.status(200).send(data)
-//             }
-//             return;
-
-
-
-
-
-
-
-
-
-//             res.status(200).send(data)
-//         }else{
-//             //send data after failed sign in
-//             const data = {status:false,msg:"User not found",data:null}
-//             res.status(200).send(data)
-//         }
+            //send data after success sign in
+            User.update(updateUserData, {where : {token:token}})
+            if (user) {
+                const data = {status:true,msg:"Updated",data:null}
+                res.status(200).send(data)
+            }else{
+                const data = {status:false,msg:"Not updated",data:null}
+                res.status(200).send(data)
+            }
+            return;
+        }else{
+            //send data after failed sign in
+            const data = {status:false,msg:"User not found",data:null}
+            res.status(200).send(data)
+        }
         
-//     }else{
-//         res.status(200).send("All fields are mandetory")
-//     }
+    }else{
+        res.status(200).send("All fields are mandetory")
+    }
     
-// }
+}
 
 //update user
 
@@ -203,5 +190,6 @@ const logInViaToken = async (req,res)=>{
 module.exports = {
     logIn,
     logInViaToken,
-    signUp
+    signUp,
+    profileEdit
 }
