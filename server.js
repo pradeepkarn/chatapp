@@ -15,8 +15,6 @@ http.listen(PORT, ()=>{
 const userRouter = require("./routes/userRouter.js");
 
 
-
-
 const io = require("socket.io")(http, {
   cors: {
     origin: '*',
@@ -55,21 +53,9 @@ app.post("/login",(req,res)=>{
 
 
 
-
-
-
-
-
-
 app.get("/register",(req,res)=>{
 res.render('register',{});
 })
-
-
-
-
-
-
 
 
 
