@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 const http = require('http').createServer(app)
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 3000
 // const SOCKET_PORT = 8081
 
 http.listen(PORT, ()=>{
