@@ -6,7 +6,7 @@ module.exports = {
     PASSWORD: "NODE9572",
     DB: "node_learn",
     dialect: 'mysql',
-    port: "3307",
+    port: "3306",
     pool: {
         max: 5,
         min: 0,
