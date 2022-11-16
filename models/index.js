@@ -7,6 +7,7 @@ const sequelize = new Sequelize(
     dbConfig.USER,
     dbConfig.PASSWORD,{
         host: dbConfig.HOST,
+        port:dbConfig.port,
         dialect: dbConfig.dialect,
         operatorAliases: false,
 
@@ -17,6 +18,7 @@ const sequelize = new Sequelize(
             idle: dbConfig.pool.idle
         }
     }
+    
 )
 
 sequelize.authenticate()
