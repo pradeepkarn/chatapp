@@ -12,7 +12,7 @@ http.listen(PORT, ()=>{
 })
 
 
-// const userRouter = require("./routes/userRouter.js");
+const userRouter = require("./routes/userRouter.js");
 
 
 
@@ -132,19 +132,19 @@ app.get('/create-room', (req, res) => {
 
 
   //api
-  // app.use("/api/users",userRouter)
-  // app.post('/api/rooms/create-room', (req, res) => {
-  //   // console.log(req.body.room)
-  //   if (rooms[req.body.room] != null || req.body.room == "") {
-  //       return res.status(200).send({ status:false, room_name: req.body.room });
-  //   }
-  //   //fill romm object with posted room name as property and put empty object containing users empty object
-  //   rooms[req.body.room] = { users: {} }
-  //   //run an socket event to emit room name
-  //   io.emit('room-created', req.body.room)
-  //   //render room object
-  //   return res.status(200).send({ status:true, room_name: req.body.room });
-  // });
+  app.use("/api/users",userRouter)
+  app.post('/api/rooms/create-room', (req, res) => {
+    // console.log(req.body.room)
+    if (rooms[req.body.room] != null || req.body.room == "") {
+        return res.status(200).send({ status:false, room_name: req.body.room });
+    }
+    //fill romm object with posted room name as property and put empty object containing users empty object
+    rooms[req.body.room] = { users: {} }
+    //run an socket event to emit room name
+    io.emit('room-created', req.body.room)
+    //render room object
+    return res.status(200).send({ status:true, room_name: req.body.room });
+  });
 
   app.get('/api/rooms/get-rooms', (req, res) => {
    
