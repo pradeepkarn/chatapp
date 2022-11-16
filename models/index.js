@@ -38,7 +38,7 @@ db.products = require('./productModel.js')(sequelize, DataTypes)
 db.reviews = require('./reviewtModel.js')(sequelize, DataTypes)
 db.users = require('./userModel.js')(sequelize, DataTypes)
 
-db.sequelize.sync( {force: true} )
+db.sequelize.sync( {force: false} )
 .then(()=>{
     // console.log('Yes re-sync done!')
 })
