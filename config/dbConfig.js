@@ -14,7 +14,7 @@ dotenv.config();
 //     }
 // }
 module.exports = {
-    HOST: "localhost",
+    HOST: "199.192.24.175:3306",
     USER: "root",
     PASSWORD: "",
     DB: "node_learn",
