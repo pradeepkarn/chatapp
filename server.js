@@ -63,7 +63,7 @@ app.get('/create-room', (req, res) => {
     const allrooms = async ()=>{
       allRooms = await roomController._getRooms();
       allRooms.forEach(item => {
-        io.emit('room-created', item.room_name)
+        // io.emit('room-created', item.room_name)
       });
     }
     allrooms()

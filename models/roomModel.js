@@ -12,6 +12,10 @@ module.exports = (Sequelize, DataTypes) => {
         created_by: {
             type: DataTypes.INTEGER,              
         },
+        creator_detail: {
+            type: DataTypes.JSON,  
+            allowNull: false         
+        },
         image: {
             type: DataTypes.TEXT,
         },
