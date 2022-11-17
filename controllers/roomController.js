@@ -1,20 +1,25 @@
 const db = require("../models/index.js");
-const io = require("socket.io");
 //create main models
 const Room = db.rooms
 
 const addRoom = async (req, res)=>{
-    const room = await Room.create({
-        room_name : req.body.room_name,
-        created_by : req.body.created_by,
-        users : req.body.users,
-        image : null,
-        info : req.body.info,
-        active : true,
-    });
-    io.emit('room-created', req.body.room_name)
-    const data = {status:true,msg:"Room found",data:room}
-    res.status(200).send(room)
+    let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
+    if (roomExist) {
+        const data = {status:false,msg:"This room is already registered",data:null}
+        res.status(200).send(data)
+        return;
+    }else{
+        const room = await Room.create({
+            room_name : req.body.room_name,
+            created_by : req.body.created_by,
+            users : req.body.users,
+            image : null,
+            info : req.body.info,
+            active : true,
+        });
+        const data = {status:true,msg:"Room found",data:room}
+        res.status(200).send(data)
+    }
 }
 
 const getRoom = async (req,res)=>{

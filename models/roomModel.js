@@ -2,7 +2,8 @@ module.exports = (Sequelize, DataTypes) => {
     const Room = Sequelize.define("room",{
         room_name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         users: {
             type: DataTypes.JSON,
