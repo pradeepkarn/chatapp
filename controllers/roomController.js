@@ -13,7 +13,46 @@ const addRoom = async (req, res)=>{
     });
     res.status(200).send(room)
 }
+
+const getRooms = async (req,res)=>{
+    let id = req.body.id
+    if (id) {
+        let room = await Room.findOne({where : {token:id}})
+        if (room) {
+            //create response user
+            const responseRoom = {
+                id: room.id,
+                room_name: room.room_name,
+                users: room.users,
+                image: room.image,
+                info: room.info,
+                active: room.active
+            }
+            //create response object
+            const data = {status:true,msg:"Room found",data:responseRoom}
+            //send data after success sign in
+            res.status(200).send(data)
+        }else{
+            //send data after failed sign in
+            const data = {status:false,msg:"room not found",data:null}
+            res.status(200).send(data)
+        }
+        
+    }else{
+        res.status(200).send("All fields are mandetory")
+    }
+    
+}
+
+const getAllRooms = async (req,res)=>{
+    //for all data
+    let rooms = await Room.findAll({});
+    res.status(200).send(rooms)
+}
+
 module.exports = {
     addRoom,
+    getRooms,
+    getAllRooms
     
 }
