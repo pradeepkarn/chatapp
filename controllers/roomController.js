@@ -12,13 +12,11 @@ const addRoom = async (req, res)=>{
         const room = await Room.create({
             room_name : req.body.room_name,
             created_by : req.body.created_by,
-            creator_detail: {
-                first_name: "",
-                last_name: "",
-                image: ""
-            },
+            first_name: req.body.first_name,
+            last_name: req.body.first_name,
+            creator_image: req.body.creator_image,
             users : req.body.users,
-            image : null,
+            image : req.body.image,
             info : req.body.info,
             active : true,
         });
