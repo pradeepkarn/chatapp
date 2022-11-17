@@ -11,6 +11,7 @@ const addRoom = async (req, res)=>{
         info : req.body.info,
         active : true,
     });
+    const data = {status:true,msg:"Room found",data:room}
     res.status(200).send(room)
 }
 
@@ -47,7 +48,8 @@ const getRoom = async (req,res)=>{
 const getAllRooms = async (req,res)=>{
     //for all data
     let rooms = await Room.findAll({});
-    res.status(200).send(rooms)
+    const data = {status:true,msg:"Room found",data:rooms}
+    res.status(200).send(data)
 }
 
 module.exports = {
