@@ -30,7 +30,8 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT
         },
         image: {
-            type: DataTypes.TEXT,
+            type: DataTypes.TEXT
+            // type: DataTypes.BLOB('long'),
         },
         level: {
             type: DataTypes.INTEGER,

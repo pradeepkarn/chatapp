@@ -34,9 +34,10 @@ const db = {}
 db.Sequelize = Sequelize;
 db.sequelize = sequelize
 
-db.products = require('./productModel.js')(sequelize, DataTypes)
-db.reviews = require('./reviewtModel.js')(sequelize, DataTypes)
+// db.products = require('./productModel.js')(sequelize, DataTypes)
+// db.reviews = require('./reviewtModel.js')(sequelize, DataTypes)
 db.users = require('./userModel.js')(sequelize, DataTypes)
+db.rooms = require('./roomModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync( {force: false} )
 .then(()=>{

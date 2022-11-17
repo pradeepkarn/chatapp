@@ -131,7 +131,6 @@ const profileEdit = async (req,res)=>{
             const updateUserData = {
                 first_name: edit.first_name?edit.first_name:user.first_name,
                 last_name: edit.last_name?edit.last_name:user.last_name,
-                mobile: edit.mobile?edit.mobile:user.mobile,
                 image: edit.image?edit.image:user.image,
                 gender: edit.gender?edit.gender:user.gender,
                 dob: edit.dob?edit.dob:user.dob,
@@ -156,6 +155,7 @@ const profileEdit = async (req,res)=>{
         }
         
     }else{
+        //in case token is not available
         res.status(200).send("All fields are mandetory")
     }
     
