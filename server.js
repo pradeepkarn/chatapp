@@ -123,7 +123,6 @@ app.get('/create-room', (req, res) => {
   app.use("/api/users",userRouter);
   app.use("/api/rooms",roomRouter);
 
-
   app.post('/api/rooms/create-room', (req, res) => {
     // console.log(req.body.room)
     if (rooms[req.body.room] != null || req.body.room == "") {
@@ -149,4 +148,3 @@ app.get('/create-room', (req, res) => {
 // console.log(Object.entries(users));
     return res.status(200).send({ status:true, data });
   });
-

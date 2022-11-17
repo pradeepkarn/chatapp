@@ -1,4 +1,5 @@
 const db = require("../models/index.js");
+const io = require("socket.io");
 //create main models
 const Room = db.rooms
 
@@ -11,6 +12,7 @@ const addRoom = async (req, res)=>{
         info : req.body.info,
         active : true,
     });
+    io.emit('room-created', req.body.room_name)
     const data = {status:true,msg:"Room found",data:room}
     res.status(200).send(room)
 }
