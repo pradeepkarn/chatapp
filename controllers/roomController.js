@@ -14,22 +14,22 @@ const addRoom = async (req, res)=>{
     res.status(200).send(room)
 }
 
-const getRooms = async (req,res)=>{
-    let id = req.body.id
+const getRoom = async (req,res)=>{
+    let id = req.params.id
     if (id) {
         let room = await Room.findOne({where : {token:id}})
         if (room) {
             //create response user
-            const responseRoom = {
-                id: room.id,
-                room_name: room.room_name,
-                users: room.users,
-                image: room.image,
-                info: room.info,
-                active: room.active
-            }
+            // const responseRoom = {
+            //     id: room.id,
+            //     room_name: room.room_name,
+            //     users: room.users,
+            //     image: room.image,
+            //     info: room.info,
+            //     active: room.active
+            // }
             //create response object
-            const data = {status:true,msg:"Room found",data:responseRoom}
+            const data = {status:true,msg:"Room found",data:room}
             //send data after success sign in
             res.status(200).send(data)
         }else{
@@ -52,7 +52,7 @@ const getAllRooms = async (req,res)=>{
 
 module.exports = {
     addRoom,
-    getRooms,
+    getRoom,
     getAllRooms
     
 }
