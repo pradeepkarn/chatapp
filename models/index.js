@@ -39,7 +39,7 @@ db.sequelize = sequelize
 db.users = require('./userModel.js')(sequelize, DataTypes)
 db.rooms = require('./roomModel.js')(sequelize, DataTypes)
 
-db.sequelize.sync( {force: true} )
+db.sequelize.sync( {force: false} )
 .then(()=>{
     // console.log('Yes re-sync done!')
 })
