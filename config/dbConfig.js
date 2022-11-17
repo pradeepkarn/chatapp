@@ -3,7 +3,7 @@ dotenv.config();
 module.exports = {
     HOST: "0.0.0.0",
     USER: "root",
-    PASSWORD: "",
+    PASSWORD: "NODE9572",
     DB: "node_learn",
     dialect: 'mysql',
     port: "3306",
