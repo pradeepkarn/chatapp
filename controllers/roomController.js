@@ -17,7 +17,7 @@ const addRoom = async (req, res)=>{
 const getRoom = async (req,res)=>{
     let id = req.params.id
     if (id) {
-        let room = await Room.findOne({where : {token:id}})
+        let room = await Room.findOne({where : {id:id}})
         if (room) {
             //create response user
             // const responseRoom = {
