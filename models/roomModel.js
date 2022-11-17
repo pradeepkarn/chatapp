@@ -12,9 +12,14 @@ module.exports = (Sequelize, DataTypes) => {
         created_by: {
             type: DataTypes.INTEGER,              
         },
-        creator_detail: {
-            type: DataTypes.JSON,  
-            allowNull: false         
+        first_name: {
+            type: DataTypes.STRING,        
+        },
+        last_name: {
+            type: DataTypes.STRING,     
+        },
+        creator_image: {
+            type: DataTypes.STRING,     
         },
         image: {
             type: DataTypes.TEXT,
