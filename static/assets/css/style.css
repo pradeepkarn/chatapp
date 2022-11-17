@@ -1278,3 +1278,6 @@ h6 {
   background-image: linear-gradient(to right, #58275c , #9e65a4);
   color:white !important;
 }
+.hide{
+  display: none !important;
+}

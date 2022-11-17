@@ -14,7 +14,7 @@ http.listen(PORT, ()=>{
 
 const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
-
+const roomController = require("./controllers/roomController.js");
 
 const io = require("socket.io")(http, {
   cors: {
@@ -23,9 +23,12 @@ const io = require("socket.io")(http, {
   }
 });
 
-
-const rooms = {}
+const rooms = {};
 const users = {};
+
+
+
+
 
 app.use(cors())
 
@@ -34,8 +37,6 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 app.use(express.static('static'))
 app.use(express.urlencoded({extended:true}))
-
-
 
 app.get("/",(req,res)=>{
   res.render('index',{});
@@ -58,8 +59,14 @@ res.render('register',{});
 
 const roomsApi = [];
 app.get('/create-room', (req, res) => {
-    // rooms[req.body.room] = { users: {} }
-    // console.log(rooms)
+    let allRooms;
+    const allrooms = async ()=>{
+      allRooms = await roomController._getRooms();
+      allRooms.forEach(item => {
+        io.emit('room-created', item.room_name)
+      });
+    }
+    allrooms()
     res.render('create-room', { rooms: rooms });
   });
   
@@ -116,7 +123,7 @@ app.get('/create-room', (req, res) => {
   app.use("/api/users",userRouter);
   app.use("/api/rooms",roomRouter);
 
-  
+
   app.post('/api/rooms/create-room', (req, res) => {
     // console.log(req.body.room)
     if (rooms[req.body.room] != null || req.body.room == "") {

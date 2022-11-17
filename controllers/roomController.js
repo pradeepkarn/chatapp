@@ -52,9 +52,15 @@ const getAllRooms = async (req,res)=>{
     res.status(200).send(data)
 }
 
+const _getRooms = async ()=>{
+    let rooms = await Room.findAll({});
+    // return JSON.stringify(rooms);
+    return rooms;
+}
+
 module.exports = {
     addRoom,
     getRoom,
-    getAllRooms
-    
+    getAllRooms,
+    _getRooms
 }
