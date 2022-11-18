@@ -53,6 +53,7 @@ const changeImg = async (token,imgname)=>{
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        
         // Uploads is the Upload_folder_name
         cb(null, "static/media/profiles/")
     },
@@ -60,6 +61,7 @@ var storage = multer.diskStorage({
       cb(null, file.fieldname + "-"+ Date.now()+".jpg")
       changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
     //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
+        // console.log(req.body)
     }
   })
        
@@ -71,7 +73,6 @@ var uploadProfileImage = multer({
     storage: storage,
     limits: { fileSize: maxSize },
     fileFilter: function (req, file, cb){
-   
         // Set the filetypes, it is optional
         var filetypes = /jpeg|jpg|png/;
         var mimetype = filetypes.test(file.mimetype);

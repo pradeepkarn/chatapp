@@ -33,6 +33,14 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT
             // type: DataTypes.BLOB('long'),
         },
+        friend_list : {
+            type: DataTypes.JSON,
+            allowNull : true
+        },
+        follower_list : {
+            type: DataTypes.JSON,
+            allowNull : true
+        },
         level: {
             type: DataTypes.INTEGER,
             defaultValue: 0

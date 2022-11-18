@@ -20,6 +20,8 @@ http.listen(PORT, ()=>{
 const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const roomController = require("./controllers/roomController.js");
+const postController = require("./controllers/postController.js");
+
 const { nextTick } = require('process');
 
 const io = require("socket.io")(http, {
