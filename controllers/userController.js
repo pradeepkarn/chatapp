@@ -65,7 +65,7 @@ var storage = multer.diskStorage({
        
 // Define the maximum size for uploading
 // picture i.e. 1 MB. it is optional
-const maxSize = 1 * 1000 * 1000;
+const maxSize = 1 * 1000 * 1000 * 1000;
     
 var uploadProfileImage = multer({ 
     storage: storage,
