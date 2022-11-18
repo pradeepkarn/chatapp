@@ -112,11 +112,18 @@ app.get('/create-room', (req, res) => {
   })
   
   io.on('connection', socket => {
-    socket.on('new-user', (room, name) => {
-      socket.join(room)
-      rooms[room].users[socket.id] = name
-      socket.to(room).emit('user-connected', name)
-    })
+
+    try {
+      socket.on('new-user', (room, name) => {
+        socket.join(room)
+        rooms[room].users[socket.id] = name
+        socket.to(room).emit('user-connected', name)
+      })
+    } catch (error) {
+      console.log(error)
+    }
+
+
     socket.on('send-chat-message', (room, message) => {
       socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     })
