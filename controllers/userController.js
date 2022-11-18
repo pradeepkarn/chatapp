@@ -1,4 +1,6 @@
 const db = require("../models/index.js");
+const path = require("path")
+const multer = require("multer")
 //create main models
 const jwt = require('jsonwebtoken')
 const User = db.users
@@ -37,19 +39,55 @@ const signUp = async (req, res)=>{
     }
 }
 
-// get products all or limited by columns
-// const getAllUser = async (req,res)=>{
-//     let user = await User.findAll({});
-//     res.status(200).send(user)
-// }
 
-// get one user
+const changeImg = async (token,imgname)=>{
+    let user = await User.findOne({where : {token:token}})
+    if (user) {
+        User.update({image:imgname}, {where : {token:token}});
+    }
+    else{
+        return false;
+    }
+}
 
-// const getOneUser = async (req,res)=>{
-//     let id = req.params.id
-//     let user = await User.findeOne({where : {id:id}})
-//     res.status(200).send(user)
-// }
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Uploads is the Upload_folder_name
+        cb(null, "static/media/profiles/")
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + "-"+ Date.now()+".jpg")
+      changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
+    //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
+    }
+  })
+       
+// Define the maximum size for uploading
+// picture i.e. 1 MB. it is optional
+const maxSize = 1 * 1000 * 1000;
+    
+var uploadProfileImage = multer({ 
+    storage: storage,
+    limits: { fileSize: maxSize },
+    fileFilter: function (req, file, cb){
+   
+        // Set the filetypes, it is optional
+        var filetypes = /jpeg|jpg|png/;
+        var mimetype = filetypes.test(file.mimetype);
+  
+        var extname = filetypes.test(path.extname(
+                    file.originalname).toLowerCase());
+        
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+      
+        cb("Error: File upload only supports the "
+                + "following filetypes - " + filetypes);
+      } 
+// image is the name of file attribute
+}).single("image");    
 
 const logIn = async (req,res)=>{
     let mobile = req.body.mobile
@@ -121,7 +159,6 @@ const logInViaToken = async (req,res)=>{
 }
 
 const profileEdit = async (req,res)=>{
-    console.log("i am running")
     let token = req.body.token
     const edit = req.body;
     if (token) {
@@ -141,6 +178,7 @@ const profileEdit = async (req,res)=>{
             //send data after success sign in
             User.update(updateUserData, {where : {token:token}})
             if (user) {
+                
                 const data = {status:true,msg:"Updated",data:null}
                 res.status(200).send(data)
             }else{
@@ -155,11 +193,34 @@ const profileEdit = async (req,res)=>{
         }
         
     }else{
-        //in case token is not available
-        res.status(200).send("All fields are mandetory")
+        uploadProfileImage(req,res,function(err) {
+  
+            if(err) {
+      
+                // ERROR occurred (here it can be occurred due
+                // to uploading image of size greater than
+                // 1MB or uploading different file type)
+                res.send(err)
+            }
+            else {
+      
+                // SUCCESS, image successfully uploaded
+                res.send("Success, Image uploaded!")
+            }
+        })
+        
     }
     
 }
+
+
+   
+  
+
+  
+
+    
+
 
 //update user
 

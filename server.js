@@ -1,9 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-
-
 const app = express();
 const http = require('http').createServer(app)
+app.use(cors())
+
+app.use(express.json());
+app.set('views', './views')
+app.set('view engine', 'ejs')
+app.use(express.static('static'))
+app.use(express.urlencoded({extended:true}))
+
 const PORT = process.env.PORT || 3000
 // const SOCKET_PORT = 8081
 
@@ -11,10 +17,10 @@ http.listen(PORT, ()=>{
     console.log(`Port is running on ${PORT}`)
 })
 
-
 const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const roomController = require("./controllers/roomController.js");
+const { nextTick } = require('process');
 
 const io = require("socket.io")(http, {
   cors: {
@@ -23,20 +29,17 @@ const io = require("socket.io")(http, {
   }
 });
 
-const rooms = {};
+var rooms = {};
 const users = {};
 
 
+// app.use((req,res,next)=>{
+// console.log(req)
+// next()
+// })
 
 
 
-app.use(cors())
-
-app.use(express.json());
-app.set('views', './views')
-app.set('view engine', 'ejs')
-app.use(express.static('static'))
-app.use(express.urlencoded({extended:true}))
 
 app.get("/",(req,res)=>{
   res.render('index',{});
@@ -62,14 +65,24 @@ app.get('/create-room', (req, res) => {
     let allRooms;
     const allrooms = async ()=>{
       allRooms = await roomController._getRooms();
+      
       allRooms.forEach(item => {
-        if (rooms[item.room_name] == null) {
+        
+        if (rooms[item.room_name] == undefined) {
           io.emit('room-created', item.room_name)
           rooms[item.room_name] = { users: {} }
         }
+        Object.keys(rooms).forEach((socketRoom) =>{
+          if (item.room_name!=socketRoom) {
+            delete rooms[socketRoom];
+          }
+        })
+       
       });
     }
     allrooms()
+      
+    
     res.render('create-room', { rooms: rooms });
   });
   
