@@ -29,7 +29,7 @@ const io = require("socket.io")(http, {
   }
 });
 
-var rooms = {};
+const rooms = {};
 const users = {};
 
 
@@ -68,15 +68,15 @@ app.get('/create-room', (req, res) => {
       
       allRooms.forEach(item => {
         
-        if (rooms[item.room_name] == undefined) {
+        if (rooms[item.room_name] == null) {
           io.emit('room-created', item.room_name)
           rooms[item.room_name] = { users: {} }
         }
-        Object.keys(rooms).forEach((socketRoom) =>{
-          if (item.room_name!=socketRoom) {
-            delete rooms[socketRoom];
-          }
-        })
+        // Object.keys(rooms).forEach((socketRoom) =>{
+        //   if (item.room_name!=socketRoom) {
+        //     // delete rooms[socketRoom];
+        //   }
+        // })
        
       });
     }
@@ -126,7 +126,8 @@ app.get('/create-room', (req, res) => {
     })
 
   })
-  
+
+ 
   function getUserRooms(socket) {
     return Object.entries(rooms).reduce((names, [name, room]) => {
       if (room.users[socket.id] != null) names.push(name)
