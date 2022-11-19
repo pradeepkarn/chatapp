@@ -19,8 +19,8 @@ http.listen(PORT, ()=>{
 
 const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
+const postRouter = require("./routes/postRouter.js");
 const roomController = require("./controllers/roomController.js");
-const postController = require("./controllers/postController.js");
 
 const { nextTick } = require('process');
 
@@ -148,6 +148,7 @@ app.get('/create-room', (req, res) => {
   //api
   app.use("/api/users",userRouter);
   app.use("/api/rooms",roomRouter);
+  app.use("/api/posts",postRouter);
 
   app.post('/api/rooms/create-room', (req, res) => {
     // console.log(req.body.room)
