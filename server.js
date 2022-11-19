@@ -286,6 +286,7 @@ app.get('/rooms', (req, res) => {
   app.get('/:room', (req, res) => {
     //join a room link
     if (rooms[req.params.room] == null) {
+      console.log(rooms)
       //if room object is empty back to create new room
       return res.redirect('/rooms')
     }
