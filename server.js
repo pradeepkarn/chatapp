@@ -270,7 +270,7 @@ app.get('/rooms', (req, res) => {
   app.post('/rooms', (req, res) => {
     // console.log(req.body.room)
     if (rooms[req.body.room] != null || req.body.room == "") {
-      return res.redirect('/create-room')
+      return res.redirect('/rooms')
     }
     //fill romm object with posted room name as property and put empty object containing users empty object
     rooms[req.body.room] = { users: {} }
@@ -284,7 +284,7 @@ app.get('/rooms', (req, res) => {
     //join a room link
     if (rooms[req.params.room] == null) {
       //if room object is empty back to create new room
-      return res.redirect('/create-room')
+      return res.redirect('/rooms')
     }
     //render chat page with clicked room
     res.render('room', { roomName: req.params.room })
