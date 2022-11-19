@@ -252,14 +252,17 @@ app.get('/rooms', (req, res) => {
     const allrooms = async ()=>{
       allRooms = await roomController._getRooms();
       
-      allRooms.forEach(item => {
+      const assignRooms = ()=>{
+        allRooms.forEach(item => {
         
-        if (rooms[item.room_name] == null || rooms[item.room_name] == undefined) {
-          io.emit('room-created', item.room_name)
-          rooms[item.room_name] = { users: {} }
-        }
-       
-      });
+          if (rooms[item.room_name] == null || rooms[item.room_name] == undefined) {
+            io.emit('room-created', item.room_name)
+            rooms[item.room_name] = { users: {} }
+          }
+         
+        });
+      }
+      assignRooms()
     }
     allrooms()
       
