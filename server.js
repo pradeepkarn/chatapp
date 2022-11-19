@@ -254,7 +254,7 @@ app.get('/rooms', (req, res) => {
       
       allRooms.forEach(item => {
         
-        if (rooms[item.room_name] == null) {
+        if (rooms[item.room_name] == null || rooms[item.room_name] == undefined) {
           io.emit('room-created', item.room_name)
           rooms[item.room_name] = { users: {} }
         }
