@@ -34,6 +34,7 @@ const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const roomController = require("./controllers/roomController.js");
+const { isRegExp } = require('util/types');
 
 
 
@@ -340,7 +341,12 @@ app.get('/rooms', (req, res) => {
     const db = require("./models/index.js");
     const Room = db.rooms
       const addRoom = async ()=>{
-        const valiRooName = (req.body.room_name).replaceAll(" ","");
+        const valiRooName = (req.body.room_name).replaceAll(" ","").replaceAll("^","").replaceAll("/","").replaceAll(",","").replaceAll("'","").replaceAll('"',"").replaceAll('`',"").replaceAll("\/","").replaceAll("\\","").replaceAll("&","").replaceAll("?","").replaceAll("=","").replaceAll("%","").replaceAll(".","").replaceAll("-","").replaceAll("*","");
+        if (valiRooName=="" || valiRooName== undefined) {
+          const data = {status:false,msg:"Invalid name",data:null}
+          res.status(200).json(data)
+          return;
+        }
         let roomExist = await Room.findOne({where : {room_name:valiRooName}})
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
