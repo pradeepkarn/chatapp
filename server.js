@@ -340,14 +340,15 @@ app.get('/rooms', (req, res) => {
     const db = require("./models/index.js");
     const Room = db.rooms
       const addRoom = async ()=>{
-        let roomExist = await Room.findOne({where : {room_name:(req.body.room_name).trim()}})
+        const valiRooName = (req.body.room_name).replaceAll(" ","");
+        let roomExist = await Room.findOne({where : {room_name:valiRooName}})
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
             res.status(200).json(data)
             return;
         }else{
             const room = await Room.create({
-                room_name : (req.body.room_name).trim(),
+                room_name : valiRooName,
                 created_by : req.body.created_by,
                 first_name: req.body.first_name,
                 last_name: req.body.first_name,
@@ -357,7 +358,7 @@ app.get('/rooms', (req, res) => {
                 info : req.body.info,
                 active : true,
             });
-            rooms[req.body.room_name] = { users: {} }
+            rooms[valiRooName] = { users: {} }
             const data = {status:true,msg:"Room found",data:room}
             res.status(200).json(data)
         }
