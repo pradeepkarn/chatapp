@@ -25,6 +25,7 @@ const roomController = require("./controllers/roomController.js");
 
 
 
+
 const io = require("socket.io")(http, {
   cors: {
     origin: '*',
@@ -41,7 +42,34 @@ const users = {};
 // next()
 // })
 
-
+app.post("/api/rooms/add-room",(req,res)=>{
+  const db = require("./models/index.js");
+  const Room = db.rooms
+    const addRoom = async ()=>{
+      let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
+      if (roomExist) {
+          const data = {status:false,msg:"This room is already registered",data:null}
+          res.status(200).json(data)
+          return;
+      }else{
+          const room = await Room.create({
+              room_name : req.body.room_name,
+              created_by : req.body.created_by,
+              first_name: req.body.first_name,
+              last_name: req.body.first_name,
+              creator_image: req.body.creator_image,
+              users : req.body.users,
+              image : req.body.image,
+              info : req.body.info,
+              active : true,
+          });
+          rooms[req.body.room_name] = { users: {} }
+          const data = {status:true,msg:"Room found",data:room}
+          res.status(200).json(data)
+      }
+  }
+  addRoom()
+})
 
 
 app.get("/",(req,res)=>{
