@@ -6,7 +6,7 @@ const addRoom = async (req, res)=>{
     let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
     if (roomExist) {
         const data = {status:false,msg:"This room is already registered",data:null}
-        res.status(200).send(data)
+        res.status(200).json(data)
         return;
     }else{
         const room = await Room.create({
@@ -21,7 +21,7 @@ const addRoom = async (req, res)=>{
             active : true,
         });
         const data = {status:true,msg:"Room found",data:room}
-        res.status(200).send(data)
+        res.status(200).json(data)
     }
 }
 
@@ -41,16 +41,16 @@ const getRoom = async (req,res)=>{
             // }
             //create response object
             const data = {status:true,msg:"Room found",data:room}
-            //send data after success sign in
-            res.status(200).send(data)
+            //json data after success sign in
+            res.status(200).json(data)
         }else{
-            //send data after failed sign in
+            //json data after failed sign in
             const data = {status:false,msg:"room not found",data:null}
-            res.status(200).send(data)
+            res.status(200).json(data)
         }
         
     }else{
-        res.status(200).send("All fields are mandetory")
+        res.status(200).json("All fields are mandetory")
     }
     
 }
@@ -59,7 +59,7 @@ const getAllRooms = async (req,res)=>{
     //for all data
     let rooms = await Room.findAll({});
     const data = {status:true,msg:"Room found",data:rooms}
-    res.status(200).send(data)
+    res.status(200).json(data)
 }
 
 const _getRooms = async ()=>{

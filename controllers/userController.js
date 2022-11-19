@@ -18,22 +18,22 @@ const signUp = async (req, res)=>{
     }
     if (req.body.mobile=="") {
         const data = {status:false,msg:"Empty mobile number is not allowed",data:null}
-        res.status(200).send(data)
+        res.status(200).json(data)
         return;
     }
     let userExist = await User.findOne({where : {mobile:req.body.mobile}})
     if (userExist) {
         const data = {status:false,msg:"User already registered",data:null}
-        res.status(200).send(data)
+        res.status(200).json(data)
         return;
     }else{
         const user = await User.create(signUpData);
         if (user) {
             const data = {status:true,msg:"Signup success",data:signUpData}
-            res.status(200).send(data)
+            res.status(200).json(data)
         }else{
             const data = {status:false,msg:"Signup failed",data:null}
-            res.status(200).send(data)
+            res.status(200).json(data)
         }
         return;
     }
@@ -107,18 +107,18 @@ const logIn = async (req,res)=>{
             }
             //create response object
             const data = {status:true,msg:"User found",data:responeUser}
-            //send data after success sign in
-            res.status(200).send(data)
+            //json data after success sign in
+            res.status(200).json(data)
             return;
         }else{
-            //send data after failed sign in
+            //json data after failed sign in
             const data = {status:false,msg:"User not found",data:null}
-            res.status(200).send(data)
+            res.status(200).json(data)
             return;
         }
         
     }else{
-        res.status(200).send("All fields are mandetory")
+        res.status(200).json("All fields are mandetory")
         return;
     }
     
@@ -145,16 +145,16 @@ const logInViaToken = async (req,res)=>{
             }
             //create response object
             const data = {status:true,msg:"User found",data:responeUser}
-            //send data after success sign in
-            res.status(200).send(data)
+            //json data after success sign in
+            res.status(200).json(data)
         }else{
-            //send data after failed sign in
+            //json data after failed sign in
             const data = {status:false,msg:"User not found",data:null}
-            res.status(200).send(data)
+            res.status(200).json(data)
         }
         
     }else{
-        res.status(200).send("All fields are mandetory")
+        res.status(200).json("All fields are mandetory")
     }
     
 }
@@ -176,21 +176,21 @@ const profileEdit = async (req,res)=>{
             }
             //update user if not null
             
-            //send data after success sign in
+            //json data after success sign in
             User.update(updateUserData, {where : {token:token}})
             if (user) {
                 
                 const data = {status:true,msg:"Updated",data:null}
-                res.status(200).send(data)
+                res.status(200).json(data)
             }else{
                 const data = {status:false,msg:"Not updated",data:null}
-                res.status(200).send(data)
+                res.status(200).json(data)
             }
             return;
         }else{
-            //send data after failed sign in
+            //json data after failed sign in
             const data = {status:false,msg:"User not found",data:null}
-            res.status(200).send(data)
+            res.status(200).json(data)
         }
         
     }else{
@@ -201,12 +201,12 @@ const profileEdit = async (req,res)=>{
                 // ERROR occurred (here it can be occurred due
                 // to uploading image of size greater than
                 // 1MB or uploading different file type)
-                res.send(err)
+                res.json(err)
             }
             else {
       
                 // SUCCESS, image successfully uploaded
-                res.send("Success, Image uploaded!")
+                res.json("Success, Image uploaded!")
             }
         })
         
@@ -228,7 +228,7 @@ const profileEdit = async (req,res)=>{
 // const updateUser = async (req,res)=>{
 //     let id = req.params.id
 //     let user = await User.update(req.body, {where : {id:id}})
-//     res.status(200).send(user)
+//     res.status(200).json(user)
 // }
 
 
@@ -237,14 +237,14 @@ const profileEdit = async (req,res)=>{
 // const deleteUser = async (req,res)=>{
 //     let id = req.params.id
 //     await User.destroy({where : {id:id}})
-//     res.status(200).send("User is deleted")
+//     res.status(200).json("User is deleted")
 // }
 
 //publish user
 
 // const getActiveUser = async (req,res)=>{
 //     let user = await User.findAll({where : {active: true}});
-//     res.status(200).send(user)
+//     res.status(200).json(user)
 // }
 
 
