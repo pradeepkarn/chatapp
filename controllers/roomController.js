@@ -55,12 +55,12 @@ const getRoom = async (req,res)=>{
     
 }
 
-const getAllRooms = async (req,res)=>{
-    //for all data
-    let rooms = await Room.findAll({});
-    const data = {status:true,msg:"Room found",data:rooms}
-    res.status(200).json(data)
-}
+// const getAllRooms = async (req,res)=>{
+//     //for all data
+//     let rooms = await Room.findAll({});
+//     const data = {status:true,msg:"Room found",data:rooms}
+//     res.status(200).json(data)
+// }
 
 const _getRooms = async ()=>{
     let rooms = await Room.findAll({});
@@ -70,6 +70,6 @@ const _getRooms = async ()=>{
 
 module.exports = {
     getRoom,
-    getAllRooms,
+    // getAllRooms,
     _getRooms
 }

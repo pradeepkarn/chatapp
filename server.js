@@ -36,34 +36,6 @@ const io = require("socket.io")(http, {
 const rooms = {};
 const users = {};
 
-app.post("/api/rooms/add-room",(req,res)=>{
-  const db = require("./models/index.js");
-  const Room = db.rooms
-    const addRoom = async ()=>{
-      let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
-      if (roomExist) {
-          const data = {status:false,msg:"This room is already registered",data:null}
-          res.status(200).json(data)
-          return;
-      }else{
-          const room = await Room.create({
-              room_name : req.body.room_name,
-              created_by : req.body.created_by,
-              first_name: req.body.first_name,
-              last_name: req.body.first_name,
-              creator_image: req.body.creator_image,
-              users : req.body.users,
-              image : req.body.image,
-              info : req.body.info,
-              active : true,
-          });
-          rooms[req.body.room_name] = { users: {} }
-          const data = {status:true,msg:"Room found",data:room}
-          res.status(200).json(data)
-      }
-  }
-  addRoom()
-})
 
 
 app.get("/",(req,res)=>{
@@ -197,7 +169,7 @@ signUp()
 
 //website signup
 app.get("/register",(req,res)=>{
-res.render('register',{});
+  res.render('register',{});
 })
 app.post("/register",(req,res)=>{
   console.log(req.body)
@@ -346,28 +318,110 @@ app.get('/rooms', (req, res) => {
   app.use("/api/rooms",roomRouter);
   app.use("/api/posts",postRouter);
 
-  app.post('/api/rooms/create-room', (req, res) => {
-    // console.log(req.body.room)
-    if (rooms[req.body.room] != null || req.body.room == "") {
-        return res.status(200).send({ status:false, room_name: req.body.room });
+
+
+  app.post("/api/rooms/add-room",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+      const addRoom = async ()=>{
+        let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
+        if (roomExist) {
+            const data = {status:false,msg:"This room is already registered",data:null}
+            res.status(200).json(data)
+            return;
+        }else{
+            const room = await Room.create({
+                room_name : req.body.room_name,
+                created_by : req.body.created_by,
+                first_name: req.body.first_name,
+                last_name: req.body.first_name,
+                creator_image: req.body.creator_image,
+                users : req.body.users,
+                image : req.body.image,
+                info : req.body.info,
+                active : true,
+            });
+            rooms[req.body.room_name] = { users: {} }
+            const data = {status:true,msg:"Room found",data:room}
+            res.status(200).json(data)
+        }
     }
-    //fill romm object with posted room name as property and put empty object containing users empty object
-    rooms[req.body.room] = { users: {} }
-    //run an socket event to emit room name
-    io.emit('room-created', req.body.room)
-    //render room object
-    const data = {
-      rooms: rooms,
-      users: users
-    }
-    return res.status(200).send({ status:true, data });
-  });
+    addRoom()
+  })
   
-  app.get('/api/rooms/get-rooms', (req, res) => {
-    const data = {
-      rooms: rooms,
-      users: users
+  
+  app.get("/api/rooms/get/:id",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+      const getRoom = async ()=>{
+        let id = req.params.id
+        if (id) {
+            let room = await Room.findOne({where : {id:id}})
+            if (room) {
+                //create response object
+                const data = {status:true,msg:"Room found",data:room}
+                //json data after success sign in
+                res.status(200).json(data)
+            }else{
+                //json data after failed sign in
+                const data = {status:false,msg:"room not found",data:null}
+                res.status(200).json(data)
+            }
+            
+        }else{
+            res.status(200).json("All fields are mandetory")
+        }
     }
-// console.log(Object.entries(users));
-    return res.status(200).send({ status:true, data });
-  });
+    getRoom()
+  })
+  
+
+  app.get("/api/rooms/get",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const getAllRooms = async ()=>{
+      //for all data
+      let roomsApi = await Room.findAll({});
+      roomsApi.forEach(item => {
+        
+        if (rooms[item.room_name] == null) {
+          io.emit('room-created', item.room_name)
+          rooms[item.room_name] = { users: {} }
+        }
+       
+      });
+      const data = {status:true,msg:"Room found",data:roomsApi}
+      res.status(200).json(data)
+  }
+    getAllRooms()
+  })
+  
+  // app.post('/api/rooms/add-room', (req, res) => {
+  //   // console.log(req.body.room)
+  //   if (rooms[req.body.room] != null || req.body.room == "") {
+  //       return res.status(200).send({ status:false, room_name: req.body.room });
+  //   }
+  //   //fill romm object with posted room name as property and put empty object containing users empty object
+  //   rooms[req.body.room] = { users: {} }
+  //   //run an socket event to emit room name
+  //   io.emit('room-created', req.body.room)
+  //   //render room object
+  //   const data = {
+  //     rooms: rooms,
+  //     users: users
+  //   }
+  //   return res.status(200).send({ status:true, data });
+  // });
+  
+
+
+
+
+//   app.get('/api/rooms/get-rooms', (req, res) => {
+//     const data = {
+//       rooms: rooms,
+//       users: users
+//     }
+// // console.log(Object.entries(users));
+//     return res.status(200).send({ status:true, data });
+//   });
