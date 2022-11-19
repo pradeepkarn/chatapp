@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const app = express();
 const http = require('http').createServer(app)
@@ -22,7 +23,7 @@ const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const roomController = require("./controllers/roomController.js");
 
-const { nextTick } = require('process');
+
 
 const io = require("socket.io")(http, {
   cors: {
@@ -47,23 +48,200 @@ app.get("/",(req,res)=>{
   res.render('index',{});
 })
 
+
+//website login
 app.get("/login",(req,res)=>{
 res.render('login',{});
 })
-
+//logic on post
 app.post("/login",(req,res)=>{
-
-
-  res.render('login',{});
+  console.log(req.body)
+  const db = require("./models/index.js");
+  const User = db.users
+  const login = async ()=>{
+    const jwt = require('jsonwebtoken')
+    let mobile = req.body.mobile
+    let password = req.body.password
+    if (mobile && password) {
+        let user = await User.findOne({where : {mobile:mobile,password:password}})
+        if (user) {
+            const token = jwt.sign({userId: user.id},
+                process.env.JWT_SECRET_KEY, {expiresIn: "5d"}
+                )
+                //update token after sign in
+            await User.update({token:token}, {where : {id:user.id}})
+            //create response user
+            // const loggedInUser = {
+            //     token: token
+            // }
+            
+            app.use(session({
+              token: token
+            }))
+            console.log(req.session)
+            //create response object
+            const msg = `<b class='text-success'>Login success</b>`;
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(msg);
+            res.end();
+            return;
+        }else{
+            //json data after failed sign in
+            const msg = `<b class='text-danger'>Invalid creadential, login failed</b>`;
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(msg);
+            res.end();
+            return;
+        }
+        
+    }else{
+        const msg = "All fields are mendatory";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }
+}
+login()
 })
+//website login end
 
-
+//website signup
 app.get("/register",(req,res)=>{
 res.render('register',{});
 })
+//logic on post method
+app.post("/register",(req,res)=>{
+  const db = require("./models/index.js");
+  const User = db.users
+  const signUp = async ()=>{
+    const signUpData = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        mobile : req.body.mobile,
+        password : req.body.password,
+        token: null,
+        active: 1
+    }
+    if (req.body.mobile=="") {
+        const msg = "Empty mobile number is not allowed";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }
+    if (req.body.password=="" || req.body.cnf_password=="") {
+      const msg = "Empty Password";
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
+    if (req.body.password!=req.body.cnf_password) {
+        const msg = "Password did not match";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }
+    let userExist = await User.findOne({where : {mobile:req.body.mobile}})
+    if (userExist) {
+        const msg = "This number is already registered";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }else{
+        const user = await User.create(signUpData);
+        if (user) {
+          const msg = "Registration success";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }else{
+          const msg = "Registration failed";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        return;
+    }
+}
+signUp()
+})
+//website signup end
+
+//website signup
+app.get("/register",(req,res)=>{
+res.render('register',{});
+})
+app.post("/register",(req,res)=>{
+  console.log(req.body)
+  const db = require("./models/index.js");
+  const User = db.users
+  const signUp = async ()=>{
+    const signUpData = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        mobile : req.body.mobile,
+        password : req.body.password,
+        token: null,
+        active: 1
+    }
+    if (req.body.mobile=="") {
+        const msg = "Empty mobile number is not allowed";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }
+    if (req.body.password=="" || req.body.cnf_password=="") {
+      const msg = "Empty Password";
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
+    if (req.body.password!=req.body.cnf_password) {
+        const msg = "Password did not match";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }
+    let userExist = await User.findOne({where : {mobile:req.body.mobile}})
+    if (userExist) {
+        const msg = "This number is already registered";
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+    }else{
+        const user = await User.create(signUpData);
+        if (user) {
+          const msg = "Registration success";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }else{
+          const msg = "Registration failed";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        return;
+    }
+}
+signUp()
+})
+//website signup end
 
 const roomsApi = [];
-app.get('/create-room', (req, res) => {
+app.get('/rooms', (req, res) => {
     let allRooms;
     const allrooms = async ()=>{
       allRooms = await roomController._getRooms();
@@ -74,11 +252,6 @@ app.get('/create-room', (req, res) => {
           io.emit('room-created', item.room_name)
           rooms[item.room_name] = { users: {} }
         }
-        // Object.keys(rooms).forEach((socketRoom) =>{
-        //   if (item.room_name!=socketRoom) {
-        //     // delete rooms[socketRoom];
-        //   }
-        // })
        
       });
     }
@@ -88,7 +261,7 @@ app.get('/create-room', (req, res) => {
     res.render('create-room', { rooms: rooms });
   });
   
-  app.post('/create-room', (req, res) => {
+  app.post('/rooms', (req, res) => {
     // console.log(req.body.room)
     if (rooms[req.body.room] != null || req.body.room == "") {
       return res.redirect('/create-room')
@@ -116,6 +289,7 @@ app.get('/create-room', (req, res) => {
     try {
       socket.on('new-user', (room, name) => {
         socket.join(room)
+        console.log(name)
         rooms[room].users[socket.id] = name
         socket.to(room).emit('user-connected', name)
       })

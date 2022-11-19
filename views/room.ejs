@@ -59,6 +59,9 @@
 
             if (messageForm != null) {
             const name = prompt('What is your name?');
+            if (!name) {
+              location.href="/";
+            }
             appendMessage('You joined');
             socket.emit('new-user', roomName, name);
 
