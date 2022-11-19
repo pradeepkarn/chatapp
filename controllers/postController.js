@@ -8,7 +8,7 @@ const addPost = async (req, res)=>{
             body : req.body.body,
             created_by : req.body.created_by,
             first_name: req.body.first_name,
-            last_name: req.body.first_name,
+            last_name: req.body.last_name,
             creator_image: req.body.creator_image,
             image : req.body.image,
             comments: req.body.comments,

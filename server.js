@@ -172,7 +172,7 @@ app.get("/register",(req,res)=>{
   res.render('register',{});
 })
 app.post("/register",(req,res)=>{
-  console.log(req.body)
+  // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
   const signUp = async ()=>{
@@ -283,7 +283,7 @@ app.get('/rooms', (req, res) => {
     try {
       socket.on('new-user', (room, name) => {
         socket.join(room)
-        console.log(name)
+        // console.log(name)
         rooms[room].users[socket.id] = name
         socket.to(room).emit('user-connected', name)
       })
