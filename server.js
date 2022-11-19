@@ -1,5 +1,10 @@
 const express = require('express');
 const session = require('express-session');
+const filestore = require("session-file-store")(session)
+const path = require("path")
+
+
+
 const cors = require('cors');
 const app = express();
 const http = require('http').createServer(app)
@@ -10,7 +15,14 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 app.use(express.static('static'))
 app.use(express.urlencoded({extended:true}))
-
+// Creating session 
+app.use(session({
+  name: "session-id",
+  secret: "dsfsdf2q34325fergraegtewge", // Secret key,
+  saveUninitialized: false,
+  resave: false,
+  store: new filestore()
+}))
 const PORT = process.env.PORT || 3000
 // const SOCKET_PORT = 8081
 
@@ -396,7 +408,7 @@ app.get('/rooms', (req, res) => {
     getAllRooms()
   })
   
-  app.post("/api/users/edit-profile", (req, res) => {
+  app.post("/api/users/edit-profile", (req, res, next) => {
     const db = require("./models/index.js");
     const User = db.users
     let token = req.body.token
@@ -405,7 +417,8 @@ app.get('/rooms', (req, res) => {
      
       
 // The base64 encoded input string
-let base64string = req.body.image
+let base64string = req.body.image;
+// let base64string = req.body.image
   
 // Create a buffer from the string
 let bufferObj = Buffer.from(base64string, "base64");
@@ -420,7 +433,7 @@ let decodedString = bufferObj.toString("utf8");
           if (user) {
               //create response user
               const updateUserData = {
-                  image: base64string ? base64string : user.image,
+                  image: decodedString ? decodedString : user.image,
               }
               //update user if not null
               
