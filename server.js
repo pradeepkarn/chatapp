@@ -36,12 +36,6 @@ const io = require("socket.io")(http, {
 const rooms = {};
 const users = {};
 
-
-// app.use((req,res,next)=>{
-// console.log(req)
-// next()
-// })
-
 app.post("/api/rooms/add-room",(req,res)=>{
   const db = require("./models/index.js");
   const Room = db.rooms
