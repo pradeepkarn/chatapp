@@ -401,7 +401,7 @@ app.get('/rooms', (req, res) => {
     const User = db.users
     let token = req.body.token
     console.log(req.body, "log")
-    const uploadImg = async (imageNameFromFile)=>{
+    const uploadImg = async ()=>{
      
       
 // The base64 encoded input string
@@ -413,14 +413,14 @@ let bufferObj = Buffer.from(base64string, "base64");
 // Encode the Buffer as a utf8 string
 let decodedString = bufferObj.toString("utf8");
   
-console.log("The decoded string:", decodedString);
+// console.log("The decoded string:", decodedString);
      
         if (token) {
           let user = await User.findOne({where : {token:token}})
           if (user) {
               //create response user
               const updateUserData = {
-                  image: imageNameFromFile ? imageNameFromFile : user.image,
+                  image: base64string ? base64string : user.image,
               }
               //update user if not null
               
@@ -448,7 +448,7 @@ console.log("The decoded string:", decodedString);
         res.status(200).json(data)
       }
     }
-    uploadImg('imagename');
+    uploadImg();
   });
   
 
