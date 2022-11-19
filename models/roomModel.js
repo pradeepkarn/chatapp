@@ -19,10 +19,10 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,     
         },
         creator_image: {
-            type: DataTypes.STRING,     
+            type: DataTypes.TEXT('long'),   
         },
         image: {
-            type: DataTypes.TEXT,
+            type: DataTypes.TEXT('long'),
         },
         info: {
             type: DataTypes.TEXT
