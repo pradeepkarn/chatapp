@@ -396,22 +396,49 @@ app.get('/rooms', (req, res) => {
     getAllRooms()
   })
   
-  // app.post('/api/rooms/add-room', (req, res) => {
-  //   // console.log(req.body.room)
-  //   if (rooms[req.body.room] != null || req.body.room == "") {
-  //       return res.status(200).send({ status:false, room_name: req.body.room });
-  //   }
-  //   //fill romm object with posted room name as property and put empty object containing users empty object
-  //   rooms[req.body.room] = { users: {} }
-  //   //run an socket event to emit room name
-  //   io.emit('room-created', req.body.room)
-  //   //render room object
-  //   const data = {
-  //     rooms: rooms,
-  //     users: users
-  //   }
-  //   return res.status(200).send({ status:true, data });
-  // });
+  app.post("/api/users/edit-profile", (req, res) => {
+    const db = require("./models/index.js");
+    const User = db.users
+    let token = req.body.token
+    console.log(req.body, "log")
+    const uploadImg = async (imageNameFromFile)=>{
+      const encoded = req.body.image
+      console.log(encoded)
+        if (token) {
+          let user = await User.findOne({where : {token:token}})
+          if (user) {
+              //create response user
+              const updateUserData = {
+                  image: imageNameFromFile ? imageNameFromFile : user.image,
+              }
+              //update user if not null
+              
+              //json data after success sign in
+              await User.update(updateUserData, {where : {token:token}})
+              if (user) {
+                  
+                  const data = {status:true,msg:"Updated",data:null}
+                  res.status(200).json(data)
+              }else{
+                  const data = {status:false,msg:"Not updated",data:null}
+                  res.status(200).json(data)
+              }
+              return;
+          }else{
+            
+              //json data after failed sign in
+              const data = {status:false,msg:"User not found",data:null}
+              res.status(200).json(data)
+          }
+          
+      }else{
+        // console.log(req.body)
+        const data = {status:false,msg:"You are not logged in",data:null}
+        res.status(200).json(data)
+      }
+    }
+    uploadImg('imagename');
+  });
   
 
 

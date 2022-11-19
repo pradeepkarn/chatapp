@@ -53,7 +53,6 @@ const changeImg = async (token,imgname)=>{
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        
         // Uploads is the Upload_folder_name
         cb(null, "static/media/profiles/")
     },
@@ -72,13 +71,20 @@ const maxSize = 1 * 1000 * 1000 * 1000;
 var uploadProfileImage = multer({ 
     storage: storage,
     limits: { fileSize: maxSize },
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
-          cb(null, true);
-        } else {
-          cb(null, false);
-          return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    fileFilter: function (req, file, cb){
+        // Set the filetypes, it is optional
+        var filetypes = /jpeg|jpg|png/;
+        var mimetype = filetypes.test(file.mimetype);
+  
+        var extname = filetypes.test(path.extname(
+                    file.originalname).toLowerCase());
+        
+        if (mimetype && extname) {
+            return cb(null, true);
         }
+      
+        cb("Error: File upload only supports the "
+                + "following filetypes - " + filetypes);
       } 
 // image is the name of file attribute
 }).single("image");    
