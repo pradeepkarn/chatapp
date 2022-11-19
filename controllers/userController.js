@@ -61,7 +61,7 @@ var storage = multer.diskStorage({
       cb(null, file.fieldname + "-"+ Date.now()+".jpg")
       changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
     //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
-        // console.log(req.body)
+        console.log(req.body)
     }
   })
        
@@ -72,20 +72,13 @@ const maxSize = 1 * 1000 * 1000 * 1000;
 var uploadProfileImage = multer({ 
     storage: storage,
     limits: { fileSize: maxSize },
-    fileFilter: function (req, file, cb){
-        // Set the filetypes, it is optional
-        var filetypes = /jpeg|jpg|png/;
-        var mimetype = filetypes.test(file.mimetype);
-  
-        var extname = filetypes.test(path.extname(
-                    file.originalname).toLowerCase());
-        
-        if (mimetype && extname) {
-            return cb(null, true);
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+          cb(null, true);
+        } else {
+          cb(null, false);
+          return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
         }
-      
-        cb("Error: File upload only supports the "
-                + "following filetypes - " + filetypes);
       } 
 // image is the name of file attribute
 }).single("image");    
