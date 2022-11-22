@@ -30,9 +30,11 @@ module.exports = (Sequelize, DataTypes) => {
         },
         image: {
             type: DataTypes.TEXT,
+            allowNull: true
         },
         info: {
-            type: DataTypes.TEXT
+            type: DataTypes.TEXT,
+            allowNull: true
         },
         active: {
             type: DataTypes.BOOLEAN,

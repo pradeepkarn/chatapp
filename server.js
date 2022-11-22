@@ -485,7 +485,7 @@ var storage = multer.diskStorage({
   // }
   filename: function (req, file, cb) {
     var extname = path.extname(file.originalname).toLowerCase();
-      cb(null, file.fieldname + "-"+ Date.now()+extname)
+      cb(null, file.fieldname + "_"+ Date.now()+extname)
 
     }
 })
