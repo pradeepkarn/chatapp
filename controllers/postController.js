@@ -24,6 +24,7 @@ const addPost = async (req, res)=>{
         const post = await Post.create({
             title : req.body.title,
             body : req.body.body,
+            tags : req.body.tags,
             created_by : user.id,
             image : imageName,
             active : true,
@@ -44,6 +45,7 @@ const getPost = async (req,res)=>{
                         id: item.id,
                         title : item.title,
                         body : item.body,
+                        tags : item.tags,
                         image : item.image,
                         likes: item.likes,
                         comments: item.comments,
@@ -118,6 +120,7 @@ const getAllPost = async (req,res)=>{
                 id: item.id,
                 title : item.title,
                 body : item.body,
+                tags : item.tags,
                 image : item.image,
                 likes: item.likes,
                 comments: item.comments,
