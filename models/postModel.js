@@ -8,7 +8,7 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT('long'),
             allowNull: false
         },
-        like: {
+        likes: {
             type: DataTypes.JSON,
             allowNull: true
         },
@@ -19,15 +19,15 @@ module.exports = (Sequelize, DataTypes) => {
         created_by: {
             type: DataTypes.INTEGER,              
         },
-        first_name: {
-            type: DataTypes.STRING,        
-        },
-        last_name: {
-            type: DataTypes.STRING,     
-        },
-        creator_image: {
-            type: DataTypes.STRING,     
-        },
+        // first_name: {
+        //     type: DataTypes.STRING,        
+        // },
+        // last_name: {
+        //     type: DataTypes.STRING,     
+        // },
+        // creator_image: {
+        //     type: DataTypes.STRING,     
+        // },
         image: {
             type: DataTypes.TEXT,
             allowNull: true

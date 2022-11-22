@@ -1,19 +1,31 @@
 const db = require("../models/index.js");
 //create main models
 const Post = db.posts
+const User = db.users
 
 const addPost = async (req, res)=>{
-    const imageName = req.file.filename;
+    let imageName = null;
+    let token = null;
+    if (req.file) {
+        imageName = req.file.filename;
+    }else{
+        imageName = null;
+    }
+    if (req.body.token) {
+        token = req.body.token;
+    }
     console.log(imageName)
+    let user = await User.findOne({where : {token:token}})
+        if (!user) {
+            const data = {status:false,msg:"Invalid user token, post not created",data:null}
+            res.status(200).json(data)
+            return;
+        }
         const post = await Post.create({
             title : req.body.title,
             body : req.body.body,
-            created_by : req.body.created_by,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            creator_image: req.body.creator_image,
+            created_by : user.id,
             image : imageName,
-            comments: req.body.comments,
             active : true,
         });
         const data = {status:true,msg:"Post created",data:post}
