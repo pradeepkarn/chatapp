@@ -3,6 +3,8 @@ const db = require("../models/index.js");
 const Post = db.posts
 
 const addPost = async (req, res)=>{
+    const imageName = req.file.filename;
+    console.log(imageName)
         const post = await Post.create({
             title : req.body.title,
             body : req.body.body,

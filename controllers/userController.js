@@ -193,22 +193,8 @@ const profileEdit = async (req,res)=>{
         }
         
     }else{
-        uploadProfileImage(req,res,function(err) {
-  
-            if(err) {
-      
-                // ERROR occurred (here it can be occurred due
-                // to uploading image of size greater than
-                // 1MB or uploading different file type)
-                res.json(err)
-            }
-            else {
-      
-                // SUCCESS, image successfully uploaded
-                res.json("Success, Image uploaded!")
-            }
-        })
-        
+        const data = {status:false,msg:"Invali token",data:null}
+        res.status(200).json(data)
     }
     
 }

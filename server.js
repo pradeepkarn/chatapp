@@ -493,8 +493,8 @@ var upload = multer({ storage: storage })
   
 app.post('/api/users/profile-upload', upload.single('profile_image'), async (req,res)=>{
  
-    console.log(JSON.stringify(req.file))
-    console.log("Token: "+ req.body.token)
+    // console.log(JSON.stringify(req.file))
+    // console.log("Token: "+ req.body.token)
     const db = require("./models/index.js");
     const User = db.users
     const token = req.body.token;
