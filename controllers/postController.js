@@ -110,14 +110,7 @@ const getPost = async (req,res)=>{
 const getAllPost = async (req,res)=>{
     //for all data
     let posts = await Post.findAll({});
-    let postData = [];
-    // async function  getUser(id) {
-    //     var userr = await User.findOne({where : {id:id}})
-    //     return userr;
-    // }
-    // var user = await User.findOne({where : {id:1}})
-    // console.log(user)
- 
+    let postData = []; 
        const loopPost = async ()=>{
         for (const item of posts) {
             var user = await User.findOne({where : {id:item.created_by}});
@@ -142,12 +135,6 @@ const getAllPost = async (req,res)=>{
           }
        }
        await loopPost()
-    // posts.forEach((itemPost) => {
-    //     var user =  User.findOne({where : {id:itemPost.created_by}});
-        
-       
-    // });
-    // console.log(postData)
     const data = {status:true,msg:"Post found",data:postData}
     res.status(200).json(data)
 }

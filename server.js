@@ -340,6 +340,7 @@ app.get('/rooms', (req, res) => {
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
+    const User = db.users
       const addRoom = async ()=>{
         const valiRooName = (req.body.room_name).replaceAll(" ","").replaceAll("^","").replaceAll("/","").replaceAll(",","").replaceAll("'","").replaceAll('"',"").replaceAll('`',"").replaceAll("\/","").replaceAll("\\","").replaceAll("&","").replaceAll("?","").replaceAll("=","").replaceAll("%","").replaceAll(".","").replaceAll("-","").replaceAll("*","");
         if (valiRooName=="" || valiRooName== undefined) {
@@ -347,12 +348,25 @@ app.get('/rooms', (req, res) => {
           res.status(200).json(data)
           return;
         }
+        const roomAdminId =  req.body.created_by;
+        let roomAdmin = await Room.findOne({where : {id:roomAdminId}})
+        
+
         let roomExist = await Room.findOne({where : {room_name:valiRooName}})
+        let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:req.body.created_by}})
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
             res.status(200).json(data)
             return;
         }else{
+          if (roomAdmin.is_admin==0 && userHasAlreadyRoomCreated) {
+            const data = {status:false,msg:"You can create only one room",data:userHasAlreadyRoomCreated}
+            if (rooms[userHasAlreadyRoomCreated.room_name]==undefined || rooms[userHasAlreadyRoomCreated.room_name]=="" || rooms[userHasAlreadyRoomCreated.room_name]==null) {
+              rooms[userHasAlreadyRoomCreated.room_name] = { users: {} }
+            }
+            res.status(200).json(data)
+            return;
+          }
             const room = await Room.create({
                 room_name : valiRooName,
                 created_by : req.body.created_by,
@@ -365,7 +379,7 @@ app.get('/rooms', (req, res) => {
                 active : true,
             });
             rooms[valiRooName] = { users: {} }
-            const data = {status:true,msg:"Room found",data:room}
+            const data = {status:true,msg:"Room Created",data:room}
             res.status(200).json(data)
         }
     }

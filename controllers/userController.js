@@ -13,6 +13,7 @@ const signUp = async (req, res)=>{
         last_name: req.body.last_name,
         mobile : req.body.mobile,
         password : req.body.password,
+        is_admin : req.body.is_admin,
         token: null,
         active: 1
     }
