@@ -37,7 +37,32 @@ const getPost = async (req,res)=>{
     if (id) {
         let post = await Post.findOne({where : {id:id}})
         if (post) {
-            const data = {status:true,msg:"Room found",data:post}
+               const wrapPost = async ()=>{
+               const item = post;
+                    var user = await User.findOne({where : {id:item.created_by}});
+                    wrapData = {
+                        id: item.id,
+                        title : item.title,
+                        body : item.body,
+                        image : item.image,
+                        likes: item.likes,
+                        comments: item.comments,
+                        created_by: item.created_by,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        creator_image: user.image,
+                        image: "post_image-1669110585144.png",
+                        info: null,
+                        active: true,
+                        createdAt: "2022-11-22T09:49:45.000Z",
+                        updatedAt: "2022-11-22T09:49:45.000Z"
+                    }
+                    return wrapData;
+                 
+               }
+               const postData  = await wrapPost();
+
+            const data = {status:true,msg:"Post found",data:postData}
             res.status(200).json(data)
         }else{
             const data = {status:false,msg:"Post not found",data:null}
@@ -85,7 +110,45 @@ const getPost = async (req,res)=>{
 const getAllPost = async (req,res)=>{
     //for all data
     let posts = await Post.findAll({});
-    const data = {status:true,msg:"Post found",data:posts}
+    let postData = [];
+    // async function  getUser(id) {
+    //     var userr = await User.findOne({where : {id:id}})
+    //     return userr;
+    // }
+    // var user = await User.findOne({where : {id:1}})
+    // console.log(user)
+ 
+       const loopPost = async ()=>{
+        for (const item of posts) {
+            var user = await User.findOne({where : {id:item.created_by}});
+            loopData = {
+                id: item.id,
+                title : item.title,
+                body : item.body,
+                image : item.image,
+                likes: item.likes,
+                comments: item.comments,
+                created_by: item.created_by,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                creator_image: user.image,
+                image: "post_image-1669110585144.png",
+                info: null,
+                active: true,
+                createdAt: "2022-11-22T09:49:45.000Z",
+                updatedAt: "2022-11-22T09:49:45.000Z"
+            }
+            postData.push(loopData)
+          }
+       }
+       await loopPost()
+    // posts.forEach((itemPost) => {
+    //     var user =  User.findOne({where : {id:itemPost.created_by}});
+        
+       
+    // });
+    // console.log(postData)
+    const data = {status:true,msg:"Post found",data:postData}
     res.status(200).json(data)
 }
 
