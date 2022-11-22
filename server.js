@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const filestore = require("session-file-store")(session)
 const path = require("path")
-
+var multer  = require('multer')
 
 
 const cors = require('cors');
@@ -419,71 +419,81 @@ app.get('/rooms', (req, res) => {
     getAllRooms()
   })
   
-  app.post("/api/users/edit-profile", (req, res, next) => {
-    const db = require("./models/index.js");
-    const User = db.users
-    let token = req.body.token
-    console.log(req.body, "log")
-    const uploadImg = async ()=>{
+//   app.post("/api/users/edit-profile", (req, res, next) => {
+//     const db = require("./models/index.js");
+//     const User = db.users
+//     let token = req.body.token
+//     console.log(req.body, "log")
+//     const uploadImg = async ()=>{
      
       
-// The base64 encoded input string
-let base64string = req.body.image;
-// let base64string = req.body.image
+// // The base64 encoded input string
+// let base64string = req.body.image;
+// // let base64string = req.body.image
   
-// Create a buffer from the string
-let bufferObj = Buffer.from(base64string, "base64");
+// // Create a buffer from the string
+// let bufferObj = Buffer.from(base64string, "base64");
   
-// Encode the Buffer as a utf8 string
-let decodedString = bufferObj.toString("utf8");
+// // Encode the Buffer as a utf8 string
+// let decodedString = bufferObj.toString("utf8");
   
-// console.log("The decoded string:", decodedString);
+// // console.log("The decoded string:", decodedString);
      
-        if (token) {
-          let user = await User.findOne({where : {token:token}})
-          if (user) {
-              //create response user
-              const updateUserData = {
-                  image: decodedString ? decodedString : user.image,
-              }
-              //update user if not null
+//         if (token) {
+//           let user = await User.findOne({where : {token:token}})
+//           if (user) {
+//               //create response user
+//               const updateUserData = {
+//                   image: decodedString ? decodedString : user.image,
+//               }
+//               //update user if not null
               
-              //json data after success sign in
-              await User.update(updateUserData, {where : {token:token}})
-              if (user) {
+//               //json data after success sign in
+//               await User.update(updateUserData, {where : {token:token}})
+//               if (user) {
                   
-                  const data = {status:true,msg:"Updated",data:null}
-                  res.status(200).json(data)
-              }else{
-                  const data = {status:false,msg:"Not updated",data:null}
-                  res.status(200).json(data)
-              }
-              return;
-          }else{
+//                   const data = {status:true,msg:"Updated",data:null}
+//                   res.status(200).json(data)
+//               }else{
+//                   const data = {status:false,msg:"Not updated",data:null}
+//                   res.status(200).json(data)
+//               }
+//               return;
+//           }else{
             
-              //json data after failed sign in
-              const data = {status:false,msg:"User not found",data:null}
-              res.status(200).json(data)
-          }
+//               //json data after failed sign in
+//               const data = {status:false,msg:"User not found",data:null}
+//               res.status(200).json(data)
+//           }
           
-      }else{
-        // console.log(req.body)
-        const data = {status:false,msg:"You are not logged in",data:null}
-        res.status(200).json(data)
-      }
-    }
-    uploadImg();
-  });
-  
-
-
-
-
-//   app.get('/api/rooms/get-rooms', (req, res) => {
-//     const data = {
-//       rooms: rooms,
-//       users: users
+//       }else{
+//         // console.log(req.body)
+//         const data = {status:false,msg:"You are not logged in",data:null}
+//         res.status(200).json(data)
+//       }
 //     }
-// // console.log(Object.entries(users));
-//     return res.status(200).send({ status:true, data });
+//     uploadImg();
 //   });
+  
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './static/media/profiles')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+var upload = multer({ storage: storage })
+
+app.post('/api/upload', upload.single('profile_image'), (req,res,next)=>{
+ 
+    // req.file is the `profile-file` file
+    // req.body will hold the text fields, if there were any
+    console.log(JSON.stringify(req.file))
+    var response = '<a href="/">Home</a><br>'
+    response += "Files uploaded successfully.<br>"
+    response += `<img src="/${req.file.path}" /><br>`
+    return res.send(response)
+
+})
+
