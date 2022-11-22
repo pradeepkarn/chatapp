@@ -40,15 +40,15 @@ const signUp = async (req, res)=>{
 }
 
 
-const changeImg = async (token,imgname)=>{
-    let user = await User.findOne({where : {token:token}})
-    if (user) {
-        User.update({image:imgname}, {where : {token:token}});
-    }
-    else{
-        return false;
-    }
-}
+// const changeImg = async (token,imgname)=>{
+//     let user = await User.findOne({where : {token:token}})
+//     if (user) {
+//         User.update({image:imgname}, {where : {token:token}});
+//     }
+//     else{
+//         return false;
+//     }
+// }
 
 
 // var storage = multer.diskStorage({
@@ -157,29 +157,13 @@ const logInViaToken = async (req,res)=>{
     }
     
 }
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './static/media/profiles')
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname)
-    }
-  })
-  var upload = multer({ storage: storage })
 
-  
 const profileEdit = async (req,res)=>{
     let token = req.body.token
     const edit = req.body;
     if (token) {
         let user = await User.findOne({where : {token:token}})
         if (user) {
-            if (req.file) {
-                console.log(JSON.stringify(req.file))
-                imagelink = req.file.path;
-                const data = {status:true,msg:"Image uploaded",data:imagelink}
-                return res.status(200).json(data)
-            }
             //create response user
             const updateUserData = {
                 first_name: edit.first_name?edit.first_name:user.first_name,
@@ -209,8 +193,22 @@ const profileEdit = async (req,res)=>{
         }
         
     }else{
-        const data = {status:false,msg:"You are not logged in",data:null}
-        res.status(200).json(data)
+        uploadProfileImage(req,res,function(err) {
+  
+            if(err) {
+      
+                // ERROR occurred (here it can be occurred due
+                // to uploading image of size greater than
+                // 1MB or uploading different file type)
+                res.json(err)
+            }
+            else {
+      
+                // SUCCESS, image successfully uploaded
+                res.json("Success, Image uploaded!")
+            }
+        })
+        
     }
     
 }

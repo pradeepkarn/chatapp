@@ -475,20 +475,70 @@ app.get('/rooms', (req, res) => {
 //     uploadImg();
 //   });
   
-// var storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './static/media/profiles')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname)
-//   }
-// })
-// var upload = multer({ storage: storage })
 
-// app.post('/api/users/profile-upload', upload.single('profile_image'), (req,res,next)=>{
-//     console.log(JSON.stringify(req.file))
-//     imagelink = req.file.path;
-//     const data = {status:true,msg:"Image uploaded",data:imagelink}
-//     return res.status(200).json(data)
-// })
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './static/media/profiles')
+  },
+  // filename: function (req, file, cb) {
+  //   cb(null, file.originalname)
+  // }
+  filename: function (req, file, cb) {
+    var extname = path.extname(file.originalname).toLowerCase();
+      cb(null, file.fieldname + "-"+ Date.now()+extname)
+
+    }
+})
+var upload = multer({ storage: storage })
+  
+app.post('/api/users/profile-upload', upload.single('profile_image'), async (req,res)=>{
+ 
+    console.log(JSON.stringify(req.file))
+    console.log("Token: "+ req.body.token)
+    const db = require("./models/index.js");
+    const User = db.users
+    const token = req.body.token;
+    const imageName = req.file.filename;
+    
+    if (token) {
+      let user = await User.findOne({where : {token:token}})
+      if (user) {
+          //create response user
+          const updateUserData = {
+              image: imageName?imageName:user.image
+          }
+          //update user if not null
+          
+          //json data after success sign in
+          User.update(updateUserData, {where : {token:token}})
+          if (user) {
+            try {
+              var fs = require('fs');
+              var filePathToUnlink = __dirname+`/static/media/profiles/${user.image}`; 
+              fs.unlinkSync(filePathToUnlink);
+            } catch (error) {
+              console.error('there was an error:', error.message);
+            }
+              const data = {status:true,msg:"Updated",data:imageName}
+              res.status(200).json(data)
+          }else{
+            try {
+              var fs = require('fs');
+              var filePathToUnlink = __dirname+`/static/media/profiles/${imageName}`; 
+              fs.unlinkSync(filePathToUnlink);
+            } catch (error) {
+              console.error('there was an error:', error.message);
+            }
+              const data = {status:false,msg:"Not updated",data:null}
+              res.status(200).json(data)
+          }
+          return;
+      }else{
+        const data = {status:true,msg:"Invalid token",data:null}
+        return res.status(200).json(data)
+      }
+    }
+    const data = {status:true,msg:"You are not logged in",data:null}
+    return res.status(200).json(data)
+})
 

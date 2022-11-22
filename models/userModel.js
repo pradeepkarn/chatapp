@@ -30,8 +30,8 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT
         },
         image: {
-            // type: DataTypes.TEXT('long')
-            type: DataTypes.BLOB('long'),
+            type: DataTypes.TEXT()
+            // type: DataTypes.BLOB('long'),
         },
         friend_list : {
             type: DataTypes.JSON,
