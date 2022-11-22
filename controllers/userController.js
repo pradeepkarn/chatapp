@@ -51,43 +51,43 @@ const changeImg = async (token,imgname)=>{
 }
 
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        // Uploads is the Upload_folder_name
-        cb(null, "static/media/profiles/")
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.fieldname + "-"+ Date.now()+".jpg")
-      changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
-    //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
-        console.log(req.body)
-    }
-  })
+// var storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         // Uploads is the Upload_folder_name
+//         cb(null, "static/media/profiles/")
+//     },
+//     filename: function (req, file, cb) {
+//       cb(null, file.fieldname + "-"+ Date.now()+".jpg")
+//       changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
+//     //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
+//         console.log(req.body)
+//     }
+//   })
        
 // Define the maximum size for uploading
 // picture i.e. 1 MB. it is optional
-const maxSize = 1 * 1000 * 1000 * 1000;
+// const maxSize = 1 * 1000 * 1000 * 1000;
     
-var uploadProfileImage = multer({ 
-    storage: storage,
-    limits: { fileSize: maxSize },
-    fileFilter: function (req, file, cb){
-        // Set the filetypes, it is optional
-        var filetypes = /jpeg|jpg|png/;
-        var mimetype = filetypes.test(file.mimetype);
+// var uploadProfileImage = multer({ 
+//     storage: storage,
+//     limits: { fileSize: maxSize },
+//     fileFilter: function (req, file, cb){
+//         // Set the filetypes, it is optional
+//         var filetypes = /jpeg|jpg|png/;
+//         var mimetype = filetypes.test(file.mimetype);
   
-        var extname = filetypes.test(path.extname(
-                    file.originalname).toLowerCase());
+//         var extname = filetypes.test(path.extname(
+//                     file.originalname).toLowerCase());
         
-        if (mimetype && extname) {
-            return cb(null, true);
-        }
+//         if (mimetype && extname) {
+//             return cb(null, true);
+//         }
       
-        cb("Error: File upload only supports the "
-                + "following filetypes - " + filetypes);
-      } 
-// image is the name of file attribute
-}).single("image");    
+//         cb("Error: File upload only supports the "
+//                 + "following filetypes - " + filetypes);
+//       } 
+// // image is the name of file attribute
+// }).single("image");    
 
 const logIn = async (req,res)=>{
     let mobile = req.body.mobile
@@ -157,13 +157,29 @@ const logInViaToken = async (req,res)=>{
     }
     
 }
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './static/media/profiles')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  })
+  var upload = multer({ storage: storage })
 
+  
 const profileEdit = async (req,res)=>{
     let token = req.body.token
     const edit = req.body;
     if (token) {
         let user = await User.findOne({where : {token:token}})
         if (user) {
+            if (req.file) {
+                console.log(JSON.stringify(req.file))
+                imagelink = req.file.path;
+                const data = {status:true,msg:"Image uploaded",data:imagelink}
+                return res.status(200).json(data)
+            }
             //create response user
             const updateUserData = {
                 first_name: edit.first_name?edit.first_name:user.first_name,
@@ -191,23 +207,6 @@ const profileEdit = async (req,res)=>{
             const data = {status:false,msg:"User not found",data:null}
             res.status(200).json(data)
         }
-        
-    }else{
-        uploadProfileImage(req,res,function(err) {
-  
-            if(err) {
-      
-                // ERROR occurred (here it can be occurred due
-                // to uploading image of size greater than
-                // 1MB or uploading different file type)
-                res.json(err)
-            }
-            else {
-      
-                // SUCCESS, image successfully uploaded
-                res.json("Success, Image uploaded!")
-            }
-        })
         
     }
     

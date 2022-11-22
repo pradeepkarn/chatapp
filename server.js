@@ -475,27 +475,20 @@ app.get('/rooms', (req, res) => {
 //     uploadImg();
 //   });
   
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './static/media/profiles')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-var upload = multer({ storage: storage })
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './static/media/profiles')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname)
+//   }
+// })
+// var upload = multer({ storage: storage })
 
-app.post('/api/upload', upload.single('profile_image'), (req,res,next)=>{
- 
-    // req.file is the `profile-file` file
-    // req.body will hold the text fields, if there were any
-    console.log(JSON.stringify(req.file))
-    // var response = '<a href="/">Home</a><br>'
-    // response += "Files uploaded successfully.<br>"
-    // response += `<img src="/${req.file.path}" /><br>`
-    imagelink = req.file.path;
-    const data = {status:true,msg:"Image uploaded",data:imagelink}
-    return res.status(200).json(data)
-
-})
+// app.post('/api/users/profile-upload', upload.single('profile_image'), (req,res,next)=>{
+//     console.log(JSON.stringify(req.file))
+//     imagelink = req.file.path;
+//     const data = {status:true,msg:"Image uploaded",data:imagelink}
+//     return res.status(200).json(data)
+// })
 
