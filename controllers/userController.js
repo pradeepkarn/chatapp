@@ -208,6 +208,9 @@ const profileEdit = async (req,res)=>{
             res.status(200).json(data)
         }
         
+    }else{
+        const data = {status:false,msg:"You are not logged in",data:null}
+        res.status(200).json(data)
     }
     
 }
