@@ -349,17 +349,23 @@ app.get('/rooms', (req, res) => {
           return;
         }
         const roomAdminId =  req.body.created_by;
-        let roomAdmin = await Room.findOne({where : {id:roomAdminId}})
+        // console.log(roomAdminId)
+        let roomAdmin = await User.findOne({where : {id:roomAdminId}})
         
-
+        // console.log(roomAdmin)
         let roomExist = await Room.findOne({where : {room_name:valiRooName}})
         let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:req.body.created_by}})
+
+       
+        
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
             res.status(200).json(data)
             return;
         }else{
-          if (roomAdmin.is_admin==0 && userHasAlreadyRoomCreated) {
+          if (roomAdmin.is_admin==false && userHasAlreadyRoomCreated) {
+            console.log(userHasAlreadyRoomCreated.room_name+" Already")
+            console.log(roomAdmin.is_admin+" is Admin")
             const data = {status:false,msg:"You can create only one room",data:userHasAlreadyRoomCreated}
             if (rooms[userHasAlreadyRoomCreated.room_name]==undefined || rooms[userHasAlreadyRoomCreated.room_name]=="" || rooms[userHasAlreadyRoomCreated.room_name]==null) {
               rooms[userHasAlreadyRoomCreated.room_name] = { users: {} }
@@ -412,6 +418,51 @@ app.get('/rooms', (req, res) => {
     getRoom()
   })
   
+
+  app.delete("/api/rooms/delete/:id",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+      const deleteRoom = async ()=>{
+        let user = await User.findOne({where : {token:token}})
+        if (!user) {
+          const data = {status:false,msg:"Invalid token",data:null}
+          res.status(200).json(data)
+        }
+        
+        let id = req.params.id
+        if (id) {
+            let room = await Room.findOne({where : {id:id}})
+            if (room) {
+              if (user.is_admin==1) {
+                await Room.destroy({where : {id:req.body.room_id}})
+                // delete rooms.room.room_name
+                const data = {status:true,msg:"Room deleted",data:null}
+                res.status(200).json(data)
+              }
+              if (user.is_admin!=1 && room.created_by==user.id) {
+                await Room.destroy({where : {id:req.body.id}})
+                const data = {status:true,msg:"Room deleted",data:null}
+                res.status(200).json(data)
+              }else{
+                const data = {status:false,msg:"You have not created any room",data:null}
+                res.status(200).json(data)
+              }
+                //create response object
+                const data = {status:true,msg:"Room not deleted",data:room}
+                res.status(200).json(data)
+            }else{
+                const data = {status:false,msg:"room not found",data:null}
+                res.status(200).json(data)
+            }
+            
+        }else{
+            const data = {status:false,msg:"All fields are mandetory",data:null}
+            res.status(200).json(data)
+        }
+    }
+    deleteRoom()
+  })
 
   app.get("/api/rooms/get",(req,res)=>{
     const db = require("./models/index.js");
