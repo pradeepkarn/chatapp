@@ -19,13 +19,15 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,     
         },
         creator_image: {
-            type: DataTypes.TEXT('long'),   
+            type: DataTypes.TEXT,   
         },
         image: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
+            allowNull: true
         },
         info: {
-            type: DataTypes.TEXT
+            type: DataTypes.TEXT,
+            allowNull: true
         },
         active: {
             type: DataTypes.BOOLEAN,
