@@ -22,4 +22,5 @@ var storage = multer.diskStorage({
 router.post("/add-post",upload.single('post_image'),postController.addPost);
 router.get("/get/:id",postController.getPost);
 router.get("/get",postController.getAllPost);
+router.post("/add-comment",postController.addCoomentOnPost);
 module.exports = router

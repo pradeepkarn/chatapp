@@ -3,7 +3,20 @@ const session = require('express-session');
 const filestore = require("session-file-store")(session)
 const path = require("path")
 var multer  = require('multer')
+const jwt = require('jsonwebtoken')
+const bcrypt = require("bcrypt");
+const passport = require('passport');
+const flash = require('express-flash')
 
+
+// const initializePassport = require('./passport-config')
+// initializePassport(
+//   passport, 
+//   async (mobile)=>{
+//   const db = require("./models/index.js");
+//   const User = db.users
+//   return await User.findOne({where : {mobile:mobile}})
+// })
 
 const cors = require('cors');
 const app = express();
@@ -23,6 +36,8 @@ app.use(session({
   resave: false,
   store: new filestore()
 }))
+
+app.use(flash())
 const PORT = process.env.PORT || 3000
 // const SOCKET_PORT = 8081
 
@@ -34,7 +49,7 @@ const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const roomController = require("./controllers/roomController.js");
-const { isRegExp } = require('util/types');
+
 
 
 
@@ -66,7 +81,6 @@ app.post("/login",(req,res)=>{
   const db = require("./models/index.js");
   const User = db.users
   const login = async ()=>{
-    const jwt = require('jsonwebtoken')
     let mobile = req.body.mobile
     let password = req.body.password
     if (mobile && password) {
@@ -177,6 +191,27 @@ app.post("/register",(req,res)=>{
     }
 }
 signUp()
+})
+
+app.post('/signup', async (req, res) => {
+  try {
+    const db = require("./models/index.js");
+    const User = db.users
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const signUpData = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      mobile : req.body.mobile,
+      password : hashedPassword,
+      token: null,
+      active: 1
+    }
+    const user = await User.create(signUpData);
+    res.redirect('/login')
+  } catch (error) {
+    res.redirect('/signup')
+  }
+  console.log()
 })
 //website signup end
 

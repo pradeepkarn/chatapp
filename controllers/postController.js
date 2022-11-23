@@ -27,6 +27,8 @@ const addPost = async (req, res)=>{
             tags : req.body.tags,
             created_by : user.id,
             image : imageName,
+            likes: [],
+            comments: [],
             active : true,
         });
         const data = {status:true,msg:"Post created",data:post}
@@ -34,9 +36,30 @@ const addPost = async (req, res)=>{
 }
 
 const getPost = async (req,res)=>{
+    // console.log(req.params.id)
     let id = req.params.id
     if (id) {
         let post = await Post.findOne({where : {id:id}})
+        const allComments = post.comments
+        console.log(allComments)
+        let commentData = []; 
+            const loopComment = async ()=>{
+            for (const item of allComments) {
+                var userCmt = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                     userid: item.userid,
+                     message: item.message,
+                     first_name: userCmt.first_name,
+                     last_name: userCmt.last_name,
+                     image: userCmt.image,
+                     createdAt: "2022-11-22T09:49:45.000Z",
+                     updatedAt: "2022-11-22T09:49:45.000Z"
+                 }
+                 commentData.push(loopData)
+               }
+            }
+            await loopComment()
+
         if (post) {
                const wrapPost = async ()=>{
                const item = post;
@@ -47,8 +70,8 @@ const getPost = async (req,res)=>{
                         body : item.body,
                         tags : item.tags,
                         image : item.image,
-                        likes: item.likes,
-                        comments: item.comments,
+                        likes: [],
+                        comments: commentData,
                         created_by: item.created_by,
                         first_name: user.first_name,
                         last_name: user.last_name,
@@ -77,37 +100,61 @@ const getPost = async (req,res)=>{
     
 }
 
-// const addCoomentOnPost = async (req, res)=>{
-//     const signUpData = {
-//         first_name: req.body.first_name,
-//         last_name: req.body.last_name,
-//         mobile : req.body.mobile,
-//         password : req.body.password,
-//         token: null,
-//         active: 1
-//     }
-//     if (req.body.mobile=="") {
-//         const data = {status:false,msg:"Empty mobile number is not allowed",data:null}
-//         res.status(200).json(data)
-//         return;
-//     }
-//     let userExist = await User.findOne({where : {mobile:req.body.mobile}})
-//     if (userExist) {
-//         const data = {status:false,msg:"User already registered",data:null}
-//         res.status(200).json(data)
-//         return;
-//     }else{
-//         const user = await User.create(signUpData);
-//         if (user) {
-//             const data = {status:true,msg:"Signup success",data:signUpData}
-//             res.status(200).json(data)
-//         }else{
-//             const data = {status:false,msg:"Signup failed",data:null}
-//             res.status(200).json(data)
-//         }
-//         return;
-//     }
-// }
+const addCoomentOnPost = async (req, res)=>{
+    let postid = req.body.postid
+    let userid = req.body.userid
+    let msg = req.body.message
+    // console.log("This is post: "+ postid)
+    if (postid && userid) {
+        try {
+            let post = await Post.findOne({where : {id:postid}})
+            let user = await User.findOne({where : {id:userid}})
+            const getUser = async (id) => {
+                return await User.findOne({where : {id:id}})
+            }
+            const comment = {
+                userid : userid,
+                message: msg,
+                createdAt: Date(),
+                updatedAt: Date()
+            }
+           
+            const allComments = JSON.parse(post.comments)
+            allComments.push(comment)
+            await Post.update({comments:allComments}, {where : {id:postid}})
+            
+
+            let commentData = []; 
+            const loopComment = async ()=>{
+            for (const item of allComments) {
+                var userCmt = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                     userid: item.userid,
+                     message: item.message,
+                     first_name: userCmt.first_name,
+                     last_name: userCmt.last_name,
+                     image: userCmt.image,
+                     createdAt: "2022-11-22T09:49:45.000Z",
+                     updatedAt: "2022-11-22T09:49:45.000Z"
+                 }
+                 commentData.push(loopData)
+               }
+            }
+            await loopComment()
+
+            const data = {status:true,msg:"Comment added",data:commentData}
+            res.status(200).json(data)
+            return;
+        } catch (error) {
+            const data = {status:false,msg:"Post not found",data:null}
+            res.status(200).json(data)
+            return;
+        }
+    }
+    const data = {status:false,msg:"Soemthing went wrong",data:null}
+    res.status(200).json(data)
+    return;
+}
 
 const getAllPost = async (req,res)=>{
     //for all data
@@ -146,5 +193,6 @@ const getAllPost = async (req,res)=>{
 module.exports = {
     addPost,
     getPost,
-    getAllPost
+    getAllPost,
+    addCoomentOnPost
 }
