@@ -76,16 +76,24 @@ app.get("/",(req,res)=>{
 
 //website login
 app.get("/login",(req,res)=>{
-res.render('login',{});
+  if (req.session.token) {
+    const msg = `<script>location.href="/";</script>`;
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(msg);
+    res.end();
+    return;
+  }
+  res.render('login',{});
 })
 //logic on post
 app.post("/login",(req,res)=>{
-  // if (req.session.token) {
-  //   const msg = `<script'>location.href="/";</script>`;
-  //   res.writeHead(200, {'Content-Type': 'text/html'});
-  //   res.write(msg);
-  //   res.end();
-  // }
+  if (req.session.token) {
+    const msg = `<script>location.href="/";</script>`;
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(msg);
+    res.end();
+    return;
+  }
   // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
@@ -133,7 +141,9 @@ app.post("/login",(req,res)=>{
 login()
 })
 //website login end
-
+app.get("/logout",(req,res)=>{
+  req.session.destroy();
+})
 //website signup
 app.get("/register",(req,res)=>{
   res.render('register',{});
