@@ -266,35 +266,36 @@ const getAllPost = async (req,res)=>{
             var loopCmtData = []
             
             var cmtDatas = []
-            // for (var cmt of JSON.parse(item.comments)) {
-            //     var userCmt = await User.findOne({where : {id:cmt.userid}})
-            //     cmtDatas = 
-            //         {
-            //             userid: cmt.userid,
-            //             message: cmt.message,
-            //             first_name: userCmt.first_name,
-            //             last_name: userCmt.last_name,
-            //             image: userCmt.image,
-            //             createdAt: cmt.createdAt,
-            //             updatedAt: cmt.updatedAt
-            //         }
-            //         loopCmtData.push(cmtDatas)
-            //     }
+            console.log(item)
+            for (var cmt of JSON.parse(item.comments)) {
+                var userCmt = await User.findOne({where : {id:cmt.userid}})
+                cmtDatas = 
+                    {
+                        userid: cmt.userid,
+                        message: cmt.message,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: cmt.createdAt,
+                        updatedAt: cmt.updatedAt
+                    }
+                    loopCmtData.push(cmtDatas)
+                }
             var loopLikeData = []
             var likeDatas = []
-            // for (var like of JSON.parse(item.likes)) {
-            //     var userCmt = await User.findOne({where : {id:like.userid}})
-            //     likeDatas = 
-            //         {
-            //             userid: like.userid,
-            //             first_name: userCmt.first_name,
-            //             last_name: userCmt.last_name,
-            //             image: userCmt.image,
-            //             createdAt: like.createdAt,
-            //             updatedAt: like.updatedAt
-            //         }
-            //         loopLikeData.push(likeDatas)
-            //     }
+            for (var like of JSON.parse(item.likes)) {
+                var userCmt = await User.findOne({where : {id:like.userid}})
+                likeDatas = 
+                    {
+                        userid: like.userid,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: like.createdAt,
+                        updatedAt: like.updatedAt
+                    }
+                    loopLikeData.push(likeDatas)
+                }
             
             loopData = {
                 id: item.id,
