@@ -100,7 +100,7 @@ const getPost = async (req,res)=>{
     
 }
 
-const addCoomentOnPost = async (req, res)=>{
+const addCommentOnPost = async (req, res)=>{
     let postid = req.body.postid
     let userid = req.body.userid
     let msg = req.body.message
@@ -108,7 +108,7 @@ const addCoomentOnPost = async (req, res)=>{
     if (postid && userid) {
         try {
             let post = await Post.findOne({where : {id:postid}})
-            let user = await User.findOne({where : {id:userid}})
+            // let user = await User.findOne({where : {id:userid}})
             const getUser = async (id) => {
                 return await User.findOne({where : {id:id}})
             }
@@ -143,6 +143,85 @@ const addCoomentOnPost = async (req, res)=>{
             await loopComment()
 
             const data = {status:true,msg:"Comment added",data:commentData}
+            res.status(200).json(data)
+            return;
+        } catch (error) {
+            const data = {status:false,msg:"Post not found",data:null}
+            res.status(200).json(data)
+            return;
+        }
+    }
+    const data = {status:false,msg:"Soemthing went wrong",data:null}
+    res.status(200).json(data)
+    return;
+}
+
+const addLikeOnPost = async (req, res)=>{
+    let postid = req.body.postid
+    let userid = req.body.userid
+    // console.log("This is post: "+ postid)
+    if (postid && userid) {
+        try {
+            let post = await Post.findOne({where : {id:postid}})
+            // let user = await User.findOne({where : {id:userid}})
+            const getUser = async (id) => {
+                return await User.findOne({where : {id:id}})
+            }
+            const like = {
+                userid : userid,
+                createdAt: Date(),
+                updatedAt: Date()
+            }
+           
+            const allLikes = JSON.parse(post.likes)
+
+            // var removeLike = function(arr, attr, value){
+            //     var i = arr.length;
+            //     while(i--){
+            //        if( arr[i] 
+            //            && arr[i].hasOwnProperty(attr) 
+            //            && (arguments.length > 2 && arr[i][attr] == value ) ){ 
+            //            arr.splice(i,1);
+            //        }
+            //     }
+            //     return arr;
+            // }
+            // // console.log(allLikes)
+            // var alreadyLiked = function (val,arr){                
+            //     let obj = arr.find(o => o.userid == val);
+            //     // console.log(obj);
+            //     return obj.userid;
+            // }
+            
+            // if (alreadyLiked(userid,allLikes)==userid) {
+            //     var finalLike = removeLike(allLikes,'userid',userid)
+            //     console.log("Final like "+finalLike)
+            // }else{
+            //     var finalLike = allLikes.push(like)
+            //     console.log("Final like "+finalLike)
+            // }
+            
+            allLikes.push(like)
+            await Post.update({likes:allLikes}, {where : {id:postid}})
+
+            let likeData = []; 
+            const loopLike = async ()=>{
+            for (const item of allLikes) {
+                var userLike = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                     userid: item.userid,
+                     first_name: userLike.first_name,
+                     last_name: userLike.last_name,
+                     image: userLike.image,
+                     createdAt: "2022-11-22T09:49:45.000Z",
+                     updatedAt: "2022-11-22T09:49:45.000Z"
+                 }
+                 likeData.push(loopData)
+               }
+            }
+            await loopLike()
+
+            const data = {status:true,msg:"You like this post",data:likeData}
             res.status(200).json(data)
             return;
         } catch (error) {
@@ -194,5 +273,6 @@ module.exports = {
     addPost,
     getPost,
     getAllPost,
-    addCoomentOnPost
+    addCommentOnPost,
+    addLikeOnPost
 }
