@@ -169,6 +169,7 @@ const addCommentOnPost = async (req, res)=>{
             res.status(200).json(data)
             return;
         } catch (error) {
+            console.log(error)
             const data = {status:false,msg:"Post not found",data:null}
             res.status(200).json(data)
             return;
