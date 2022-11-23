@@ -199,8 +199,29 @@ const addLikeOnPost = async (req, res)=>{
             }
            
             const allLikes = JSON.parse(post.likes)
+            var removeLike = function(arr, attr, value){
+                var i = arr.length;
+                
+                if (i==0) {
+                    console.log(i+" arr length ")
+                    return false;
+                }
+                while(i--){
+                   if( arr[i] 
+                       && arr[i].hasOwnProperty(attr) 
+                       && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+                       arr.splice(i,1);
+                       return true;
+                   }else{
+                    return false;
+                   }
+                }
+                
+            }
+            if (removeLike(allLikes,'userid',userid)==false) {
+                allLikes.push(like)
+            }
             
-            allLikes.push(like)
             await Post.update({likes:allLikes}, {where : {id:postid}})
 
             let likeData = []; 
