@@ -259,16 +259,42 @@ const getAllPost = async (req,res)=>{
     let posts = await Post.findAll({});
     let postData = []; 
        const loopPost = async ()=>{
+
+        const myCmt = async (postid)=>{
+            let post = await Post.findOne({where : {id:postid}})
+            var allComments = JSON.parse(post.comments)        
+            let commentData = []; 
+                var loopComment = async ()=>{
+                for (var item of allComments) {
+                    var userCmt = await User.findOne({where : {id:item.userid}})
+                    loopData = {
+                        userid: item.userid,
+                        message: item.message,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: "2022-11-22T09:49:45.000Z",
+                        updatedAt: "2022-11-22T09:49:45.000Z"
+                    }
+                    commentData.push(loopData)
+                    return commentData;
+                    }
+                }
+                await loopComment()
+        }
+
+
         for (const item of posts) {
             var user = await User.findOne({where : {id:item.created_by}});
+
             loopData = {
                 id: item.id,
                 title : item.title,
                 body : item.body,
                 tags : item.tags,
                 image : item.image,
-                likes: item.likes,
-                comments: item.comments,
+                likes: JSON.parse(item.likes),
+                comments: JSON.parse(item.comments),
                 created_by: item.created_by,
                 first_name: user.first_name,
                 last_name: user.last_name,
