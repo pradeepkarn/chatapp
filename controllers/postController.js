@@ -40,7 +40,9 @@ const getPost = async (req,res)=>{
     let id = req.params.id
     if (id) {
         let post = await Post.findOne({where : {id:id}})
-        const allComments = JSON.parse(post.comments)
+        
+        typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
+        const allComments = post.comments
         
         
         let commentData = []; 
@@ -60,7 +62,8 @@ const getPost = async (req,res)=>{
                }
             }
             await loopComment()
-
+            
+            typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
             const allLikes = JSON.parse(post.likes)
             let likeData = []; 
             const loopLike = async ()=>{
@@ -139,8 +142,9 @@ const addCommentOnPost = async (req, res)=>{
                 createdAt:  dateText,
                 updatedAt:  dateText
             }
-           
-            const allComments = JSON.parse(post.comments)
+
+            typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
+            const allComments = post.comments;
             allComments.push(comment)
             await Post.update({comments:allComments}, {where : {id:postid}})
             
@@ -199,7 +203,9 @@ const addLikeOnPost = async (req, res)=>{
                 updatedAt: dateText 
             }
            
-            const allLikes = JSON.parse(post.likes)
+            typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
+            const allLikes = post.likes
+            
             var removeLike = function(arr, attr, value){
                 var i = arr.length;
                 
