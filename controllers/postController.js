@@ -40,8 +40,8 @@ const getPost = async (req,res)=>{
     let id = req.params.id
     if (id) {
         let post = await Post.findOne({where : {id:id}})
-        const allComments = post.comments
-        console.log(allComments)
+        const allComments = JSON.parse(post.comments)
+        
         let commentData = []; 
             const loopComment = async ()=>{
             for (const item of allComments) {
