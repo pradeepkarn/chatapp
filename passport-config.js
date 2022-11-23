@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 function initialize(passport, getUser) {
     const authenticateUser = (mobile, password, done) => {
         const user = getUser(mobile)
-        if (!user) {
+        if (user==null) {
             return done(null, false, { message: 'No user with that mobile' })
         }
 
@@ -18,7 +18,8 @@ function initialize(passport, getUser) {
         }
 
     }
-    passport.use(new LocalStartegy({ usernameField: 'mobile' }),authenticateUser)
+    passport.use(new LocalStartegy({ usernameField: 'mobile' }),
+    authenticateUser)
     passport.serializeUser((user, done) => { })
     passport.deserializeUser((id, done) => { })
 }

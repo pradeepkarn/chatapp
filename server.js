@@ -5,8 +5,8 @@ const path = require("path")
 var multer  = require('multer')
 const jwt = require('jsonwebtoken')
 const bcrypt = require("bcrypt");
-const passport = require('passport');
-const flash = require('express-flash')
+// const passport = require('passport');
+// const flash = require('express-flash')
 
 
 // const initializePassport = require('./passport-config')
@@ -28,6 +28,7 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 app.use(express.static('static'))
 app.use(express.urlencoded({extended:true}))
+// app.use(flash())
 // Creating session 
 app.use(session({
   name: "session-id",
@@ -37,7 +38,9 @@ app.use(session({
   store: new filestore()
 }))
 
-app.use(flash())
+// app.use(passport.initialize())
+// app.use(passport.session())
+
 const PORT = process.env.PORT || 3000
 // const SOCKET_PORT = 8081
 
@@ -77,7 +80,13 @@ res.render('login',{});
 })
 //logic on post
 app.post("/login",(req,res)=>{
-  console.log(req.body)
+  // if (req.session.token) {
+  //   const msg = `<script'>location.href="/";</script>`;
+  //   res.writeHead(200, {'Content-Type': 'text/html'});
+  //   res.write(msg);
+  //   res.end();
+  // }
+  // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
   const login = async ()=>{
@@ -96,10 +105,8 @@ app.post("/login",(req,res)=>{
             //     token: token
             // }
             
-            app.use(session({
-              token: token
-            }))
-            console.log(req.session)
+            req.session.token = token
+            console.log(req.session.token)
             //create response object
             const msg = `<b class='text-success'>Login success</b>`;
             res.writeHead(200, {'Content-Type': 'text/html'});
@@ -129,7 +136,7 @@ login()
 
 //website signup
 app.get("/register",(req,res)=>{
-res.render('register',{});
+  res.render('register',{});
 })
 //logic on post method
 app.post("/register",(req,res)=>{
@@ -193,26 +200,26 @@ app.post("/register",(req,res)=>{
 signUp()
 })
 
-app.post('/signup', async (req, res) => {
-  try {
-    const db = require("./models/index.js");
-    const User = db.users
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    const signUpData = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      mobile : req.body.mobile,
-      password : hashedPassword,
-      token: null,
-      active: 1
-    }
-    const user = await User.create(signUpData);
-    res.redirect('/login')
-  } catch (error) {
-    res.redirect('/signup')
-  }
-  console.log()
-})
+// app.post('/signup', async (req, res) => {
+//   try {
+//     const db = require("./models/index.js");
+//     const User = db.users
+//     const hashedPassword = await bcrypt.hash(req.body.password, 10)
+//     const signUpData = {
+//       first_name: req.body.first_name,
+//       last_name: req.body.last_name,
+//       mobile : req.body.mobile,
+//       password : hashedPassword,
+//       token: null,
+//       active: 1
+//     }
+//     const user = await User.create(signUpData);
+//     res.redirect('/login')
+//   } catch (error) {
+//     res.redirect('/signup')
+//   }
+//   console.log()
+// })
 //website signup end
 
 //website signup
