@@ -412,7 +412,7 @@ app.get('/rooms', (req, res) => {
                 room_name : valiRooName,
                 created_by : req.body.created_by,
                 first_name: req.body.first_name,
-                last_name: req.body.first_name,
+                last_name: req.body.last_name,
                 creator_image: req.body.creator_image,
                 users : req.body.users,
                 image : req.body.image,
