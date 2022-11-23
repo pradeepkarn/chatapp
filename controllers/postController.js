@@ -134,8 +134,8 @@ const addCommentOnPost = async (req, res)=>{
             const comment = {
                 userid : userid,
                 message: msg,
-                createdAt: Date(),
-                updatedAt: Date()
+                createdAt: Date("YYYY-MM-DD"),
+                updatedAt: Date("YYYY-MM-DD")
             }
            
             const allComments = JSON.parse(post.comments)
@@ -147,14 +147,16 @@ const addCommentOnPost = async (req, res)=>{
             const loopComment = async ()=>{
             for (const item of allComments) {
                 var userCmt = await User.findOne({where : {id:item.userid}})
+                const d = new Date();
+                var dateText = d.toISOString();
                  loopData = {
                      userid: item.userid,
                      message: item.message,
                      first_name: userCmt.first_name,
                      last_name: userCmt.last_name,
                      image: userCmt.image,
-                     createdAt: "2022-11-22T09:49:45.000Z",
-                     updatedAt: "2022-11-22T09:49:45.000Z"
+                     createdAt: dateText,
+                     updatedAt: dateText
                  }
                  commentData.push(loopData)
                }
@@ -186,39 +188,15 @@ const addLikeOnPost = async (req, res)=>{
             const getUser = async (id) => {
                 return await User.findOne({where : {id:id}})
             }
+            const d = new Date();
+            let dateText = d.toISOString();
             const like = {
                 userid : userid,
-                createdAt: Date(),
-                updatedAt: Date()
+                createdAt: dateText,
+                updatedAt: dateText 
             }
            
             const allLikes = JSON.parse(post.likes)
-
-            // var removeLike = function(arr, attr, value){
-            //     var i = arr.length;
-            //     while(i--){
-            //        if( arr[i] 
-            //            && arr[i].hasOwnProperty(attr) 
-            //            && (arguments.length > 2 && arr[i][attr] == value ) ){ 
-            //            arr.splice(i,1);
-            //        }
-            //     }
-            //     return arr;
-            // }
-            // // console.log(allLikes)
-            // var alreadyLiked = function (val,arr){                
-            //     let obj = arr.find(o => o.userid == val);
-            //     // console.log(obj);
-            //     return obj.userid;
-            // }
-            
-            // if (alreadyLiked(userid,allLikes)==userid) {
-            //     var finalLike = removeLike(allLikes,'userid',userid)
-            //     console.log("Final like "+finalLike)
-            // }else{
-            //     var finalLike = allLikes.push(like)
-            //     console.log("Final like "+finalLike)
-            // }
             
             allLikes.push(like)
             await Post.update({likes:allLikes}, {where : {id:postid}})
@@ -232,8 +210,8 @@ const addLikeOnPost = async (req, res)=>{
                      first_name: userLike.first_name,
                      last_name: userLike.last_name,
                      image: userLike.image,
-                     createdAt: "2022-11-22T09:49:45.000Z",
-                     updatedAt: "2022-11-22T09:49:45.000Z"
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
                  }
                  likeData.push(loopData)
                }
@@ -260,41 +238,44 @@ const getAllPost = async (req,res)=>{
     let postData = []; 
        const loopPost = async ()=>{
 
-        const myCmt = async (postid)=>{
-            let post = await Post.findOne({where : {id:postid}})
-            var allComments = JSON.parse(post.comments)        
-            let commentData = []; 
-                var loopComment = async ()=>{
-                for (var item of allComments) {
-                    var userCmt = await User.findOne({where : {id:item.userid}})
-                    loopData = {
-                        userid: item.userid,
-                        message: item.message,
+        for (const item of posts) {
+            var user = await User.findOne({where : {id:item.created_by}});
+            var loopCmtData = []
+            var loopLikeData = []
+            for (var cmt of JSON.parse(item.comments)) {
+                var userCmt = await User.findOne({where : {id:cmt.userid}})
+                loopCmtData = 
+                    {
+                        userid: cmt.userid,
+                        message: cmt.message,
                         first_name: userCmt.first_name,
                         last_name: userCmt.last_name,
                         image: userCmt.image,
-                        createdAt: "2022-11-22T09:49:45.000Z",
-                        updatedAt: "2022-11-22T09:49:45.000Z"
-                    }
-                    commentData.push(loopData)
-                    return commentData;
+                        createdAt: cmt.createdAt,
+                        updatedAt: cmt.updatedAt
                     }
                 }
-                await loopComment()
-        }
-
-
-        for (const item of posts) {
-            var user = await User.findOne({where : {id:item.created_by}});
-
+            for (var like of JSON.parse(item.likes)) {
+                var userCmt = await User.findOne({where : {id:like.userid}})
+                loopLikeData = 
+                    {
+                        userid: like.userid,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: like.createdAt,
+                        updatedAt: like.updatedAt
+                    }
+                }
+            
             loopData = {
                 id: item.id,
                 title : item.title,
                 body : item.body,
                 tags : item.tags,
                 image : item.image,
-                likes: JSON.parse(item.likes),
-                comments: JSON.parse(item.comments),
+                likes: loopLikeData,
+                comments: loopCmtData,
                 created_by: item.created_by,
                 first_name: user.first_name,
                 last_name: user.last_name,
@@ -302,8 +283,8 @@ const getAllPost = async (req,res)=>{
                 image: item.image,
                 info: null,
                 active: true,
-                createdAt: "2022-11-22T09:49:45.000Z",
-                updatedAt: "2022-11-22T09:49:45.000Z"
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt
             }
             postData.push(loopData)
           }
