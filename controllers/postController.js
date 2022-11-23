@@ -282,19 +282,19 @@ const getAllPost = async (req,res)=>{
             //     }
             var loopLikeData = []
             var likeDatas = []
-            for (var like of JSON.parse(item.likes)) {
-                var userCmt = await User.findOne({where : {id:like.userid}})
-                likeDatas = 
-                    {
-                        userid: like.userid,
-                        first_name: userCmt.first_name,
-                        last_name: userCmt.last_name,
-                        image: userCmt.image,
-                        createdAt: like.createdAt,
-                        updatedAt: like.updatedAt
-                    }
-                    loopLikeData.push(likeDatas)
-                }
+            // for (var like of JSON.parse(item.likes)) {
+            //     var userCmt = await User.findOne({where : {id:like.userid}})
+            //     likeDatas = 
+            //         {
+            //             userid: like.userid,
+            //             first_name: userCmt.first_name,
+            //             last_name: userCmt.last_name,
+            //             image: userCmt.image,
+            //             createdAt: like.createdAt,
+            //             updatedAt: like.updatedAt
+            //         }
+            //         loopLikeData.push(likeDatas)
+            //     }
             
             loopData = {
                 id: item.id,
