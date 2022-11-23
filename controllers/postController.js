@@ -131,11 +131,13 @@ const addCommentOnPost = async (req, res)=>{
             const getUser = async (id) => {
                 return await User.findOne({where : {id:id}})
             }
+            const d = new Date();
+            let dateText = d.toISOString();
             const comment = {
                 userid : userid,
                 message: msg,
-                createdAt: Date("YYYY-MM-DD"),
-                updatedAt: Date("YYYY-MM-DD")
+                createdAt:  dateText,
+                updatedAt:  dateText
             }
            
             const allComments = JSON.parse(post.comments)
