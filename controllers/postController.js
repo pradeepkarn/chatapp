@@ -267,7 +267,7 @@ const getAllPost = async (req,res)=>{
             
             var cmtDatas = []
             // console.log(item)
-            item ? "": console.log(item)
+            // item ? "": console.log(item)
             for (var cmt of JSON.parse(item.comments)) {
                 var userCmt = await User.findOne({where : {id:cmt.userid}})
                 cmtDatas = 
