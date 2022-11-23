@@ -42,6 +42,7 @@ const getPost = async (req,res)=>{
         let post = await Post.findOne({where : {id:id}})
         const allComments = JSON.parse(post.comments)
         
+        
         let commentData = []; 
             const loopComment = async ()=>{
             for (const item of allComments) {
@@ -60,6 +61,24 @@ const getPost = async (req,res)=>{
             }
             await loopComment()
 
+            const allLikes = JSON.parse(post.likes)
+            let likeData = []; 
+            const loopLike = async ()=>{
+            for (const item of allLikes) {
+                var userLike = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                     userid: item.userid,
+                     first_name: userLike.first_name,
+                     last_name: userLike.last_name,
+                     image: userLike.image,
+                     createdAt: "2022-11-22T09:49:45.000Z",
+                     updatedAt: "2022-11-22T09:49:45.000Z"
+                 }
+                 likeData.push(loopData)
+               }
+            }
+            await loopLike()
+
         if (post) {
                const wrapPost = async ()=>{
                const item = post;
@@ -70,7 +89,7 @@ const getPost = async (req,res)=>{
                         body : item.body,
                         tags : item.tags,
                         image : item.image,
-                        likes: [],
+                        likes: likeData,
                         comments: commentData,
                         created_by: item.created_by,
                         first_name: user.first_name,
