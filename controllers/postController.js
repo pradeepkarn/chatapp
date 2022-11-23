@@ -241,10 +241,11 @@ const getAllPost = async (req,res)=>{
         for (const item of posts) {
             var user = await User.findOne({where : {id:item.created_by}});
             var loopCmtData = []
-            var loopLikeData = []
+            
+            var cmtDatas = []
             for (var cmt of JSON.parse(item.comments)) {
                 var userCmt = await User.findOne({where : {id:cmt.userid}})
-                loopCmtData = 
+                cmtDatas = 
                     {
                         userid: cmt.userid,
                         message: cmt.message,
@@ -254,10 +255,13 @@ const getAllPost = async (req,res)=>{
                         createdAt: cmt.createdAt,
                         updatedAt: cmt.updatedAt
                     }
+                    loopCmtData.push(cmtDatas)
                 }
+            var loopLikeData = []
+            var likeDatas = []
             for (var like of JSON.parse(item.likes)) {
                 var userCmt = await User.findOne({where : {id:like.userid}})
-                loopLikeData = 
+                likeDatas = 
                     {
                         userid: like.userid,
                         first_name: userCmt.first_name,
@@ -266,6 +270,7 @@ const getAllPost = async (req,res)=>{
                         createdAt: like.createdAt,
                         updatedAt: like.updatedAt
                     }
+                    loopLikeData.push(likeDatas)
                 }
             
             loopData = {
