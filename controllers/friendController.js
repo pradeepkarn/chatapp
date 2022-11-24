@@ -266,7 +266,7 @@ const getFriendshipRequestList = async (req,res)=>{
                     request_sent: friends_request_sent_data,
                     request_received: friends_request_received_data
                 }
-                const data = {status:true,msg: `You have ${msg} the friendship`,data:friendsData}
+                const data = {status:true,msg: `You have ${msg} the friendship`,data:frndsdata}
                 res.status(200).json(data)
                 return;
             } catch (error) {
