@@ -178,7 +178,7 @@ const getFriendshipList = async (req,res)=>{
                        }
                     }
                     await im_loopFriends()
-                    console.log(im_as_friend+ " i m as frnd")
+                    // console.log(im_as_friend+ " i m as frnd")
                 }
                 
                 const data = {status:true,msg: `You have ${msg} the friendship`,data:friendsData}
@@ -238,7 +238,7 @@ const getFriendshipRequestList = async (req,res)=>{
                     // console.log(my_friends+ " my frnd")
                 }
                 let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship", status: "pending"}})
-                console.log(im_as_friend)
+                // console.log(im_as_friend)
                 let friends_request_received_data = []; 
                 if ((im_as_friend).length>0) {
                     const im_loopFriends = async ()=>{

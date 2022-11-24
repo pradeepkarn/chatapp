@@ -172,6 +172,24 @@ app.get("/register",(req,res)=>{
   }
   res.render('register',{});
 })
+//active members
+app.get("/active-members",(req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  res.render('pages/active-members',{});
+})
+//todays members
+app.get("/todays-members",(req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  res.render('pages/todays-members',{});
+})
 //logic on post method
 // app.post("/register",(req,res)=>{
 //   if (req.session.token) {
