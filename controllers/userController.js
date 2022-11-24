@@ -41,54 +41,7 @@ const signUp = async (req, res)=>{
 }
 
 
-// const changeImg = async (token,imgname)=>{
-//     let user = await User.findOne({where : {token:token}})
-//     if (user) {
-//         User.update({image:imgname}, {where : {token:token}});
-//     }
-//     else{
-//         return false;
-//     }
-// }
-
-
-// var storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         // Uploads is the Upload_folder_name
-//         cb(null, "static/media/profiles/")
-//     },
-//     filename: function (req, file, cb) {
-//       cb(null, file.fieldname + "-"+ Date.now()+".jpg")
-//       changeImg(req.body.token,file.fieldname + "-"+ Date.now()+".jpg");
-//     //   console.log(file.fieldname + "-"+ Date.now()+".jpg")
-//         console.log(req.body)
-//     }
-//   })
-       
-// Define the maximum size for uploading
-// picture i.e. 1 MB. it is optional
-// const maxSize = 1 * 1000 * 1000 * 1000;
-    
-// var uploadProfileImage = multer({ 
-//     storage: storage,
-//     limits: { fileSize: maxSize },
-//     fileFilter: function (req, file, cb){
-//         // Set the filetypes, it is optional
-//         var filetypes = /jpeg|jpg|png/;
-//         var mimetype = filetypes.test(file.mimetype);
-  
-//         var extname = filetypes.test(path.extname(
-//                     file.originalname).toLowerCase());
-        
-//         if (mimetype && extname) {
-//             return cb(null, true);
-//         }
-      
-//         cb("Error: File upload only supports the "
-//                 + "following filetypes - " + filetypes);
-//       } 
-// // image is the name of file attribute
-// }).single("image");    
+ 
 
 const logIn = async (req,res)=>{
     let mobile = req.body.mobile
@@ -201,6 +154,46 @@ const profileEdit = async (req,res)=>{
 }
 
 
+const addFriend = async (req,res)=>{
+    let token = req.body.token
+    const edit = req.body;
+    if (token) {
+        let user = await User.findOne({where : {token:token}})
+        if (user) {
+            //create response user
+            const updateUserData = {
+                first_name: edit.first_name?edit.first_name:user.first_name,
+                last_name: edit.last_name?edit.last_name:user.last_name,
+                image: edit.image?edit.image:user.image,
+                gender: edit.gender?edit.gender:user.gender,
+                dob: edit.dob?edit.dob:user.dob,
+                country: edit.country?edit.country:user.country,
+            }
+            //update user if not null
+            
+            //json data after success sign in
+            User.update(updateUserData, {where : {token:token}})
+            if (user) {
+                
+                const data = {status:true,msg:"Updated",data:null}
+                res.status(200).json(data)
+            }else{
+                const data = {status:false,msg:"Not updated",data:null}
+                res.status(200).json(data)
+            }
+            return;
+        }else{
+            //json data after failed sign in
+            const data = {status:false,msg:"User not found",data:null}
+            res.status(200).json(data)
+        }
+        
+    }else{
+        const data = {status:false,msg:"Invali token",data:null}
+        res.status(200).json(data)
+    }
+    
+}
    
   
 

@@ -4,6 +4,7 @@ const filestore = require("session-file-store")(session)
 const path = require("path")
 var multer  = require('multer')
 const jwt = require('jsonwebtoken')
+TZ = 'Asia/Calcutta'
 // const bcrypt = require("bcrypt");
 // const passport = require('passport');
 // const flash = require('express-flash')
@@ -51,6 +52,8 @@ http.listen(PORT, ()=>{
 const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
+const friendRouter = require("./routes/friendRouter.js");
+
 const roomController = require("./controllers/roomController.js");
 
 
@@ -386,6 +389,7 @@ app.get('/rooms', (req, res) => {
   app.use("/api/users",userRouter);
   app.use("/api/rooms",roomRouter);
   app.use("/api/posts",postRouter);
+  app.use("/api/friends",friendRouter);
 
 
 

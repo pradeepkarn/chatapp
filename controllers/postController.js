@@ -43,8 +43,6 @@ const getPost = async (req,res)=>{
         
         typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
         const allComments = post.comments
-        
-        
         let commentData = []; 
             const loopComment = async ()=>{
             for (const item of allComments) {
@@ -55,14 +53,13 @@ const getPost = async (req,res)=>{
                      first_name: userCmt.first_name,
                      last_name: userCmt.last_name,
                      image: userCmt.image,
-                     createdAt: "2022-11-22T09:49:45.000Z",
-                     updatedAt: "2022-11-22T09:49:45.000Z"
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
                  }
                  commentData.push(loopData)
                }
             }
             await loopComment()
-            
             typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
             const allLikes = JSON.parse(post.likes)
             let likeData = []; 
@@ -74,14 +71,13 @@ const getPost = async (req,res)=>{
                      first_name: userLike.first_name,
                      last_name: userLike.last_name,
                      image: userLike.image,
-                     createdAt: "2022-11-22T09:49:45.000Z",
-                     updatedAt: "2022-11-22T09:49:45.000Z"
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
                  }
                  likeData.push(loopData)
                }
             }
             await loopLike()
-
         if (post) {
                const wrapPost = async ()=>{
                const item = post;
@@ -101,8 +97,8 @@ const getPost = async (req,res)=>{
                         image: item.image,
                         info: null,
                         active: true,
-                        createdAt: "2022-11-22T09:49:45.000Z",
-                        updatedAt: "2022-11-22T09:49:45.000Z"
+                        createdAt: item.createdAt,
+                        updatedAt: item.updatedAt
                     }
                     return wrapData;
                  

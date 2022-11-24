@@ -39,6 +39,7 @@ db.sequelize = sequelize
 db.users = require('./userModel.js')(sequelize, DataTypes)
 db.rooms = require('./roomModel.js')(sequelize, DataTypes)
 db.posts = require('./postModel.js')(sequelize, DataTypes)
+db.friends = require('./friendModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync( {force: false} )
 .then(()=>{
