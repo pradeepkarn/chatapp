@@ -131,13 +131,15 @@ const getFriendshipList = async (req,res)=>{
     if (token) {
         const me = await User.findOne({where : {token:token}})
         if (me) {
+            // console.log(me.id)
             try {
+                let friendsData = []; 
                 let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+                // console.log(my_friends)
                 if (my_friends.length>0) {
-                    let friendsData = []; 
-                    const loopFriends = async ()=>{
+                    const my_loopFriends = async ()=>{
                     for (const item of my_friends) {
-                        var userFrnd = await User.findOne({where : {id:item.userid}})
+                        var userFrnd = await User.findOne({where : {id:item.friend_id}})
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
@@ -152,16 +154,34 @@ const getFriendshipList = async (req,res)=>{
                          friendsData.push(loopData)
                        }
                     }
-                    await loopFriends()
+                    await my_loopFriends()
                     console.log(my_friends+ " my frnd")
                 }
                 let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship"}})
+                console.log(im_as_friend)
                 if ((im_as_friend).length>0) {
-                    console.log(me.first_name, me.id)
+                    const im_loopFriends = async ()=>{
+                    for (const item of im_as_friend) {
+                        var userFrnd = await User.findOne({where : {id:item.myid}})
+                        const d = new Date();
+                        var dateText = d.toISOString();
+                         loopData = {
+                             userid: item.userid,
+                             message: item.message,
+                             first_name: userFrnd.first_name,
+                             last_name: userFrnd.last_name,
+                             image: userFrnd.image,
+                             createdAt: dateText,
+                             updatedAt: dateText
+                         }
+                         friendsData.push(loopData)
+                       }
+                    }
+                    await im_loopFriends()
                     console.log(im_as_friend+ " i m as frnd")
                 }
                 
-                const data = {status:true,msg: `You have ${msg} the friendship`,data:null}
+                const data = {status:true,msg: `You have ${msg} the friendship`,data:friendsData}
                 res.status(200).json(data)
                 return;
             } catch (error) {
