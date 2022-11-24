@@ -74,6 +74,11 @@ const users = {};
 
 
 app.get("/",(req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/login")
+    res.end();
+    return;
+  }
   res.render('index',{});
 })
 
@@ -120,7 +125,8 @@ app.post("/login",(req,res)=>{
             req.session.token = token
             console.log(req.session.token)
             //create response object
-            const msg = `<b class='text-success'>Login success</b>`;
+            var msg = `<b class='text-success'>Login success</b>`;
+            msg += `<script>location.href="/";</script>`;
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(msg);
             res.end();
@@ -147,72 +153,93 @@ login()
 //website login end
 app.get("/logout",(req,res)=>{
   req.session.destroy();
+  res.redirect("/login")
+  res.end();
+  return;
+})
+app.get("/signout",(req,res)=>{
+  req.session.destroy();
+  res.redirect("/login")
+  res.end();
+  return;
 })
 //website signup
 app.get("/register",(req,res)=>{
+  if (req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
   res.render('register',{});
 })
 //logic on post method
-app.post("/register",(req,res)=>{
-  const db = require("./models/index.js");
-  const User = db.users
-  const signUp = async ()=>{
-    const signUpData = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        mobile : req.body.mobile,
-        password : req.body.password,
-        token: null,
-        active: 1
-    }
-    if (req.body.mobile=="") {
-        const msg = "Empty mobile number is not allowed";
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(msg);
-        res.end();
-        return;
-    }
-    if (req.body.password=="" || req.body.cnf_password=="") {
-      const msg = "Empty Password";
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(msg);
-      res.end();
-      return;
-    }
-    if (req.body.password!=req.body.cnf_password) {
-        const msg = "Password did not match";
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(msg);
-        res.end();
-        return;
-    }
-    let userExist = await User.findOne({where : {mobile:req.body.mobile}})
-    if (userExist) {
-        const msg = "This number is already registered";
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(msg);
-        res.end();
-        return;
-    }else{
-        const user = await User.create(signUpData);
-        if (user) {
-          const msg = "Registration success";
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(msg);
-          res.end();
-          return;
-        }else{
-          const msg = "Registration failed";
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(msg);
-          res.end();
-          return;
-        }
-        return;
-    }
-}
-signUp()
-})
+// app.post("/register",(req,res)=>{
+//   if (req.session.token) {
+//     const msg = `<script>location.href="/";</script>`;
+//     res.writeHead(200, {'Content-Type': 'text/html'});
+//     res.write(msg);
+//     res.end();
+//     return;
+//   }
+//   const db = require("./models/index.js");
+//   const User = db.users
+//   const signUp = async ()=>{
+//     const signUpData = {
+//         first_name: req.body.first_name,
+//         last_name: req.body.last_name,
+//         mobile : req.body.mobile,
+//         password : req.body.password,
+//         token: null,
+//         active: 1
+//     }
+//     if (req.body.mobile=="") {
+//         const msg = "Empty mobile number is not allowed";
+//         res.writeHead(200, {'Content-Type': 'text/html'});
+//         res.write(msg);
+//         res.end();
+//         return;
+//     }
+//     if (req.body.password=="" || req.body.cnf_password=="") {
+//       const msg = "Empty Password";
+//       res.writeHead(200, {'Content-Type': 'text/html'});
+//       res.write(msg);
+//       res.end();
+//       return;
+//     }
+//     if (req.body.password!=req.body.cnf_password) {
+//         const msg = "Password did not match";
+//         res.writeHead(200, {'Content-Type': 'text/html'});
+//         res.write(msg);
+//         res.end();
+//         return;
+//     }
+//     let userExist = await User.findOne({where : {mobile:req.body.mobile}})
+//     if (userExist) {
+//         const msg = "This number is already registered";
+//         res.writeHead(200, {'Content-Type': 'text/html'});
+//         res.write(msg);
+//         res.end();
+//         return;
+//     }else{
+//         const user = await User.create(signUpData);
+//         if (user) {
+//           const msg = "Registration success";
+//           res.writeHead(200, {'Content-Type': 'text/html'});
+//           res.write(msg);
+//           res.end();
+//           return;
+//         }else{
+//           const msg = "Registration failed";
+//           res.writeHead(200, {'Content-Type': 'text/html'});
+//           res.write(msg);
+//           res.end();
+//           return;
+//         }
+//         return;
+//     }
+// }
+// signUp()
+// })
 
 // app.post('/signup', async (req, res) => {
 //   try {
@@ -241,6 +268,13 @@ app.get("/register",(req,res)=>{
   res.render('register',{});
 })
 app.post("/register",(req,res)=>{
+  if (req.session.token) {
+        const msg = `<script>location.href="/";</script>`;
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+      }
   // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
@@ -284,7 +318,18 @@ app.post("/register",(req,res)=>{
     }else{
         const user = await User.create(signUpData);
         if (user) {
-          const msg = "Registration success";
+          var msg = "";
+          const token = jwt.sign({userId: user.id},
+            process.env.JWT_SECRET_KEY, {expiresIn: "5d"}
+            )
+            try {
+              req.session.token = token
+              await User.update({token: token}, {where : {mobile:user.mobile}})
+              msg = `<script>location.href="/";</script>`;
+              msg += "Registration success";
+            } catch (error) {
+              msg += "Registration not success";
+            }
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.write(msg);
           res.end();
@@ -392,9 +437,6 @@ app.get('/rooms', (req, res) => {
   app.use("/api/posts",postRouter);
   app.use("/api/friends",friendRouter);
   app.use("/api/followers",followRouter);
-
-
-
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
@@ -449,7 +491,6 @@ app.get('/rooms', (req, res) => {
     }
     addRoom()
   })
-  
   
   app.get("/api/rooms/get/:id",(req,res)=>{
     const db = require("./models/index.js");
@@ -542,62 +583,7 @@ app.get('/rooms', (req, res) => {
     getAllRooms()
   })
   
-//   app.post("/api/users/edit-profile", (req, res, next) => {
-//     const db = require("./models/index.js");
-//     const User = db.users
-//     let token = req.body.token
-//     console.log(req.body, "log")
-//     const uploadImg = async ()=>{
-     
-      
-// // The base64 encoded input string
-// let base64string = req.body.image;
-// // let base64string = req.body.image
-  
-// // Create a buffer from the string
-// let bufferObj = Buffer.from(base64string, "base64");
-  
-// // Encode the Buffer as a utf8 string
-// let decodedString = bufferObj.toString("utf8");
-  
-// // console.log("The decoded string:", decodedString);
-     
-//         if (token) {
-//           let user = await User.findOne({where : {token:token}})
-//           if (user) {
-//               //create response user
-//               const updateUserData = {
-//                   image: decodedString ? decodedString : user.image,
-//               }
-//               //update user if not null
-              
-//               //json data after success sign in
-//               await User.update(updateUserData, {where : {token:token}})
-//               if (user) {
-                  
-//                   const data = {status:true,msg:"Updated",data:null}
-//                   res.status(200).json(data)
-//               }else{
-//                   const data = {status:false,msg:"Not updated",data:null}
-//                   res.status(200).json(data)
-//               }
-//               return;
-//           }else{
-            
-//               //json data after failed sign in
-//               const data = {status:false,msg:"User not found",data:null}
-//               res.status(200).json(data)
-//           }
-          
-//       }else{
-//         // console.log(req.body)
-//         const data = {status:false,msg:"You are not logged in",data:null}
-//         res.status(200).json(data)
-//       }
-//     }
-//     uploadImg();
-//   });
-  
+
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
