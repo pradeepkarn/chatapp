@@ -8,7 +8,7 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        info: {
+        group: {
             type: DataTypes.STRING,
             defaultValue: "friendship"
         },

@@ -28,10 +28,10 @@ const requestFriendship = async (req,res)=>{
                 const addFriendListData = {
                     myid: user.id,
                     friend_id: friend_id,
-                    info: "friendship"
+                    group: "friendship"
                 }
-                let friendshipRequestExists = await Friend.findOne({where : {myid: user.id, friend_id:friend_id}})
-                let friendshipExists = await Friend.findOne({where : {myid: friend_id, friend_id: user.id}})
+                let friendshipRequestExists = await Friend.findOne({where : {myid: user.id, friend_id:friend_id, group:"friendship"}})
+                let friendshipExists = await Friend.findOne({where : {myid: friend_id, friend_id: user.id, group:"friendship"}})
                 if (friendshipRequestExists) {
                     var status = friendshipRequestExists.status
                     await Friend.update({updatedAt: dateText}, {where : {id:friendshipRequestExists.id}})
@@ -84,7 +84,7 @@ const responseFriendship = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let friendship = await Friend.findOne({where : {myid: requested_by, friend_id:me.id}})
+                let friendship = await Friend.findOne({where : {myid: requested_by, friend_id:me.id,group:"friendship"}})
                 if (!friendship) {
                     const data = {status:false,msg:"Friendship does not exist",data:null}
                     res.status(200).json(data)
@@ -132,14 +132,33 @@ const getFriendshipList = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let my_friends = await Friend.findAll({where : {myid: me.id}})
-                if (my_friends) {
-                    
+                let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+                if (my_friends.length>0) {
+                    let friendsData = []; 
+                    const loopFriends = async ()=>{
+                    for (const item of my_friends) {
+                        var userFrnd = await User.findOne({where : {id:item.userid}})
+                        const d = new Date();
+                        var dateText = d.toISOString();
+                         loopData = {
+                             userid: item.userid,
+                             message: item.message,
+                             first_name: userFrnd.first_name,
+                             last_name: userFrnd.last_name,
+                             image: userFrnd.image,
+                             createdAt: dateText,
+                             updatedAt: dateText
+                         }
+                         friendsData.push(loopData)
+                       }
+                    }
+                    await loopFriends()
                     console.log(my_friends+ " my frnd")
                 }
-                let im_as_friend = await Friend.findAll({where : {friend_id: me.id}})
-                if (im_as_friend) {
-                    console.log(im_as_friend+ " im as frnd")
+                let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship"}})
+                if ((im_as_friend).length>0) {
+                    console.log(me.first_name, me.id)
+                    console.log(im_as_friend+ " i m as frnd")
                 }
                 
                 const data = {status:true,msg: `You have ${msg} the friendship`,data:null}

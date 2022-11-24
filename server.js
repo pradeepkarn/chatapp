@@ -4,7 +4,7 @@ const filestore = require("session-file-store")(session)
 const path = require("path")
 var multer  = require('multer')
 const jwt = require('jsonwebtoken')
-TZ = 'Asia/Calcutta'
+
 // const bcrypt = require("bcrypt");
 // const passport = require('passport');
 // const flash = require('express-flash')

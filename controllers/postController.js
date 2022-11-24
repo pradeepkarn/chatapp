@@ -143,6 +143,7 @@ const addCommentOnPost = async (req, res)=>{
             const allComments = post.comments;
             allComments.push(comment)
             await Post.update({comments:allComments}, {where : {id:postid}})
+
             
 
             let commentData = []; 
@@ -164,8 +165,21 @@ const addCommentOnPost = async (req, res)=>{
                }
             }
             await loopComment()
+            // Single comment data
+            var lastCmt = await User.findOne({where : {id:comment.userid}})
+            let lastCommentData = {
+                userid: comment.userid,
+                message: comment.message,
+                first_name: lastCmt.first_name,
+                last_name: lastCmt.last_name,
+                image: lastCmt.image,
+                createdAt: dateText,
+                updatedAt: dateText
+            }
+            //single comment data
 
-            const data = {status:true,msg:"Comment added",data:commentData}
+
+            const data = {status:true,msg:"Comment added",data:lastCommentData}
             res.status(200).json(data)
             return;
         } catch (error) {
