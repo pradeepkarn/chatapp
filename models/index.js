@@ -34,12 +34,11 @@ const db = {}
 db.Sequelize = Sequelize;
 db.sequelize = sequelize
 
-// db.products = require('./productModel.js')(sequelize, DataTypes)
-// db.reviews = require('./reviewtModel.js')(sequelize, DataTypes)
 db.users = require('./userModel.js')(sequelize, DataTypes)
 db.rooms = require('./roomModel.js')(sequelize, DataTypes)
 db.posts = require('./postModel.js')(sequelize, DataTypes)
 db.friends = require('./friendModel.js')(sequelize, DataTypes)
+db.follows = require('./followModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync( {force: false} )
 .then(()=>{

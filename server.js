@@ -53,6 +53,7 @@ const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const friendRouter = require("./routes/friendRouter.js");
+const followRouter = require("./routes/followRouter.js");
 
 const roomController = require("./controllers/roomController.js");
 
@@ -390,6 +391,7 @@ app.get('/rooms', (req, res) => {
   app.use("/api/rooms",roomRouter);
   app.use("/api/posts",postRouter);
   app.use("/api/friends",friendRouter);
+  app.use("/api/followers",followRouter);
 
 
 
