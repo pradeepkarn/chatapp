@@ -340,5 +340,6 @@ module.exports = {
     requestFriendship,
     responseFriendship,
     getFriendshipList,
-    removeFriendship
+    removeFriendship,
+    getFriendshipRequestList
 }
