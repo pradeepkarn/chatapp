@@ -2,8 +2,11 @@ const db = require("../models/index.js");
 //create main models
 const Post = db.posts
 const User = db.users
+// function uuidv4(any="") {
+//     return any+"_"+Date.now()+"_"+Math.random(100,999999)
+// }
 function uuidv4(any="") {
-    return any+"_"+Date.now()+"_"+Math.random(100,999999)
+    return any+"_"+Date.now()+"_"+Math.random()
 }
 //   console.log(uuidv4())
 const addPost = async (req, res)=>{
