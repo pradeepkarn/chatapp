@@ -54,6 +54,7 @@ const getPost = async (req,res)=>{
             for (const item of allComments) {
                 var userCmt = await User.findOne({where : {id:item.userid}})
                  loopData = {
+                    comment_id: item.comment_id,
                      userid: item.userid,
                      message: item.message,
                      first_name: userCmt.first_name,
@@ -73,6 +74,7 @@ const getPost = async (req,res)=>{
             for (const item of allLikes) {
                 var userLike = await User.findOne({where : {id:item.userid}})
                  loopData = {
+                    like_id: item.like_id,
                      userid: item.userid,
                      first_name: userLike.first_name,
                      last_name: userLike.last_name,
