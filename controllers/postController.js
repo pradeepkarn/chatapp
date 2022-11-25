@@ -4,8 +4,8 @@ const Post = db.posts
 const User = db.users
 function uuidv4(any="") {
     return any+"_"+Date.now()
-  }
-  console.log(uuidv4())
+}
+//   console.log(uuidv4())
 const addPost = async (req, res)=>{
     let imageName = null;
     let token = null;
@@ -136,7 +136,7 @@ const addCommentOnPost = async (req, res)=>{
             const d = new Date();
             let dateText = d.toISOString();
             const comment = {
-                comment_id: uuidv4(),
+                comment_id: uuidv4(userid),
                 userid : userid,
                 message: msg,
                 createdAt:  dateText,
@@ -214,7 +214,7 @@ const addLikeOnPost = async (req, res)=>{
             const d = new Date();
             let dateText = d.toISOString();
             const like = {
-                like_id: uuidv4(),
+                like_id: uuidv4(userid),
                 userid : userid,
                 createdAt: dateText,
                 updatedAt: dateText 
