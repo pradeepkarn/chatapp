@@ -65,7 +65,7 @@ const io = require("socket.io")(http, {
   }
 });
 
-let rooms = { }
+var rooms = { }
 
 // function uuidv4(any="") {
 //   return any+"_"+Date.now()+"_"+Math.random()
@@ -285,7 +285,7 @@ app.get('/rooms', async (req, res) => {
       const Room = db.rooms
       let allRooms = await Room.findAll({})
       for (const rm of allRooms) {
-        if (rooms[rm.room_name]==undefined || rooms[rm.room_name]=="" || rooms[rm.room_name]==null) {
+        if (rooms[rm.room_name]==undefined || !rooms[rm.room_name]) {
           rooms[rm.room_name] = { users: {} }
           io.emit('room-created', rm.room_name)
         }
@@ -293,7 +293,7 @@ app.get('/rooms', async (req, res) => {
       return rooms;
     }
     let roomsObj = await allrooms()
-    // console.log(roomsObj)
+    console.log(roomsObj)
     res.render('create-room', { roomsObj: roomsObj });
   });
   
@@ -306,7 +306,7 @@ app.get('/rooms', async (req, res) => {
     }
     await Room.create({room_name: req.body.room, users: [], created_by: 1})
 
-    if (rooms[req.body.room] != null || req.body.room == "") {
+    if (rooms[req.body.room] != undefined) {
       return res.redirect('/rooms')
     }
     //fill romm object with posted room name as property and put empty object containing users empty object
@@ -319,7 +319,7 @@ app.get('/rooms', async (req, res) => {
   });
   
   app.get("/chat/:room", async (req, res) => {
-    // console.log(req.params['room'])
+    console.log(rooms," all rooms")
 
     const db = require("./models/index.js");
     const Room = db.rooms
@@ -330,7 +330,7 @@ app.get('/rooms', async (req, res) => {
       return res.redirect('/rooms')
     }
     console.log(rooms)
-    if (rooms[singleRoom.room_name] == null) {
+    if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
       return res.redirect('/rooms')
     }
     // render chat page with clicked room
