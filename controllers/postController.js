@@ -2,7 +2,11 @@ const db = require("../models/index.js");
 //create main models
 const Post = db.posts
 const User = db.users
-
+function uuidv4(any) {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    )+Date.now()+any;
+  }
 const addPost = async (req, res)=>{
     let imageName = null;
     let token = null;
@@ -133,6 +137,7 @@ const addCommentOnPost = async (req, res)=>{
             const d = new Date();
             let dateText = d.toISOString();
             const comment = {
+                comment_id: uuidv4(userid),
                 userid : userid,
                 message: msg,
                 createdAt:  dateText,
@@ -153,6 +158,7 @@ const addCommentOnPost = async (req, res)=>{
                 const d = new Date();
                 var dateText = d.toISOString();
                  loopData = {
+                    comment_id: item.comment_id,
                      userid: item.userid,
                      message: item.message,
                      first_name: userCmt.first_name,
@@ -168,6 +174,7 @@ const addCommentOnPost = async (req, res)=>{
             // Single comment data
             var lastCmt = await User.findOne({where : {id:comment.userid}})
             let lastCommentData = {
+                comment_id: comment.comment_id,
                 userid: comment.userid,
                 message: comment.message,
                 first_name: lastCmt.first_name,
@@ -195,6 +202,88 @@ const addCommentOnPost = async (req, res)=>{
 }
 
 const addLikeOnPost = async (req, res)=>{
+    let postid = req.body.postid
+    let userid = req.body.userid
+    // console.log("This is post: "+ postid)
+    if (postid && userid) {
+        try {
+            let post = await Post.findOne({where : {id:postid}})
+            // let user = await User.findOne({where : {id:userid}})
+            const getUser = async (id) => {
+                return await User.findOne({where : {id:id}})
+            }
+            const d = new Date();
+            let dateText = d.toISOString();
+            const like = {
+                like_id: uuidv4(userid),
+                userid : userid,
+                createdAt: dateText,
+                updatedAt: dateText 
+            }
+           
+            typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
+            const allLikes = post.likes
+            
+            var removeLike = function(arr, attr, value){
+                var i = arr.length;
+                
+                if (i==0) {
+                    console.log(i+" arr length ")
+                    return false;
+                }
+                while(i--){
+                   if( arr[i] 
+                       && arr[i].hasOwnProperty(attr) 
+                       && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+                       arr.splice(i,1);
+                       return true;
+                   }else{
+                    return false;
+                   }
+                }
+                
+            }
+            if (removeLike(allLikes,'userid',userid)==false) {
+                allLikes.push(like)
+            }
+            
+            await Post.update({likes:allLikes}, {where : {id:postid}})
+
+            let likeData = []; 
+            const loopLike = async ()=>{
+            for (const item of allLikes) {
+                var userLike = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                    like_id: item.like_id,
+                     userid: item.userid,
+                     first_name: userLike.first_name,
+                     last_name: userLike.last_name,
+                     image: userLike.image,
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
+                 }
+                 likeData.push(loopData)
+               }
+            }
+            await loopLike()
+
+            const data = {status:true,msg:"You like this post",data:likeData}
+            res.status(200).json(data)
+            return;
+        } catch (error) {
+            const data = {status:false,msg:"Post not found",data:null}
+            res.status(200).json(data)
+            return;
+        }
+    }
+    const data = {status:false,msg:"Soemthing went wrong",data:null}
+    res.status(200).json(data)
+    return;
+}
+
+
+
+const removeCommentOnPost = async (req, res)=>{
     let postid = req.body.postid
     let userid = req.body.userid
     // console.log("This is post: "+ postid)
@@ -271,6 +360,10 @@ const addLikeOnPost = async (req, res)=>{
     res.status(200).json(data)
     return;
 }
+
+
+
+
 
 const getAllPost = async (req,res)=>{
     //for all data
