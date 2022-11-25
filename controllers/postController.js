@@ -288,8 +288,9 @@ const addLikeOnPost = async (req, res)=>{
 
 
 const removeCommentOnPost = async (req, res)=>{
-    let postid = req.body.postid
-    let userid = req.body.userid
+    let postid = req.body.postid;
+    let userid = req.body.userid;
+    let commentid = req.body.commentid;
     // console.log("This is post: "+ postid)
     if (postid && userid) {
         try {
