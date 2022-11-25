@@ -223,8 +223,7 @@ const getFriendshipRequestList = async (req,res)=>{
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                             userid: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,
@@ -247,8 +246,7 @@ const getFriendshipRequestList = async (req,res)=>{
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                            userid: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,
