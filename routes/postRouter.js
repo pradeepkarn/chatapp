@@ -24,4 +24,5 @@ router.get("/get/:id",postController.getPost);
 router.get("/get",postController.getAllPost);
 router.post("/add-comment",postController.addCommentOnPost);
 router.post("/add-like",postController.addLikeOnPost);
+router.post("/remove-post",postController.deletePost);
 module.exports = router

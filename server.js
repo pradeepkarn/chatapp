@@ -68,8 +68,7 @@ const io = require("socket.io")(http, {
   }
 });
 
-const rooms = {};
-const users = {};
+let rooms = { }
 
 
 
@@ -123,7 +122,7 @@ app.post("/login",(req,res)=>{
             // }
             
             req.session.token = token
-            console.log(req.session.token)
+            // console.log(req.session.token)
             //create response object
             var msg = `<b class='text-success'>Login success</b>`;
             msg += `<script>location.href="/";</script>`;
@@ -190,96 +189,7 @@ app.get("/todays-members",(req,res)=>{
   }
   res.render('pages/todays-members',{});
 })
-//logic on post method
-// app.post("/register",(req,res)=>{
-//   if (req.session.token) {
-//     const msg = `<script>location.href="/";</script>`;
-//     res.writeHead(200, {'Content-Type': 'text/html'});
-//     res.write(msg);
-//     res.end();
-//     return;
-//   }
-//   const db = require("./models/index.js");
-//   const User = db.users
-//   const signUp = async ()=>{
-//     const signUpData = {
-//         first_name: req.body.first_name,
-//         last_name: req.body.last_name,
-//         mobile : req.body.mobile,
-//         password : req.body.password,
-//         token: null,
-//         active: 1
-//     }
-//     if (req.body.mobile=="") {
-//         const msg = "Empty mobile number is not allowed";
-//         res.writeHead(200, {'Content-Type': 'text/html'});
-//         res.write(msg);
-//         res.end();
-//         return;
-//     }
-//     if (req.body.password=="" || req.body.cnf_password=="") {
-//       const msg = "Empty Password";
-//       res.writeHead(200, {'Content-Type': 'text/html'});
-//       res.write(msg);
-//       res.end();
-//       return;
-//     }
-//     if (req.body.password!=req.body.cnf_password) {
-//         const msg = "Password did not match";
-//         res.writeHead(200, {'Content-Type': 'text/html'});
-//         res.write(msg);
-//         res.end();
-//         return;
-//     }
-//     let userExist = await User.findOne({where : {mobile:req.body.mobile}})
-//     if (userExist) {
-//         const msg = "This number is already registered";
-//         res.writeHead(200, {'Content-Type': 'text/html'});
-//         res.write(msg);
-//         res.end();
-//         return;
-//     }else{
-//         const user = await User.create(signUpData);
-//         if (user) {
-//           const msg = "Registration success";
-//           res.writeHead(200, {'Content-Type': 'text/html'});
-//           res.write(msg);
-//           res.end();
-//           return;
-//         }else{
-//           const msg = "Registration failed";
-//           res.writeHead(200, {'Content-Type': 'text/html'});
-//           res.write(msg);
-//           res.end();
-//           return;
-//         }
-//         return;
-//     }
-// }
-// signUp()
-// })
 
-// app.post('/signup', async (req, res) => {
-//   try {
-//     const db = require("./models/index.js");
-//     const User = db.users
-//     const hashedPassword = await bcrypt.hash(req.body.password, 10)
-//     const signUpData = {
-//       first_name: req.body.first_name,
-//       last_name: req.body.last_name,
-//       mobile : req.body.mobile,
-//       password : hashedPassword,
-//       token: null,
-//       active: 1
-//     }
-//     const user = await User.create(signUpData);
-//     res.redirect('/login')
-//   } catch (error) {
-//     res.redirect('/signup')
-//   }
-//   console.log()
-// })
-//website signup end
 
 //website signup
 app.get("/register",(req,res)=>{
@@ -367,31 +277,35 @@ signUp()
 //website signup end
 
 const roomsApi = [];
-app.get('/rooms', (req, res) => {
+app.get('/rooms', async (req, res) => {
     let allRooms;
-    const allrooms = async ()=>{
-      allRooms = await roomController._getRooms();
-      
-      const assignRooms = ()=>{
-        allRooms.forEach(item => {
-        
-          if (rooms[item.room_name] == null || rooms[item.room_name] == undefined) {
-            io.emit('room-created', item.room_name)
-            rooms[item.room_name] = { users: {} }
-          }
-         
-        });
-      }
-      assignRooms()
-    }
-    allrooms()
-      
     
-    res.render('create-room', { rooms: rooms });
+    const allrooms = async ()=>{
+      // allRooms = await roomController._getRooms();
+      const db = require("./models/index.js");
+      const Room = db.rooms
+      let allRooms = await Room.findAll({})
+      for (const rm of allRooms) {
+        // console.log(rm.room_name)
+        rooms[rm.room_name] = { users: {} }
+        io.emit('room-created', rm.room_name)
+      }
+      return rooms;
+    }
+    let roomsObj = await allrooms()
+    // console.log(roomsObj)
+    res.render('create-room', { roomsObj: roomsObj });
   });
   
-  app.post('/rooms', (req, res) => {
-    // console.log(req.body.room)
+  app.post('/rooms', async (req, res) => {
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    let singleRoom = await Room.findOne({where: {room_name: req.body.room}})
+    if (singleRoom) {
+      return res.redirect('/rooms')
+    }
+    await Room.create({room_name: req.body.room, users: [], created_by: 1})
+
     if (rooms[req.body.room] != null || req.body.room == "") {
       return res.redirect('/rooms')
     }
@@ -400,25 +314,36 @@ app.get('/rooms', (req, res) => {
     //run an socket event to emit room name
     io.emit('room-created', req.body.room)
     //render room object
-    res.render('create-room', { rooms: rooms });
+    // console.log(rooms)
+    res.render('create-room', { roomsObj: rooms });
   });
   
-  app.get('/:room', (req, res) => {
-    //join a room link
-    if (rooms[req.params.room] == null) {
-      console.log(rooms)
-      //if room object is empty back to create new room
+  app.get("/chat/:room", async (req, res) => {
+    // console.log(req.params['room'])
+
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    let singleRoom = await Room.findOne({where: {room_name: req.params['room']}})
+    // console.log(singleRoom.room_name, "single")
+    // console.log(rooms, "Roomsvh j")
+    if (!singleRoom) {
       return res.redirect('/rooms')
     }
-    //render chat page with clicked room
-    res.render('room', { roomName: req.params.room })
+    console.log(rooms)
+    if (rooms[singleRoom.room_name] == null) {
+      return res.redirect('/rooms')
+    }
+    // render chat page with clicked room
+    res.render('room', { roomName: req.params['room'] })
   })
+
   
   io.on('connection', socket => {
 
     try {
       socket.on('new-user', (room, name) => {
         socket.join(room)
+        // console.log(rooms)
         // console.log(name)
         rooms[room].users[socket.id] = name
         socket.to(room).emit('user-connected', name)
@@ -426,8 +351,6 @@ app.get('/rooms', (req, res) => {
     } catch (error) {
       console.log(error)
     }
-
-
     socket.on('send-chat-message', (room, message) => {
       socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     })

@@ -1,4 +1,4 @@
-<<%- include('inc/header.ejs') %>
+<%- include('inc/header.ejs') %>
 <%- include('inc/nav.ejs') %>
 <%- include('inc/sidebar.ejs') %>
 <main id="main">
@@ -6,7 +6,7 @@
   <section style="min-height: 100vh;">
     <div class="row">
       <div class="col-md-6">
-        <form id="form" class="hide" action="" method="post">
+        <form id="form" action="" method="post">
           <div class="row">
           <div class="col-8">
             <input id="create-room" class="form-control" placeholder="Room Name" name="room" autocomplete="off" />
@@ -19,8 +19,8 @@
       
         <h3>Avalable Rooms</h3>
         <div id="room-container">
-          <% Object.keys(rooms).forEach(room => { %>
-            <a href="/<%= room %>"><%= room %></a> <br>
+          <% Object.keys(roomsObj).forEach(room => { %>
+            <a href="/chat/<%= room %>"><%= room %></a> <br>
           <% }) %>
         </div>
       </div>
@@ -38,7 +38,7 @@
     // const roomElement = document.createElement('div')
     // roomElement.innerText = room
     const roomLink = document.createElement('a')
-    roomLink.href = `/${room}`
+    roomLink.href = `/chat/${room}`
     roomLink.innerText = room
     // roomContainer.append(roomElement)
     roomContainer.append(roomLink)

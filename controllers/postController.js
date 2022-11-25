@@ -344,6 +344,41 @@ const getAllPost = async (req,res)=>{
     const data = {status:true,msg:"Post found",data:postData}
     res.status(200).json(data)
 }
+//delete post 
+
+const deletePost = async (req,res)=>{
+    if (!req.body.postid || !req.body.token) {
+        const data = {status:false,msg:"All fields are mandetory",data:null}
+        res.status(200).json(data)
+        return;
+    }
+    let id = req.body.postid
+    let token = req.body.token
+    let user = await User.findOne({where : {token:token}})
+    if (!user) {
+        const data = {status:false,msg:"You are not logged in",data:null}
+        res.status(200).json(data)
+        return;
+    }
+    try {
+        let post = await Post.findOne({where : {id:id}})
+        if (post.created_by==user.id) {
+            await Post.destroy({where : {id:id}})
+            const data = {status:true,msg:"Deleted successfully",data:null}
+            res.status(200).json(data)
+            return;
+        }else{
+            const data = {status:false,msg:"You are not publisher of this post, hence you can not delete this post",data:null}
+            res.status(200).json(data)
+            return;
+        }
+    } catch (error) {
+        const data = {status:false,msg:"Post not found, something went wrong",data:null}
+        res.status(200).json(data)
+        return;
+    }
+}
+
 
 
 module.exports = {
@@ -351,5 +386,6 @@ module.exports = {
     getPost,
     getAllPost,
     addCommentOnPost,
-    addLikeOnPost
+    addLikeOnPost,
+    deletePost
 }
