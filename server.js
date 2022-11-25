@@ -67,7 +67,10 @@ const io = require("socket.io")(http, {
 
 let rooms = { }
 
-
+function uuidv4(any="") {
+  return any+"_"+Date.now()+"_"+Math.random()
+}
+console.log(uuidv4(1))
 app.get("/",(req,res)=>{
   if (!req.session.token) {
     res.redirect("/login")

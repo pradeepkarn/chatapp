@@ -3,7 +3,7 @@ const db = require("../models/index.js");
 const Post = db.posts
 const User = db.users
 function uuidv4(any="") {
-    return any+"_"+Date.now()
+    return any+"_"+Date.now()+"_"+Math.random(100,999999)
 }
 //   console.log(uuidv4())
 const addPost = async (req, res)=>{
