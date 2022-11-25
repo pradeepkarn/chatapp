@@ -320,11 +320,18 @@ const removeCommentOnPost = async (req, res)=>{
                 }
                 
             }
-            removeCmnt(allCmts,'comment_id',commentid);
-            await Post.update({comments:allCmts}, {where : {id:postid}})
-            const data = {status:true,msg:"Deleted",data:allCmts}
-            res.status(200).json(data)
-            return;
+            if(removeCmnt(allCmts,'comment_id',commentid)){
+                await Post.update({comments:allCmts}, {where : {id:postid}})
+                const data = {status:true,msg:"Deleted",data:allCmts}
+                res.status(200).json(data)
+                return;
+            }else{
+                const data = {status:false,msg:"Comment not found",data:allCmts}
+                res.status(200).json(data)
+                return;
+            }
+           
+            
         } catch (error) {
             const data = {status:false,msg:"Comment not found, something went wrong",data:null}
             res.status(200).json(data)
