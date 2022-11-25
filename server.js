@@ -286,9 +286,10 @@ app.get('/rooms', async (req, res) => {
       const Room = db.rooms
       let allRooms = await Room.findAll({})
       for (const rm of allRooms) {
-        // console.log(rm.room_name)
-        rooms[rm.room_name] = { users: {} }
-        io.emit('room-created', rm.room_name)
+        if (rooms[rm.room_name]==undefined) {
+          rooms[rm.room_name] = { users: {} }
+          io.emit('room-created', rm.room_name)
+        }
       }
       return rooms;
     }
