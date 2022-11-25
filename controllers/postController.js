@@ -389,6 +389,7 @@ const getAllPost = async (req,res)=>{
                 var userCmt = await User.findOne({where : {id:cmt.userid}})
                 cmtDatas = 
                     {
+                        comment_id: cmt.comment_id,
                         userid: cmt.userid,
                         message: cmt.message,
                         first_name: userCmt.first_name,
@@ -407,6 +408,7 @@ const getAllPost = async (req,res)=>{
                 var userCmt = await User.findOne({where : {id:like.userid}})
                 likeDatas = 
                     {
+                        like_id: like.like_id,
                         userid: like.userid,
                         first_name: userCmt.first_name,
                         last_name: userCmt.last_name,
