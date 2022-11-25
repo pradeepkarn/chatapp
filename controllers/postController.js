@@ -289,28 +289,19 @@ const addLikeOnPost = async (req, res)=>{
 
 const removeCommentOnPost = async (req, res)=>{
     let postid = req.body.postid;
-    let userid = req.body.userid;
     let commentid = req.body.commentid;
     // console.log("This is post: "+ postid)
-    if (postid && userid) {
+    if (postid) {
         try {
             let post = await Post.findOne({where : {id:postid}})
-            // let user = await User.findOne({where : {id:userid}})
-            const getUser = async (id) => {
-                return await User.findOne({where : {id:id}})
+            if (!post) {
+                const data = {status:false,msg:"Post not found",data:allCmts}
+                res.status(200).json(data)
+                return;
             }
-            const d = new Date();
-            let dateText = d.toISOString();
-            const like = {
-                userid : userid,
-                createdAt: dateText,
-                updatedAt: dateText 
-            }
-           
-            typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
-            const allLikes = post.likes
-            
-            var removeLike = function(arr, attr, value){
+            typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
+            const allCmts = post.comments
+            var removeCmnt = function(arr, attr, value){
                 var i = arr.length;
                 
                 if (i==0) {
@@ -329,39 +320,18 @@ const removeCommentOnPost = async (req, res)=>{
                 }
                 
             }
-            if (removeLike(allLikes,'userid',userid)==false) {
-                allLikes.push(like)
-            }
-            
-            await Post.update({likes:allLikes}, {where : {id:postid}})
-
-            let likeData = []; 
-            const loopLike = async ()=>{
-            for (const item of allLikes) {
-                var userLike = await User.findOne({where : {id:item.userid}})
-                 loopData = {
-                     userid: item.userid,
-                     first_name: userLike.first_name,
-                     last_name: userLike.last_name,
-                     image: userLike.image,
-                     createdAt: item.createdAt,
-                     updatedAt: item.updatedAt
-                 }
-                 likeData.push(loopData)
-               }
-            }
-            await loopLike()
-
-            const data = {status:true,msg:"You like this post",data:likeData}
+            removeCmnt(allCmts,'comment_id',commentid);
+            await Post.update({comments:allCmts}, {where : {id:postid}})
+            const data = {status:true,msg:"Deleted",data:allCmts}
             res.status(200).json(data)
             return;
         } catch (error) {
-            const data = {status:false,msg:"Post not found",data:null}
+            const data = {status:false,msg:"Comment not found, something went wrong",data:null}
             res.status(200).json(data)
             return;
         }
     }
-    const data = {status:false,msg:"Soemthing went wrong",data:null}
+    const data = {status:false,msg:"Invalid post id",data:null}
     res.status(200).json(data)
     return;
 }
@@ -487,5 +457,6 @@ module.exports = {
     getAllPost,
     addCommentOnPost,
     addLikeOnPost,
-    deletePost
+    deletePost,
+    removeCommentOnPost
 }
