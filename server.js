@@ -58,9 +58,6 @@ const followRouter = require("./routes/followRouter.js");
 const roomController = require("./controllers/roomController.js");
 
 
-
-
-
 const io = require("socket.io")(http, {
   cors: {
     origin: '*',
@@ -69,7 +66,6 @@ const io = require("socket.io")(http, {
 });
 
 let rooms = { }
-
 
 
 app.get("/",(req,res)=>{
