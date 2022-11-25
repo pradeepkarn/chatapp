@@ -322,11 +322,11 @@ const removeCommentOnPost = async (req, res)=>{
             }
             if(removeCmnt(allCmts,'comment_id',commentid)){
                 await Post.update({comments:allCmts}, {where : {id:postid}})
-                const data = {status:true,msg:"Deleted",data:allCmts}
+                const data = {status:true,msg:"Deleted",data:null}
                 res.status(200).json(data)
                 return;
             }else{
-                const data = {status:false,msg:"Comment not found",data:allCmts}
+                const data = {status:false,msg:"Comment not found",data:null}
                 res.status(200).json(data)
                 return;
             }
