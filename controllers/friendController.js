@@ -148,8 +148,7 @@ const getFriendshipList = async (req,res)=>{
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                             friend_id: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,
@@ -171,8 +170,7 @@ const getFriendshipList = async (req,res)=>{
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                            friend_id: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,
@@ -192,13 +190,12 @@ const getFriendshipList = async (req,res)=>{
                 // console.log(im_as_friend)
                 if ((im_as_follower).length>0) {
                     const im_loopFollowing = async ()=>{
-                    for (const item of im_as_friend) {
+                    for (const item of im_as_follower) {
                         var userFrnd = await User.findOne({where : {id:item.myid}})
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                            followed_id: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,
@@ -217,13 +214,12 @@ const getFriendshipList = async (req,res)=>{
                 // console.log(im_as_friend)
                 if ((im_being_followed).length>0) {
                     const im_loopFollowers = async ()=>{
-                    for (const item of im_as_friend) {
-                        var userFrnd = await User.findOne({where : {id:item.myid}})
+                    for (const item of im_being_followed) {
+                        var userFrnd = await User.findOne({where : {id:item.friend_id}})
                         const d = new Date();
                         var dateText = d.toISOString();
                          loopData = {
-                             userid: item.userid,
-                             message: item.message,
+                            follower_id: userFrnd.id,
                              first_name: userFrnd.first_name,
                              last_name: userFrnd.last_name,
                              image: userFrnd.image,

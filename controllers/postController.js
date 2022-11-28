@@ -2,6 +2,7 @@ const db = require("../models/index.js");
 //create main models
 const Post = db.posts
 const User = db.users
+const Friend = db.friends
 
 function search(attr,attrValue,myArray){
     for (let i=0; i < myArray.length; i++) {
@@ -393,6 +394,80 @@ const removeCommentOnPost = async (req, res)=>{
 
 
 const getAllPost = async (req,res)=>{
+    //for all data
+    let posts = await Post.findAll({});
+    let postData = []; 
+       const loopPost = async ()=>{
+
+        for (const item of posts) {
+            var user = await User.findOne({where : {id:item.created_by}});
+            var loopCmtData = []
+            
+            var cmtDatas = []
+            // console.log(item)
+            // item ? "": console.log(item)
+            typeof(item.comments)=="string"?item.comments=JSON.parse(item.comments):""
+            
+            for (var cmt of item.comments) {
+                var userCmt = await User.findOne({where : {id:cmt.userid}})
+                cmtDatas = 
+                    {
+                        comment_id: cmt.comment_id,
+                        userid: cmt.userid,
+                        message: cmt.message,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: cmt.createdAt,
+                        updatedAt: cmt.updatedAt
+                    }
+                    loopCmtData.push(cmtDatas)
+                }
+            var loopLikeData = []
+            var likeDatas = []
+            
+            typeof(item.likes)=="string"?item.likes=JSON.parse(item.likes):""
+            for (var like of item.likes) {
+                var userCmt = await User.findOne({where : {id:like.userid}})
+                likeDatas = 
+                    {
+                        like_id: like.like_id,
+                        userid: like.userid,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: like.createdAt,
+                        updatedAt: like.updatedAt
+                    }
+                    loopLikeData.push(likeDatas)
+                }
+            
+            loopData = {
+                id: item.id,
+                title : item.title,
+                body : item.body,
+                tags : item.tags,
+                image : item.image,
+                likes: loopLikeData,
+                comments: loopCmtData,
+                created_by: item.created_by,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                creator_image: user.image,
+                image: item.image,
+                info: null,
+                active: true,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt
+            }
+            postData.push(loopData)
+          }
+       }
+       await loopPost()
+    const data = {status:true,msg:"Post found",data:postData}
+    res.status(200).json(data)
+}
+const getMyFriendsPost = async (req,res)=>{
     //for all data
     let posts = await Post.findAll({});
     let postData = []; 
