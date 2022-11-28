@@ -376,7 +376,7 @@ const removeFriendship = async (req,res)=>{
                     res.status(200).json(data)
                     return;
                 }else{
-                    const data = {status:true, msg: `friendship not found`,data:null}
+                    const data = {status:false, msg: `friendship not found`,data:null}
                     res.status(200).json(data)
                     return;
                 }

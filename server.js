@@ -65,7 +65,7 @@ const io = require("socket.io")(http, {
   }
 });
 
-var rooms = { }
+
 
 // function uuidv4(any="") {
 //   return any+"_"+Date.now()+"_"+Math.random()
@@ -274,27 +274,26 @@ app.post("/register",(req,res)=>{
 signUp()
 })
 //website signup end
-
+const rooms = { }
+// const users = { }
 const roomsApi = [];
 app.get('/rooms', async (req, res) => {
-    let allRooms;
-    
-    const allrooms = async ()=>{
-      // allRooms = await roomController._getRooms();
-      const db = require("./models/index.js");
-      const Room = db.rooms
-      let allRooms = await Room.findAll({})
+  const db = require("./models/index.js");
+  const Room = db.rooms
+  let allRooms = await Room.findAll({})
       for (const rm of allRooms) {
-        if (rooms[rm.room_name]==undefined || !rooms[rm.room_name]) {
-          rooms[rm.room_name] = { users: {} }
+        if (rooms[rm.room_name]==undefined || rooms[rm.room_name]==null) {
+          rooms[rm.room_name] = { users: { } }
           io.emit('room-created', rm.room_name)
         }
       }
-      return rooms;
-    }
-    let roomsObj = await allrooms()
-    console.log(roomsObj)
-    res.render('create-room', { roomsObj: roomsObj });
+      // console.log(rooms)
+      res.render('create-room', { roomsObj: rooms });
+  
+    
+    // let roomsObj = await allrooms()
+    // console.log(roomsObj)
+    
   });
   
   app.post('/rooms', async (req, res) => {
@@ -310,7 +309,7 @@ app.get('/rooms', async (req, res) => {
       return res.redirect('/rooms')
     }
     //fill romm object with posted room name as property and put empty object containing users empty object
-    rooms[req.body.room] = { users: {} }
+    rooms[req.body.room] = { users: { } }
     //run an socket event to emit room name
     io.emit('room-created', req.body.room)
     //render room object
@@ -329,10 +328,10 @@ app.get('/rooms', async (req, res) => {
     if (!singleRoom) {
       return res.redirect('/rooms')
     }
-    console.log(rooms)
-    if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
-      return res.redirect('/rooms')
-    }
+    // console.log(rooms)
+    // if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
+    //   return res.redirect('/rooms')
+    // }
     // render chat page with clicked room
     res.render('room', { roomName: req.params['room'] })
   })
