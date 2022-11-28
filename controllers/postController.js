@@ -133,8 +133,19 @@ const getPost = async (req,res)=>{
 }
 
 const addCommentOnPost = async (req, res)=>{
+    if (!req.body.token || !req.body.message || !req.body.postid) {
+        const data = {status:false,msg:"Missing parameters",data:null}
+        res.status(200).json(data)
+        return;
+    }
+    let user = await User.findOne({where : {token:token}})
+    if (!user) {
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+        return;
+    }
     let postid = req.body.postid
-    let userid = req.body.userid
+    let userid = req.body.user.id
     let msg = req.body.message
     // console.log("This is post: "+ postid)
     if (postid && userid) {
