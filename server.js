@@ -180,6 +180,16 @@ app.get("/all-members", async (req,res)=>{
   const User = db.users;
   const allUsers = await User.findAll({})
   // console.log(allUsers)
+  // let usrss = []
+  // for (const item of allUsers) {
+  //   var user = {
+  //     id: item.id,
+  //     first_name: item.first_name
+
+  //   }
+  //   usrss.push(user)
+  //   console.log(usrss)
+  // }
   res.render('pages/all-members',{allUsers: allUsers});
 })
 //todays members
@@ -332,9 +342,9 @@ app.get('/rooms', async (req, res) => {
       return res.redirect('/rooms')
     }
     // console.log(rooms)
-    // if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
-    //   return res.redirect('/rooms')
-    // }
+    if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
+      return res.redirect('/rooms')
+    }
     // render chat page with clicked room
     res.render('room', { roomName: req.params['room'] })
   })
