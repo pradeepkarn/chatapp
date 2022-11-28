@@ -299,7 +299,7 @@ const removeCommentOnPost = async (req, res)=>{
     const token = req.body.token;
     const logged_in_user = await User.findOne({where : {token:token}})
     if (!req.body.token || !req.body.commentid || !req.body.postid) {
-        const data = {status:false,msg:"Invalid token in",data:null}
+        const data = {status:false,msg:"Missing parameters",data:null}
         res.status(200).json(data)
         return;
     }
