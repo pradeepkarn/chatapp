@@ -58,12 +58,12 @@ const myFrndsIds = async (token)=>{
                 await im_loopFollowing()
                 // console.log(im_as_friend+ " i m as frnd")
             }
-            // try {
-            //     return [...new Set(friendsIds)];
-            // } catch (error) {
-            //     return friendsIds;
-            // }
-            return friendsIds;
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+            // return friendsIds;
             
     }
     else{
