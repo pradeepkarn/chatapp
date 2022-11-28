@@ -185,7 +185,9 @@ const getFriendshipList = async (req,res)=>{
                     await im_loopFriends()
                     // console.log(im_as_friend+ " i m as frnd")
                 }
-                
+                if (friendsData.length==0) {
+                    friendsData = null;
+                }
                 const data = {status:true,msg: `You have ${msg} the friendship`,data:friendsData}
                 res.status(200).json(data)
                 return;
