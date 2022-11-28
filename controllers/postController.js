@@ -16,6 +16,63 @@ function uuidv4(any="") {
     return any+"_"+Date.now()+"_"+Math.random()
 }
 //   console.log(uuidv4())
+const myFrndsIds = async (token)=>{
+    var msg = "";
+    const me = await User.findOne({where : {token:token}})
+    if (me) {
+            let friendsIds = []; 
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+            // console.log(my_friends)
+            if (my_friends.length>0) {
+                const my_loopFriends = async ()=>{
+                for (const item of my_friends) {
+                    var userFrnd = await User.findOne({where : {id:item.friend_id}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await my_loopFriends()
+                // console.log(my_friends+ " my frnd")
+            }
+            let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
+            // console.log(im_as_friend)
+            if ((im_as_friend).length>0) {
+                const im_loopFriends = async ()=>{
+                for (const item of im_as_friend) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFriends()
+                // console.log(im_as_friend+ " i m as frnd")
+            }
+          
+            let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
+            // console.log(im_as_friend)
+            if ((im_as_follower).length>0) {
+                const im_loopFollowing = async ()=>{
+                for (const item of im_as_follower) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFollowing()
+                // console.log(im_as_friend+ " i m as frnd")
+            }
+            return friendsIds;
+    }
+    else{
+        return []
+    }
+    
+}
+
+
+
+
+
+
+
+
 const addPost = async (req, res)=>{
     let imageName = null;
     let token = null;
@@ -467,9 +524,21 @@ const getAllPost = async (req,res)=>{
     const data = {status:true,msg:"Post found",data:postData}
     res.status(200).json(data)
 }
+
 const getMyFriendsPost = async (req,res)=>{
-    //for all data
-    let posts = await Post.findAll({});
+    if (!req.body.token) {
+        const data = {status:false,msg:"Login is required",data:null}
+        res.status(200).json(data)
+        return;
+    }
+    const token = req.body.token
+    let posts = []
+    let frndsids = myFrndsIds(token)
+    for (const frndid of frndsids) {
+        posts.push(await Post.findOne({where : {created_by: frndid}}));
+    }
+
+    // let posts = await Post.findAll({});
     let postData = []; 
        const loopPost = async ()=>{
 
@@ -583,5 +652,6 @@ module.exports = {
     addCommentOnPost,
     addLikeOnPost,
     deletePost,
-    removeCommentOnPost
+    removeCommentOnPost,
+    getMyFriendsPost
 }

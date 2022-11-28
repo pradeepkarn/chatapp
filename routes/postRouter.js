@@ -26,4 +26,5 @@ router.post("/add-comment",postController.addCommentOnPost);
 router.post("/add-like",postController.addLikeOnPost);
 router.post("/remove-post",postController.deletePost);
 router.post("/remove-comment",postController.removeCommentOnPost);
+router.post("/get-my-friends-post",postController.getMyFriendsPost);
 module.exports = router
