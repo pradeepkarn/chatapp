@@ -298,12 +298,17 @@ const removeCommentOnPost = async (req, res)=>{
     const commentid = req.body.commentid;
     const token = req.body.token;
     const logged_in_user = await User.findOne({where : {token:token}})
+    if (!req.body.token) {
+        const data = {status:false,msg:"Invalid token in",data:null}
+        res.status(200).json(data)
+        return;
+    }
     if (!logged_in_user) {
         const data = {status:false,msg:"You are not logged in",data:null}
         res.status(200).json(data)
         return;
     }
-    
+   
     // console.log("This is post: "+ postid)
     if (postid) {
         try {
