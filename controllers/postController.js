@@ -533,7 +533,7 @@ const getMyFriendsPost = async (req,res)=>{
     }
     const token = req.body.token
     let posts = []
-    let frndsids = myFrndsIds(token)
+    let frndsids = await myFrndsIds(token)
     console.log(frndsids)
     
     for (const frndid of frndsids) {
