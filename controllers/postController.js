@@ -145,8 +145,8 @@ const addCommentOnPost = async (req, res)=>{
         res.status(200).json(data)
         return;
     }
+    let userid = user.id
     let postid = req.body.postid
-    let userid = req.body.user.id
     let msg = req.body.message
     // console.log("This is post: "+ postid)
     if (postid && userid) {
