@@ -4,7 +4,7 @@ const filestore = require("session-file-store")(session)
 const path = require("path")
 var multer  = require('multer')
 const jwt = require('jsonwebtoken')
-
+const db = require("./models/index.js");
 // const bcrypt = require("bcrypt");
 // const passport = require('passport');
 // const flash = require('express-flash')
@@ -171,13 +171,16 @@ app.get("/register",(req,res)=>{
   res.render('register',{});
 })
 //active members
-app.get("/active-members",(req,res)=>{
+app.get("/all-members", async (req,res)=>{
   if (!req.session.token) {
     res.redirect("/")
     res.end();
     return;
   }
-  res.render('pages/active-members',{});
+  const User = db.users;
+  const allUsers = await User.findAll({})
+  // console.log(allUsers)
+  res.render('pages/all-members',{allUsers: allUsers});
 })
 //todays members
 app.get("/todays-members",(req,res)=>{
@@ -189,15 +192,6 @@ app.get("/todays-members",(req,res)=>{
   res.render('pages/todays-members',{});
 })
 
-//todays members
-app.get("/all-members",(req,res)=>{
-  if (!req.session.token) {
-    res.redirect("/")
-    res.end();
-    return;
-  }
-  res.render('pages/todays-members',{});
-})
 
 //website signup
 app.get("/register",(req,res)=>{

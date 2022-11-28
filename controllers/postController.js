@@ -539,8 +539,11 @@ const getMyFriendsPost = async (req,res)=>{
     const token = req.body.token
     let posts = []
     let frndsids = await myFrndsIds(token)
-    console.log(frndsids)
-    
+    if (frndsids.length==0) {
+        const data = {status:false,msg:"No friends found",data:null}
+        res.status(200).json(data)
+        return;
+    }
     for (const frndid of frndsids) {
         posts.push(await Post.findOne({where : {created_by: frndid}}));
     }
