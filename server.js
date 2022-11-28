@@ -189,6 +189,15 @@ app.get("/todays-members",(req,res)=>{
   res.render('pages/todays-members',{});
 })
 
+//todays members
+app.get("/all-members",(req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  res.render('pages/todays-members',{});
+})
 
 //website signup
 app.get("/register",(req,res)=>{
