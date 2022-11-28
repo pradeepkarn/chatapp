@@ -547,7 +547,11 @@ const getMyFriendsPost = async (req,res)=>{
     }
     for (const frndid of frndsids) {
         if (frndid!=null) {
-            posts.push(await Post.findOne({where : {created_by: frndid}}));
+            let mypost = await Post.findOne({where : {created_by: frndid}})
+            if (mypost) {
+                posts.push(mypost);
+            }
+            
         }
         
     }
