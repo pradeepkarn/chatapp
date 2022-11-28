@@ -2,9 +2,15 @@ const db = require("../models/index.js");
 //create main models
 const Post = db.posts
 const User = db.users
-// function uuidv4(any="") {
-//     return any+"_"+Date.now()+"_"+Math.random(100,999999)
-// }
+
+function search(attr,attrValue,myArray){
+    for (let i=0; i < myArray.length; i++) {
+        if (myArray[i].attr === attrValue) {
+            return myArray[i];
+        }
+    }
+}
+
 function uuidv4(any="") {
     return any+"_"+Date.now()+"_"+Math.random()
 }
@@ -288,8 +294,16 @@ const addLikeOnPost = async (req, res)=>{
 
 
 const removeCommentOnPost = async (req, res)=>{
-    let postid = req.body.postid;
-    let commentid = req.body.commentid;
+    const postid = req.body.postid;
+    const commentid = req.body.commentid;
+    const token = req.body.token;
+    const logged_in_user = await User.findOne({where : {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"You are not logged in",data:null}
+        res.status(200).json(data)
+        return;
+    }
+    
     // console.log("This is post: "+ postid)
     if (postid) {
         try {
@@ -300,7 +314,14 @@ const removeCommentOnPost = async (req, res)=>{
                 return;
             }
             typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
-            const allCmts = post.comments
+            let allCmts = post.comments
+            let commented_by;
+            try {
+                commented_by = search("comment_id",commentid).userid;
+            } catch (error) {
+                commented_by = 0;
+            }
+            
             var removeCmnt = function(arr, attr, value){
                 var i = arr.length;
                 
@@ -319,6 +340,12 @@ const removeCommentOnPost = async (req, res)=>{
                    }
                 }
                 
+            }
+
+            if (post.created_by!=logged_in_user.id || !commented_by!=logged_in_user.id) {
+                const data = {status:false, msg:"You are not post author or commentetor, you can not delete this comment", data:null}
+                res.status(200).json(data)
+                return;
             }
             if(removeCmnt(allCmts,'comment_id',commentid)){
                 await Post.update({comments:allCmts}, {where : {id:postid}})

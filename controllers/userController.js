@@ -154,7 +154,7 @@ const profileEdit = async (req,res)=>{
 }
 
 
-const addFriend = async (req,res)=>{
+const profilePasswordReset = async (req,res)=>{
     let token = req.body.token
     const edit = req.body;
     if (token) {
@@ -194,6 +194,48 @@ const addFriend = async (req,res)=>{
     }
     
 }
+
+
+// const addFriend = async (req,res)=>{
+//     let token = req.body.token
+//     const edit = req.body;
+//     if (token) {
+//         let user = await User.findOne({where : {token:token}})
+//         if (user) {
+//             //create response user
+//             const updateUserData = {
+//                 first_name: edit.first_name?edit.first_name:user.first_name,
+//                 last_name: edit.last_name?edit.last_name:user.last_name,
+//                 image: edit.image?edit.image:user.image,
+//                 gender: edit.gender?edit.gender:user.gender,
+//                 dob: edit.dob?edit.dob:user.dob,
+//                 country: edit.country?edit.country:user.country,
+//             }
+//             //update user if not null
+            
+//             //json data after success sign in
+//             User.update(updateUserData, {where : {token:token}})
+//             if (user) {
+                
+//                 const data = {status:true,msg:"Updated",data:null}
+//                 res.status(200).json(data)
+//             }else{
+//                 const data = {status:false,msg:"Not updated",data:null}
+//                 res.status(200).json(data)
+//             }
+//             return;
+//         }else{
+//             //json data after failed sign in
+//             const data = {status:false,msg:"User not found",data:null}
+//             res.status(200).json(data)
+//         }
+        
+//     }else{
+//         const data = {status:false,msg:"Invali token",data:null}
+//         res.status(200).json(data)
+//     }
+    
+// }
    
   
 
