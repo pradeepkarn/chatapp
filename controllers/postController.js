@@ -138,6 +138,7 @@ const addCommentOnPost = async (req, res)=>{
         res.status(200).json(data)
         return;
     }
+    let token = req.body.token;
     let user = await User.findOne({where : {token:token}})
     if (!user) {
         const data = {status:false,msg:"Invalid token",data:null}
