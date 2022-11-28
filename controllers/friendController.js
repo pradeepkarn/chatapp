@@ -163,7 +163,7 @@ const getFriendshipList = async (req,res)=>{
                     // console.log(my_friends+ " my frnd")
                 }
                 let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
-                console.log(im_as_friend)
+                // console.log(im_as_friend)
                 if ((im_as_friend).length>0) {
                     const im_loopFriends = async ()=>{
                     for (const item of im_as_friend) {
@@ -185,10 +185,73 @@ const getFriendshipList = async (req,res)=>{
                     await im_loopFriends()
                     // console.log(im_as_friend+ " i m as frnd")
                 }
+              
+                //i am following data
+                let followingData = []
+                let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
+                // console.log(im_as_friend)
+                if ((im_as_follower).length>0) {
+                    const im_loopFollowing = async ()=>{
+                    for (const item of im_as_friend) {
+                        var userFrnd = await User.findOne({where : {id:item.myid}})
+                        const d = new Date();
+                        var dateText = d.toISOString();
+                         loopData = {
+                             userid: item.userid,
+                             message: item.message,
+                             first_name: userFrnd.first_name,
+                             last_name: userFrnd.last_name,
+                             image: userFrnd.image,
+                             createdAt: dateText,
+                             updatedAt: dateText
+                         }
+                         followingData.push(loopData)
+                       }
+                    }
+                    await im_loopFollowing()
+                    // console.log(im_as_friend+ " i m as frnd")
+                }
+                //my followers data
+                let followersData = []
+                let im_being_followed = await Friend.findAll({where : {myid: me.id, group:"follow",status:"accepted"}})
+                // console.log(im_as_friend)
+                if ((im_being_followed).length>0) {
+                    const im_loopFollowers = async ()=>{
+                    for (const item of im_as_friend) {
+                        var userFrnd = await User.findOne({where : {id:item.myid}})
+                        const d = new Date();
+                        var dateText = d.toISOString();
+                         loopData = {
+                             userid: item.userid,
+                             message: item.message,
+                             first_name: userFrnd.first_name,
+                             last_name: userFrnd.last_name,
+                             image: userFrnd.image,
+                             createdAt: dateText,
+                             updatedAt: dateText
+                         }
+                         followersData.push(loopData)
+                       }
+                    }
+                    await im_loopFollowers()
+                    // console.log(im_as_friend+ " i m as frnd")
+                }
+               
                 if (friendsData.length==0) {
                     friendsData = null;
                 }
-                const data = {status:true,msg: `You have ${msg} the friendship`,data:friendsData}
+                if (followersData.length==0) {
+                    followersData = null;
+                }
+                if (followingData.length==0) {
+                    followingData = null;
+                }
+                const allFriendsAndFollowersData = {
+                    friends: friendsData,
+                    followers: followersData,
+                    following: followingData
+                }
+                const data = {status:true,msg: `Here is your friendship, followers and following detail`,data:allFriendsAndFollowersData}
                 res.status(200).json(data)
                 return;
             } catch (error) {
@@ -340,7 +403,75 @@ const removeFriendship = async (req,res)=>{
     }
     
 }
-  
+//followers area
+
+const requestFollow = async (req,res)=>{
+    const token = req.body.token
+    const follow_to_id = req.body.follow_to_id;
+    if (token && follow_to_id) {
+        let user = await User.findOne({where : {token:token}})
+        let follow = await User.findOne({where : {id:follow_to_id}})
+        if (!follow) {
+            const data = {status:true,msg:"Person does not exist",data:null}
+            res.status(200).json(data)
+            return;
+        }
+        if (follow_to_id==user.id) {
+            const data = {status:true,msg:"You can not send follow request to yourself",data:null}
+            res.status(200).json(data)
+            return;
+        }
+        if (user) {
+            try {
+                const addfollowListData = {
+                    myid: user.id,
+                    friend_id: follow_to_id,
+                    group: "follow",
+                    status: "accepted"
+                }
+                // let FollowRequestExists = await Follow.findOne({where : {myid: user.id, follower_id:user.id, group:"follow"}})
+                let FollowExists = await Friend.findOne({where : {myid: follow_to_id, friend_id: user.id, group:"follow"}})
+                // if (FollowRequestExists) {
+                //     var status = FollowRequestExists.status
+                //     await Follow.update({updatedAt: dateText}, {where : {id:FollowRequestExists.id}})
+                //     const data = {status:true,msg:`You already have sent follow request and status is ${status}`,data:null}
+                //     res.status(200).json(data)
+                //     return;
+                // }
+                if (FollowExists) {
+                    var status = FollowExists.status
+                    await Friend.update({updatedAt: dateText}, {where : {id:FollowExists.id}})
+                    const data = {status:true,msg:`You already are following ${follow.first_name} ${follow.last_name} and status is ${status}`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }
+                const newfollow = Friend.create(addfollowListData)
+                if (newfollow) {
+                    const data = {status:true,msg:`Congartulations!, you are following ${follow.first_name} ${follow.last_name} now.`,data:null}
+                    res.status(200).json(data)
+                }else{
+                    const data = {status:false,msg:"Request failed",data:null}
+                    res.status(200).json(data)
+                }
+                return;
+            } catch (error) {
+                console.log(error)
+                const data = {status:false,msg:"Something went wrong",data:null}
+                res.status(200).json(data)
+                return;
+            }
+        }else{
+            const data = {status:false,msg:"You are not logged in",data:null}
+            res.status(200).json(data)
+            return;
+        }
+        
+    }else{
+        const data = {status:false,msg:"Invalid token or follow to id",data:null}
+        res.status(200).json(data)
+    }
+    
+}
 module.exports = {
     requestFriendship,
     responseFriendship,

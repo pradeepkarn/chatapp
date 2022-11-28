@@ -306,7 +306,7 @@ app.get('/rooms', async (req, res) => {
     }
     await Room.create({room_name: req.body.room, users: [], created_by: 1})
 
-    if (rooms[req.body.room] != undefined) {
+    if (rooms[req.body.room] != undefined || rooms[req.body.room] != null) {
       return res.redirect('/rooms')
     }
     //fill romm object with posted room name as property and put empty object containing users empty object
@@ -377,7 +377,7 @@ app.get('/rooms', async (req, res) => {
   app.use("/api/rooms",roomRouter);
   app.use("/api/posts",postRouter);
   app.use("/api/friends",friendRouter);
-  app.use("/api/followers",followRouter);
+  // app.use("/api/followers",followRouter);
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms

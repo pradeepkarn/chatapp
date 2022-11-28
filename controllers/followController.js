@@ -12,7 +12,7 @@ const requestFollow = async (req,res)=>{
     const follow_to_id = req.body.follow_to_id;
     if (token && follow_to_id) {
         let user = await User.findOne({where : {token:token}})
-        let follow = await User.findOne({where : {id:follow_id}})
+        let follow = await User.findOne({where : {id:follow_to_id}})
         if (!follow) {
             const data = {status:true,msg:"Person does not exist",data:null}
             res.status(200).json(data)
@@ -28,30 +28,31 @@ const requestFollow = async (req,res)=>{
                 const addfollowListData = {
                     myid: user.id,
                     follower_id: follow_to_id,
-                    group: "follow"
+                    group: "follow",
+                    status: "accepted"
                 }
-                let FollowRequestExists = await Follow.findOne({where : {myid: user.id, follower_id:user.id, group:"follow"}})
+                // let FollowRequestExists = await Follow.findOne({where : {myid: user.id, follower_id:user.id, group:"follow"}})
                 let FollowExists = await Follow.findOne({where : {myid: follow_to_id, follower_id: user.id, group:"follow"}})
-                if (FollowRequestExists) {
-                    var status = FollowRequestExists.status
-                    await Follow.update({updatedAt: dateText}, {where : {id:FollowRequestExists.id}})
-                    const data = {status:true,msg:`You already have sent follow request and status is ${status}`,data:null}
-                    res.status(200).json(data)
-                    return;
-                }
+                // if (FollowRequestExists) {
+                //     var status = FollowRequestExists.status
+                //     await Follow.update({updatedAt: dateText}, {where : {id:FollowRequestExists.id}})
+                //     const data = {status:true,msg:`You already have sent follow request and status is ${status}`,data:null}
+                //     res.status(200).json(data)
+                //     return;
+                // }
                 if (FollowExists) {
                     var status = FollowExists.status
                     await Follow.update({updatedAt: dateText}, {where : {id:FollowExists.id}})
-                    const data = {status:true,msg:`You already have connected with this user and status is ${status}`,data:null}
+                    const data = {status:true,msg:`You already are following ${follow.first_name} ${follow.last_name} and status is ${status}`,data:null}
                     res.status(200).json(data)
                     return;
                 }
                 const newfollow = Follow.create(addfollowListData)
                 if (newfollow) {
-                    const data = {status:true,msg:"Request sent, wait for approval",data:null}
+                    const data = {status:true,msg:`Congartulations!, you are following ${follow.first_name} ${follow.last_name} now.`,data:null}
                     res.status(200).json(data)
                 }else{
-                    const data = {status:false,msg:"Not updated",data:null}
+                    const data = {status:false,msg:"Request failed",data:null}
                     res.status(200).json(data)
                 }
                 return;
@@ -68,7 +69,7 @@ const requestFollow = async (req,res)=>{
         }
         
     }else{
-        const data = {status:false,msg:"Invalid token or follow's id",data:null}
+        const data = {status:false,msg:"Invalid token or follow to id",data:null}
         res.status(200).json(data)
     }
     
