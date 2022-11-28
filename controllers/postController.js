@@ -58,11 +58,12 @@ const myFrndsIds = async (token)=>{
                 await im_loopFollowing()
                 // console.log(im_as_friend+ " i m as frnd")
             }
-            try {
-                return [...new Set(friendsIds)];
-            } catch (error) {
-                return friendsIds;
-            }
+            // try {
+            //     return [...new Set(friendsIds)];
+            // } catch (error) {
+            //     return friendsIds;
+            // }
+            return friendsIds;
             
     }
     else{
@@ -553,6 +554,7 @@ const getMyFriendsPost = async (req,res)=>{
        const loopPost = async ()=>{
 
         for (const item of posts) {
+            console.log(item.created_by)
             var user = await User.findOne({where : {id:item.created_by}});
             var loopCmtData = []
             
