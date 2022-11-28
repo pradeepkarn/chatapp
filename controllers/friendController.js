@@ -125,6 +125,11 @@ const responseFriendship = async (req,res)=>{
 
 
 const getFriendshipList = async (req,res)=>{
+    if (!req.body.token) {
+        const data = {status:false, msg:"User credential needed", data:null}
+        res.status(200).json(data)
+        return;
+    }
     const token = req.body.token
     var msg = "";
     let friendList = []
