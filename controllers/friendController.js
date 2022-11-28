@@ -162,7 +162,7 @@ const getFriendshipList = async (req,res)=>{
                     await my_loopFriends()
                     console.log(my_friends+ " my frnd")
                 }
-                let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship"}})
+                let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
                 console.log(im_as_friend)
                 if ((im_as_friend).length>0) {
                     const im_loopFriends = async ()=>{
@@ -192,7 +192,7 @@ const getFriendshipList = async (req,res)=>{
                 res.status(200).json(data)
                 return;
             } catch (error) {
-                console.log(error)
+                // console.log(error)
                 const data = {status:false,msg:"Something went wrong",data:null}
                 res.status(200).json(data)
                 return;
