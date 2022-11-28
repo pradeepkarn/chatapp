@@ -160,7 +160,7 @@ const getFriendshipList = async (req,res)=>{
                        }
                     }
                     await my_loopFriends()
-                    console.log(my_friends+ " my frnd")
+                    // console.log(my_friends+ " my frnd")
                 }
                 let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
                 console.log(im_as_friend)
