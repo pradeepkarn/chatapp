@@ -241,8 +241,15 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
           res.end();
           return;
         }
-        if (req.body.password=="") {
-          const msg = "Empty Password";
+        if (!req.body.bio) {
+          const msg = "Bio required";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        if (!req.body.dob) {
+          const msg = "Set Date of birth";
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.write(msg);
           res.end();
@@ -261,8 +268,8 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             mobile: req.body.mobile,
-            email: req.body.email,
-            password: req.body.password,
+            dob: req.body.dob,
+            bio: req.body.bio,
             is_admin: is_admin
           }
             const user = await User.update(updateData, { where : {id: req.body.id} })
