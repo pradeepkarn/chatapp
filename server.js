@@ -208,13 +208,13 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
     return;
   }
   const User = db.users;
-        if (req.body.mobile=="") {
-          const msg = "Empty mobile number is not allowed";
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(msg);
-          res.end();
-          return;
-        }
+        // if (req.body.mobile=="") {
+        //   const msg = "Empty mobile number is not allowed";
+        //   res.writeHead(200, {'Content-Type': 'text/html'});
+        //   res.write(msg);
+        //   res.end();
+        //   return;
+        // }
         let is_admin = false
         if (req.body.is_admin) {
           is_admin = true
@@ -267,7 +267,6 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
           const updateData = {
             first_name: req.body.first_name,
             last_name: req.body.last_name,
-            mobile: req.body.mobile,
             dob: req.body.dob,
             bio: req.body.bio,
             is_admin: is_admin
