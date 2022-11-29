@@ -6,25 +6,30 @@
   
 <main id="main">
     <div class="pagetitle">
-        <h1>Voice Chat Dashboard</h1>
+        <h1>All Members</h1>
         <nav>
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/active-members">Members</a></li>
+            <li class="breadcrumb-item"><a href="/all-members">All Members</a></li>
           </ol>
         </nav>
       </div><!-- End Page Title -->
     <section style="min-height: 100vh;">
-      <div class="row mx-auto">
-        <div class="col-md-6">
-              <h5 class="card-title text-prime">All Members</h5>
-              <div>
-                <% Object.keys(allUsers).forEach(user => { %>
-                  <%= user.id %>
-                <% }) %>
+     <h5 class="card-title text-prime">All Members</h5>
+              
+              <div class="row">
+                <% for (const usr of allUsers) { %>
+                <div class="col-sm-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= usr.first_name %> <%= usr.last_name %></h5>
+                      <p class="card-text">Mobile: <b><%= usr.mobile %></b></p>
+                      <a href="/all-members/edit/<%= usr.id %>" class="btn btn-primary">View/Edit</a>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
               </div>
-        </div>
-      </div>
     </section>
 </main>
   <%- include('../inc/footer.ejs') %>

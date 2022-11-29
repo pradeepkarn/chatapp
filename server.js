@@ -170,7 +170,7 @@ app.get("/register",(req,res)=>{
   }
   res.render('register',{});
 })
-//active members
+//all members
 app.get("/all-members", async (req,res)=>{
   if (!req.session.token) {
     res.redirect("/")
@@ -179,18 +179,109 @@ app.get("/all-members", async (req,res)=>{
   }
   const User = db.users;
   const allUsers = await User.findAll({})
-  // console.log(allUsers)
-  // let usrss = []
-  // for (const item of allUsers) {
-  //   var user = {
-  //     id: item.id,
-  //     first_name: item.first_name
-
-  //   }
-  //   usrss.push(user)
-  //   console.log(usrss)
-  // }
   res.render('pages/all-members',{allUsers: allUsers});
+})
+//edit memeber by id
+app.get("/all-members/edit/:id", async (req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  if (!req.params.id) {
+    res.redirect("/all-members");
+  }
+  const userid = req.params.id;
+  const User = db.users;
+  const singleUser = await User.findOne({ where: {id: userid} })
+  if (!singleUser) {
+    res.redirect("/all-members");
+  }
+  res.render('pages/edit-member',{singleUser: singleUser});
+})
+app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
+  if (!req.session.token) {
+    const msg = `<script>location.href="/logout";</script>`;
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(msg);
+    res.end();
+    return;
+  }
+  const User = db.users;
+        if (req.body.mobile=="") {
+          const msg = "Empty mobile number is not allowed";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        let is_admin = false
+        if (req.body.is_admin) {
+          is_admin = true
+        }
+        if (!req.body.id) {
+          console.log(req.body)
+          const msg = "User id required";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        if (!req.body.first_name) {
+          const msg = "First name required";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        if (!req.body.last_name) {
+          const msg = "Last name required";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        if (req.body.password=="") {
+          const msg = "Empty Password";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+     
+        let userExist = await User.findOne({where : {id:req.body.id}})
+        if (!userExist) {
+            const msg = "User not found";
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(msg);
+            res.end();
+            return;
+        }else{
+          const updateData = {
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            mobile: req.body.mobile,
+            email: req.body.email,
+            password: req.body.password,
+            is_admin: is_admin
+          }
+            const user = await User.update(updateData, { where : {id: req.body.id} })
+            if (user) {
+              var msg = "Updated";
+              msg += `<script>location.reload();</script>`;
+              res.writeHead(200, {'Content-Type': 'text/html'});
+              res.write(msg);
+              res.end();
+              return;
+            }else{
+              const msg = "Not updated";
+              res.writeHead(200, {'Content-Type': 'text/html'});
+              res.write(msg);
+              res.end();
+              return;
+            }
+        }
+
 })
 //todays members
 app.get("/todays-members",(req,res)=>{
@@ -554,7 +645,6 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
   
 app.post('/api/users/profile-upload', upload.single('profile_image'), async (req,res)=>{
- 
     // console.log(JSON.stringify(req.file))
     // console.log("Token: "+ req.body.token)
     const db = require("./models/index.js");

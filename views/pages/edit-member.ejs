@@ -1,0 +1,147 @@
+
+<%- include('../inc/header.ejs') %>
+<%- include('../inc/nav.ejs') %>
+<%- include('../inc/sidebar.ejs') %>
+<link rel="stylesheet" href="/style.css">  
+<% usr = singleUser; %>
+<% 
+let dob = null;
+if (usr.dob!=null) {
+  dob = (usr.dob.toISOString().split('T'))[0]; 
+}
+%>
+
+<main id="main">
+    <div class="pagetitle">
+        <h1>Edit User</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/all-members">All Members</a></li>
+            <li class="breadcrumb-item"><%= usr.first_name %> <%= usr.last_name %></li>
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->
+    <section style="min-height: 100vh;">
+      <form id="editUserForm" action="/all-members/edit/update-user-ajax" method="post">
+      <b>Make admin</b> <input <% if(usr.is_admin == true){ %> checked <% } %> type="checkbox" name="is_admin">
+      <div id="res"></div>
+     <h5 class="card-title text-prime">Editing for: <i> <%= usr.first_name %> <%= usr.last_name %></i></h5>
+        
+      <div class="row">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input name="first_name" type="text" class="form-control" id="fnameInput" placeholder="First Name" value="<%= usr.first_name %>">
+                <label for="fnameInput">First Name</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input name="last_name" type="text" class="form-control" id="lnameInput" placeholder="Last Name" value="<%= usr.last_name %>">
+                <label for="lnameInput">Last Name</label>
+              </div>
+            </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              <input name="mobile" type="text" class="form-control" id="mobileInput" placeholder="Mobile" value="<%= usr.mobile %>">
+              <label for="mobileInput">Mobile</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              <input name="email" type="email" class="form-control" id="emailInput" placeholder="Email" value="<%= usr.email %>">
+              <label for="emailInput">Email</label>
+            </div>
+          </div>
+      </div>
+       
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-floating mb-3">
+            <textarea name="bio" class="form-control" placeholder="Bio" id="userBioTextarea"><%= usr.bio %></textarea>
+            <label for="userBioTextarea">Bio</label>
+          </div>
+        </div>
+    </div>
+     
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-floating mb-3">
+          <input name="country" type="text" class="form-control" id="countryInput" placeholder="Country" value="<%= usr.country %>">
+          <label for="countryInput">Country</label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-floating mb-3">
+          <input name="dob" type="date" class="form-control" id="dateOfBirthInput" placeholder="Country" value="<%= dob %>">
+          <label for="dateOfBirthInput">Date of birth</label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-floating mb-3">
+          <select name="gender" class="form-select" id="genderSelect" aria-label="Floating label select example">
+            <option <% if(usr.gender == "male"){ %> selected <% } %>  value="male">Male</option>
+            <option <% if(usr.gender == "female"){ %> selected <% } %>  value="male">Female</option>
+            <option <% if(usr.gender == "other"){ %> selected <% } %>  value="Other">Other</option>
+          </select>
+          <label for="genderSelect">Gender</label>
+        </div>
+      </div>
+      
+  </div>
+  <div class="row">
+    <div class="col-md-3 ms-auto text-end">
+      
+      <input type="hidden" name="id" value="<%= usr.id %>">
+      <button id="editUserBtn" type="button" class="btn btn-primary">Update</button>
+    </div>
+</div>
+</form>
+<script>
+  $(document).ready(function() {
+      $('#editUserBtn').on('click',function(event) {
+          event.preventDefault();
+          $.ajax({
+              url: '/all-members/edit/update-user-ajax',
+              method: 'post',
+              data: $('#editUserForm').serializeArray(),
+              dataType: 'html',
+              success: function(resultValue) {
+                  $('#res').html(resultValue)
+              }
+          });
+      });
+  });
+  </script>
+    <script>
+    //   $(document).ready(function (e) {
+    //     $('#editUserForm').on('submit',(function(e) {
+    //         e.preventDefault();
+    //         if (typeof tinyMCE != 'undefined') {
+    //           tinyMCE.triggerSave();
+    //         }
+    //         event.preventDefault();
+    //         var formData = new FormData(this);
+    //         $.ajax({
+    //             type:'POST',
+    //             url: $(this).attr('action'),
+    //             data:formData,
+    //             cache:false,
+    //             contentType: 'html',
+    //             processData: false,
+    //             success:function(resultValue){
+    //               $('#res').html(resultValue)
+    //             }
+    //         });
+    //     }));
+    //     $('#editUserBtn').on('click', function() {
+    //       $('#editUserForm').submit();
+    //   });
+    // });
+    </script>
+    </section>
+</main>
+  <%- include('../inc/footer.ejs') %>
