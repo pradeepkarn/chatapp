@@ -20,8 +20,10 @@ var storage = multer.diskStorage({
 
 
 router.post("/add-post",upload.single('post_image'),postController.addPost);
-router.post("/get",postController.getPost);
-router.post("/get-all",postController.getAllPost);
+router.get("/get/:id",postController.getPost);
+router.get("/get",postController.getAllPost);
+router.post("/get-single",postController.getPostWithFrnds);
+router.post("/get-all",postController.getAllPostWithFrnds);
 router.post("/add-comment",postController.addCommentOnPost);
 router.post("/add-like",postController.addLikeOnPost);
 router.post("/remove-post",postController.deletePost);

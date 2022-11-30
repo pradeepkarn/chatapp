@@ -21,7 +21,7 @@ const myFrndsIds = async (token)=>{
     const me = await User.findOne({where : {token:token}})
     if (me) {
             let friendsIds = []; 
-            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship",status:"accepted"}})
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
             // console.log(my_friends)
             if (my_friends.length>0) {
                 const my_loopFriends = async ()=>{
@@ -112,23 +112,11 @@ const addPost = async (req, res)=>{
 }
 
 const getPost = async (req,res)=>{
-    if (!req.body.token) {
-        const data = {status:false,msg:"Token is required",data:null}
-        res.status(200).json(data)
-    }
-    const token = req.body.token;
-    const logged_in_user = await User.findOne({where: {token:token}})
-    if (!logged_in_user) {
-        const data = {status:false,msg:"Invalid token",data:null}
-        res.status(200).json(data)
-    }
-
-    let id = req.body.id
+    // console.log(req.params.id)
+    let id = req.params.id
     if (id) {
         let post = await Post.findOne({where : {id:id}})
-        var myfrndsids = await myFrndsIds(token)
-        var is_friend = myfrndsids.includes(post.created_by);
-
+        
         typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
         const allComments = post.comments
         let commentData = []; 
@@ -187,7 +175,6 @@ const getPost = async (req,res)=>{
                         image: item.image,
                         info: null,
                         active: true,
-                        is_friend: is_friend,
                         createdAt: item.createdAt,
                         updatedAt: item.updatedAt
                     }
@@ -467,19 +454,7 @@ const removeCommentOnPost = async (req, res)=>{
 
 
 
-
-
 const getAllPost = async (req,res)=>{
-    if (!req.body.token) {
-        const data = {status:false,msg:"Token is required",data:null}
-        res.status(200).json(data)
-    }
-    const token = req.body.token;
-    const logged_in_user = await User.findOne({where: {token:token}})
-    if (!logged_in_user) {
-        const data = {status:false,msg:"Invalid token",data:null}
-        res.status(200).json(data)
-    }
     //for all data
     let posts = await Post.findAll({});
     let postData = []; 
@@ -488,8 +463,7 @@ const getAllPost = async (req,res)=>{
         for (const item of posts) {
             var user = await User.findOne({where : {id:item.created_by}});
             var loopCmtData = []
-            var myfrndsids = await myFrndsIds(token)
-            var is_friend = myfrndsids.includes(item.created_by);
+            
             var cmtDatas = []
             // console.log(item)
             // item ? "": console.log(item)
@@ -544,7 +518,6 @@ const getAllPost = async (req,res)=>{
                 image: item.image,
                 info: null,
                 active: true,
-                is_friend: is_friend,
                 createdAt: item.createdAt,
                 updatedAt: item.updatedAt
             }
@@ -689,6 +662,213 @@ const deletePost = async (req,res)=>{
     }
 }
 
+
+
+
+
+
+const getPostWithFrnds = async (req,res)=>{
+    if (!req.body.token) {
+        const data = {status:false,msg:"Token is required",data:null}
+        res.status(200).json(data)
+    }
+    const token = req.body.token;
+    const logged_in_user = await User.findOne({where: {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
+
+    let id = req.body.id
+    if (id) {
+        let post = await Post.findOne({where : {id:id}})
+        var myfrndsids = await myFrndsIds(token)
+        var is_friend = myfrndsids.includes(post.created_by);
+
+        typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
+        const allComments = post.comments
+        let commentData = []; 
+            const loopComment = async ()=>{
+            for (const item of allComments) {
+                var userCmt = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                    comment_id: item.comment_id,
+                     userid: item.userid,
+                     message: item.message,
+                     first_name: userCmt.first_name,
+                     last_name: userCmt.last_name,
+                     image: userCmt.image,
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
+                 }
+                 commentData.push(loopData)
+               }
+            }
+            await loopComment()
+            typeof(post.likes)=="string"?post.likes=JSON.parse(post.likes):""
+            const allLikes = JSON.parse(post.likes)
+            let likeData = []; 
+            const loopLike = async ()=>{
+            for (const item of allLikes) {
+                var userLike = await User.findOne({where : {id:item.userid}})
+                 loopData = {
+                    like_id: item.like_id,
+                     userid: item.userid,
+                     first_name: userLike.first_name,
+                     last_name: userLike.last_name,
+                     image: userLike.image,
+                     createdAt: item.createdAt,
+                     updatedAt: item.updatedAt
+                 }
+                 likeData.push(loopData)
+               }
+            }
+            await loopLike()
+        if (post) {
+               const wrapPost = async ()=>{
+               const item = post;
+                    var user = await User.findOne({where : {id:item.created_by}});
+                    wrapData = {
+                        id: item.id,
+                        title : item.title,
+                        body : item.body,
+                        tags : item.tags,
+                        image : item.image,
+                        likes: likeData,
+                        comments: commentData,
+                        created_by: item.created_by,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        creator_image: user.image,
+                        image: item.image,
+                        info: null,
+                        active: true,
+                        is_friend: is_friend,
+                        createdAt: item.createdAt,
+                        updatedAt: item.updatedAt
+                    }
+                    return wrapData;
+                 
+               }
+               const postData  = await wrapPost();
+
+            const data = {status:true,msg:"Post found",data:postData}
+            res.status(200).json(data)
+        }else{
+            const data = {status:false,msg:"Post not found",data:null}
+            res.status(200).json(data)
+        }
+        
+    }else{
+        res.status(200).json("Please provide post id")
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+const getAllPostWithFrnds = async (req,res)=>{
+    if (!req.body.token) {
+        const data = {status:false,msg:"Token is required",data:null}
+        res.status(200).json(data)
+    }
+    const token = req.body.token;
+    const logged_in_user = await User.findOne({where: {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
+    //for all data
+    let posts = await Post.findAll({});
+    let postData = []; 
+       const loopPost = async ()=>{
+
+        for (const item of posts) {
+            var user = await User.findOne({where : {id:item.created_by}});
+            var loopCmtData = []
+            var myfrndsids = await myFrndsIds(token)
+            var is_friend = myfrndsids.includes(item.created_by);
+            var cmtDatas = []
+            // console.log(item)
+            // item ? "": console.log(item)
+            typeof(item.comments)=="string"?item.comments=JSON.parse(item.comments):""
+            
+            for (var cmt of item.comments) {
+                var userCmt = await User.findOne({where : {id:cmt.userid}})
+                cmtDatas = 
+                    {
+                        comment_id: cmt.comment_id,
+                        userid: cmt.userid,
+                        message: cmt.message,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: cmt.createdAt,
+                        updatedAt: cmt.updatedAt
+                    }
+                    loopCmtData.push(cmtDatas)
+                }
+            var loopLikeData = []
+            var likeDatas = []
+            
+            typeof(item.likes)=="string"?item.likes=JSON.parse(item.likes):""
+            for (var like of item.likes) {
+                var userCmt = await User.findOne({where : {id:like.userid}})
+                likeDatas = 
+                    {
+                        like_id: like.like_id,
+                        userid: like.userid,
+                        first_name: userCmt.first_name,
+                        last_name: userCmt.last_name,
+                        image: userCmt.image,
+                        createdAt: like.createdAt,
+                        updatedAt: like.updatedAt
+                    }
+                    loopLikeData.push(likeDatas)
+                }
+            
+            loopData = {
+                id: item.id,
+                title : item.title,
+                body : item.body,
+                tags : item.tags,
+                image : item.image,
+                likes: loopLikeData,
+                comments: loopCmtData,
+                created_by: item.created_by,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                creator_image: user.image,
+                image: item.image,
+                info: null,
+                active: true,
+                is_friend: is_friend,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt
+            }
+            postData.push(loopData)
+          }
+       }
+       await loopPost()
+    const data = {status:true,msg:"Post found",data:postData}
+    res.status(200).json(data)
+}
+
+
+
+
+
+
+
+
+
 module.exports = {
     addPost,
     getPost,
@@ -697,5 +877,7 @@ module.exports = {
     addLikeOnPost,
     deletePost,
     removeCommentOnPost,
-    getMyFriendsPost
+    getMyFriendsPost,
+    getAllPostWithFrnds,
+    getPostWithFrnds
 }
