@@ -90,7 +90,7 @@ const addPost = async (req, res)=>{
     if (req.body.token) {
         token = req.body.token;
     }
-    console.log(imageName)
+    // console.log(imageName)
     let user = await User.findOne({where : {token:token}})
         if (!user) {
             const data = {status:false,msg:"Invalid user token, post not created",data:null}

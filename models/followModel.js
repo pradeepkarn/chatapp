@@ -1,7 +1,7 @@
 module.exports = (Sequelize, DataTypes) => {
     const Follow = Sequelize.define("follow",{
         myid: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         follower_id: {

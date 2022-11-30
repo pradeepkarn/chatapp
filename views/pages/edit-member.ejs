@@ -23,92 +23,108 @@ if (usr.dob!=null) {
         </nav>
       </div><!-- End Page Title -->
     <section style="min-height: 100vh;">
-      <form id="editUserForm" action="/all-members/edit/update-user-ajax" method="post">
-      <b>Make admin</b> <input <% if(usr.is_admin == true){ %> checked <% } %> type="checkbox" name="is_admin">
-      <div id="res"></div>
-     <h5 class="card-title text-prime">Editing for: <i> <%= usr.first_name %> <%= usr.last_name %></i></h5>
-        
       <div class="row">
+        <div class="col-md-7">
+          <form id="editUserForm" action="/all-members/edit/update-user-ajax" method="post">
+            <b>Make admin</b> <input <% if(usr.is_admin == true){ %> checked <% } %> type="checkbox" name="is_admin">
+            <div id="res"></div>
+           <h5 class="card-title text-prime">Editing for: <i> <%= usr.first_name %> <%= usr.last_name %></i></h5>
+              
+            <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                      <input name="first_name" type="text" class="form-control" id="fnameInput" placeholder="First Name" value="<%= usr.first_name %>">
+                      <label for="fnameInput">First Name</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                      <input name="last_name" type="text" class="form-control" id="lnameInput" placeholder="Last Name" value="<%= usr.last_name %>">
+                      <label for="lnameInput">Last Name</label>
+                    </div>
+                  </div>
+              
+                <div class="col-md-4">
+                  <div class="form-floating mb-3">
+                    <input name="mobile" type="text" class="form-control" id="mobileInput" placeholder="Mobile" value="<%= usr.mobile %>">
+                    <label for="mobileInput">Mobile</label>
+                  </div>
+                </div>
+             
+            </div>
+             
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-floating mb-3">
+                  <textarea name="bio" class="form-control" placeholder="Bio" id="userBioTextarea"><%= usr.bio %></textarea>
+                  <label for="userBioTextarea">Bio</label>
+                </div>
+              </div>
+          </div>
+           
+          <div class="row">
             <div class="col-md-4">
               <div class="form-floating mb-3">
-                <input name="first_name" type="text" class="form-control" id="fnameInput" placeholder="First Name" value="<%= usr.first_name %>">
-                <label for="fnameInput">First Name</label>
+                <input name="country" type="text" class="form-control" id="countryInput" placeholder="Country" value="<%= usr.country %>">
+                <label for="countryInput">Country</label>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-floating mb-3">
-                <input name="last_name" type="text" class="form-control" id="lnameInput" placeholder="Last Name" value="<%= usr.last_name %>">
-                <label for="lnameInput">Last Name</label>
+                <input name="dob" type="date" class="form-control" id="dateOfBirthInput" placeholder="Country" value="<%= dob %>">
+                <label for="dateOfBirthInput">Date of birth</label>
               </div>
             </div>
-        
-          <div class="col-md-4">
-            <div class="form-floating mb-3">
-              <input disabled name="mobile" type="text" class="form-control" id="mobileInput" placeholder="Mobile" value="<%= usr.mobile %>">
-              <label for="mobileInput">Mobile</label>
+            <div class="col-md-4">
+              <div class="form-floating mb-3">
+                <select name="gender" class="form-select" id="genderSelect" aria-label="Floating label select example">
+                  <option <% if(usr.gender == "male"){ %> selected <% } %>  value="male">Male</option>
+                  <option <% if(usr.gender == "female"){ %> selected <% } %>  value="male">Female</option>
+                  <option <% if(usr.gender == "other"){ %> selected <% } %>  value="Other">Other</option>
+                </select>
+                <label for="genderSelect">Gender</label>
+              </div>
             </div>
+            
+        </div>
+        <div class="row">
+          <div class="col-md-3 ms-auto text-end">
+            
+            <input type="hidden" name="id" value="<%= usr.id %>">
+            <button id="editUserBtn" type="button" class="btn btn-primary">Update</button>
           </div>
-       
       </div>
-       
-      <div class="row">
-        <div class="col-md-12">
-          <div class="form-floating mb-3">
-            <textarea name="bio" class="form-control" placeholder="Bio" id="userBioTextarea"><%= usr.bio %></textarea>
-            <label for="userBioTextarea">Bio</label>
-          </div>
+      </form>
+      <script>
+        $(document).ready(function() {
+            $('#editUserBtn').on('click',function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: '/all-members/edit/update-user-ajax',
+                    method: 'post',
+                    data: $('#editUserForm').serializeArray(),
+                    dataType: 'html',
+                    success: function(resultValue) {
+                        $('#res').html(resultValue)
+                    }
+                });
+            });
+        });
+        </script>
         </div>
-    </div>
-     
-    <div class="row">
-      <div class="col-md-4">
-        <div class="form-floating mb-3">
-          <input name="country" type="text" class="form-control" id="countryInput" placeholder="Country" value="<%= usr.country %>">
-          <label for="countryInput">Country</label>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-floating mb-3">
-          <input name="dob" type="date" class="form-control" id="dateOfBirthInput" placeholder="Country" value="<%= dob %>">
-          <label for="dateOfBirthInput">Date of birth</label>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-floating mb-3">
-          <select name="gender" class="form-select" id="genderSelect" aria-label="Floating label select example">
-            <option <% if(usr.gender == "male"){ %> selected <% } %>  value="male">Male</option>
-            <option <% if(usr.gender == "female"){ %> selected <% } %>  value="male">Female</option>
-            <option <% if(usr.gender == "other"){ %> selected <% } %>  value="Other">Other</option>
-          </select>
-          <label for="genderSelect">Gender</label>
+        <div class="col-md-5 my-auto mx-auto">
+          <% if(usr.image){ %> 
+            <img style="width: 100%; height: 200px; object-fit: contain;" src="/media/profiles/<%= usr.image %>" alt="<%= usr.first_name %>">
+          <% } %>
+          <% if(!usr.image){ %> 
+            <img style="width: 100%; height: 200px; object-fit: contain;" src="/media/profiles/user.png" alt="<%= usr.first_name %>">
+          <% } %>
+          <!-- <form action="" method="post">
+            <input type="file" name="user" class="form-control">
+            <input type="submit">
+          </form> -->
         </div>
       </div>
-      
-  </div>
-  <div class="row">
-    <div class="col-md-3 ms-auto text-end">
-      
-      <input type="hidden" name="id" value="<%= usr.id %>">
-      <button id="editUserBtn" type="button" class="btn btn-primary">Update</button>
-    </div>
-</div>
-</form>
-<script>
-  $(document).ready(function() {
-      $('#editUserBtn').on('click',function(event) {
-          event.preventDefault();
-          $.ajax({
-              url: '/all-members/edit/update-user-ajax',
-              method: 'post',
-              data: $('#editUserForm').serializeArray(),
-              dataType: 'html',
-              success: function(resultValue) {
-                  $('#res').html(resultValue)
-              }
-          });
-      });
-  });
-  </script>
     <script>
     //   $(document).ready(function (e) {
     //     $('#editUserForm').on('submit',(function(e) {

@@ -1,0 +1,73 @@
+
+<%- include('../inc/header.ejs') %>
+<%- include('../inc/nav.ejs') %>
+<%- include('../inc/sidebar.ejs') %>
+<link rel="stylesheet" href="/style.css">  
+  
+<main id="main">
+    <div class="pagetitle">
+        <h1>All Members</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/app-banners">App Banners</a></li>
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->
+    <section style="min-height: 100vh;">
+      <form id="imageUploadForm--" action="/gallery/app-banner/ajax-upload" method="post" enctype="multipart/form-data">
+        <input id="ImageBrowse" type="file" name="app_banner" class="form-control">
+        <input id="ImageBrowseBtn" type="submit" class="btn btn-primary" value="Submit">
+        <input type="hidden" name="obj_id" value="0">
+      </form>
+      <div id="res"></div>
+     <h5 class="card-title text-prime">App Banners</h5>
+              <div class="row">
+                <% for (const appBanner of banners) { %>
+                <div class="col-sm-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <img style="width: 100%; height: 150px; object-fit: cover;" src="/media/gallery/<%= appBanner.obj %>" alt="<%= appBanner.obj %>">
+                     <div class="mt-2 form-inline">
+                      <a href="/gallery/app-banner/edit/<%= appBanner.id %>" class="btn btn-primary">View/Edit</a>
+                      <form action="/gallery/app-banner/remove" method="post">
+                        <button class="btn btn-danger" type="submit">
+                          Delete
+                        </button>
+                        <input type="hidden" name="delid" value="<%= appBanner.id %>">
+                      </form>
+                     </div>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+    </section>
+
+     <script>
+      //   $(document).ready(function (e) {
+      //     $('#imageUploadForm').on('submit',(function(e) {
+      //         e.preventDefault();
+      //         var formData = new FormData(this);
+      //         $.ajax({
+      //             type:'POST',
+      //             url: $(this).attr('action'),
+      //             data:formData,
+      //             cache:false,
+      //             contentType: 'html',
+      //             processData: false,
+      //             success:function(resultValue){
+      //               $('#res').html(resultValue)
+      //             },
+      //             error: function(data){
+      //               $('#res').html(error)
+      //             }
+      //         });
+      //     }));
+      //       $("#ImageBrowseBtn").on("click", function() {
+      //         $("#imageUploadForm").submit();
+      //       });
+      // });
+      </script>
+</main>
+  <%- include('../inc/footer.ejs') %>

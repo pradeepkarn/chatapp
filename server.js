@@ -53,7 +53,9 @@ const userRouter = require("./routes/userRouter.js");
 const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const friendRouter = require("./routes/friendRouter.js");
-const followRouter = require("./routes/followRouter.js");
+const mediaRouterApi = require("./routes/mediaRouterApi.js");
+// const followRouter = require("./routes/followRouter.js");
+
 
 const roomController = require("./controllers/roomController.js");
 
@@ -207,14 +209,16 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
     res.end();
     return;
   }
+  let mobile = null;
   const User = db.users;
-        // if (req.body.mobile=="") {
-        //   const msg = "Empty mobile number is not allowed";
-        //   res.writeHead(200, {'Content-Type': 'text/html'});
-        //   res.write(msg);
-        //   res.end();
-        //   return;
-        // }
+        if (!req.body.mobile) {
+          const msg = "Empty mobile number is not allowed";
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.write(msg);
+          res.end();
+          return;
+        }
+        
         let is_admin = false
         if (req.body.is_admin) {
           is_admin = true
@@ -241,12 +245,9 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
           res.end();
           return;
         }
-        if (!req.body.bio) {
-          const msg = "Bio required";
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(msg);
-          res.end();
-          return;
+        let bio = "";
+        if (req.body.bio) {
+          bio = req.body.bio;
         }
         if (!req.body.dob) {
           const msg = "Set Date of birth";
@@ -257,6 +258,24 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
         }
      
         let userExist = await User.findOne({where : {id:req.body.id}})
+        let userMobile = await User.findOne({where : {mobile:req.body.mobile}})
+        if (!userMobile) {
+          mobile = req.body.mobile
+        }
+        else if (userMobile && userMobile.id==userExist.id) {
+          mobile = userExist.mobile
+        }
+        // else if (userMobile && userMobile.id!=userExist.id) {
+        //   mobile = userExist.mobile
+        // }
+        else if (userMobile && userMobile.id!=userExist.id) {
+          const msg = "Mobile number already in databse";
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(msg);
+            res.end();
+            return;
+        }
+        
         if (!userExist) {
             const msg = "User not found";
             res.writeHead(200, {'Content-Type': 'text/html'});
@@ -268,9 +287,11 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             dob: req.body.dob,
-            bio: req.body.bio,
+            bio: bio,
+            mobile: mobile,
             is_admin: is_admin
           }
+          try {
             const user = await User.update(updateData, { where : {id: req.body.id} })
             if (user) {
               var msg = "Updated";
@@ -280,12 +301,22 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
               res.end();
               return;
             }else{
-              const msg = "Not updated";
+              const msg = "User Not updated";
               res.writeHead(200, {'Content-Type': 'text/html'});
               res.write(msg);
               res.end();
               return;
             }
+          } catch (error) {
+            
+              const msg = "Something went wrong";
+              res.writeHead(200, {'Content-Type': 'text/html'});
+              res.write(msg);
+              res.end();
+              return;
+            
+          }
+            
         }
 
 })
@@ -299,6 +330,8 @@ app.get("/todays-members",(req,res)=>{
   res.render('pages/todays-members',{});
 })
 
+const mediaRouter = require("./routes/mediaRouter.js");
+app.use("/gallery",mediaRouter);
 
 //website signup
 app.get("/register",(req,res)=>{
@@ -486,6 +519,7 @@ app.get('/rooms', async (req, res) => {
   app.use("/api/rooms",roomRouter);
   app.use("/api/posts",postRouter);
   app.use("/api/friends",friendRouter);
+  app.use("/api/gallery",mediaRouterApi);
   // app.use("/api/followers",followRouter);
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
