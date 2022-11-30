@@ -617,6 +617,7 @@ const getMyFriendsPost = async (req,res)=>{
                 image: item.image,
                 info: null,
                 active: true,
+                is_friend: true,
                 createdAt: item.createdAt,
                 updatedAt: item.updatedAt
             }
@@ -661,9 +662,6 @@ const deletePost = async (req,res)=>{
         return;
     }
 }
-
-
-
 
 
 
@@ -764,14 +762,6 @@ const getPostWithFrnds = async (req,res)=>{
     }
     
 }
-
-
-
-
-
-
-
-
 
 
 const getAllPostWithFrnds = async (req,res)=>{
