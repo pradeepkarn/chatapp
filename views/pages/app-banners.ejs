@@ -10,14 +10,14 @@
         <nav>
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/app-banners">App Banners</a></li>
+            <li class="breadcrumb-item"><a href="/gallery/app-banner">App Banners</a></li>
           </ol>
         </nav>
       </div><!-- End Page Title -->
     <section style="min-height: 100vh;">
       <form id="imageUploadForm--" action="/gallery/app-banner/ajax-upload" method="post" enctype="multipart/form-data">
-        <input id="ImageBrowse" type="file" name="app_banner" class="form-control">
-        <input id="ImageBrowseBtn" type="submit" class="btn btn-primary" value="Submit">
+        <input required accept=".jpg,.png,.jpeg" id="ImageBrowse" type="file" name="app_banner" class="form-control">
+        <input id="ImageBrowseBtn" type="submit" class="my-2 btn btn-primary" value="Submit">
         <input type="hidden" name="obj_id" value="0">
       </form>
       <div id="res"></div>
