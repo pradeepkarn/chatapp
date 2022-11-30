@@ -1,0 +1,35 @@
+
+<%- include('../inc/header.ejs') %>
+<%- include('../inc/nav.ejs') %>
+<%- include('../inc/sidebar.ejs') %>
+<link rel="stylesheet" href="/style.css">  
+  
+<main id="main">
+    <div class="pagetitle">
+        <h1>All Members</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/all-members">All Members</a></li>
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->
+    <section style="min-height: 100vh;">
+     <h5 class="card-title text-prime">All Members</h5>
+              
+              <div class="row">
+                <% for (const pst of allPosts) { %>
+                <div class="col-sm-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= pst.title %> </h5>
+                      <p class="card-text">Mobile: <b><%= pst.body %></b></p>
+                      <a href="/all-posts/remove/<%= pst.id %>" class="btn btn-danger">Delete</a>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+    </section>
+</main>
+  <%- include('../inc/footer.ejs') %>

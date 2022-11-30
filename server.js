@@ -320,6 +320,43 @@ app.post("/all-members/edit/update-user-ajax", async (req,res)=>{
         }
 
 })
+
+//all posts
+app.get("/all-posts", async (req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  const Post = db.posts;
+  const allPosts = await Post.findAll({})
+  res.render('pages/all-posts',{allPosts: allPosts});
+})
+//edit post by id
+app.get("/all-posts/remove/:id", async (req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  if (!req.params.id) {
+    res.redirect("/all-posts");
+  }
+  const postid = req.params.id;
+  const Post = db.posts;
+  const singlePost = await Post.findOne({ where: {id: postid} })
+  if (singlePost) {
+    try {
+      var fs = require('fs');
+      var filePathToUnlink = __dirname+`/static/media/posts/${singlePost.image}`; 
+      fs.unlinkSync(filePathToUnlink);
+    } catch (error) {
+      console.log('there was an error:', error.message);
+    }
+    await Post.destroy({ where: {id: postid} })
+  }
+  res.redirect("/all-posts");
+})
 //todays members
 app.get("/todays-members",(req,res)=>{
   if (!req.session.token) {
