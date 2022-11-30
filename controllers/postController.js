@@ -21,7 +21,7 @@ const myFrndsIds = async (token)=>{
     const me = await User.findOne({where : {token:token}})
     if (me) {
             let friendsIds = []; 
-            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship",status:"accepted"}})
             // console.log(my_friends)
             if (my_friends.length>0) {
                 const my_loopFriends = async ()=>{
@@ -112,11 +112,23 @@ const addPost = async (req, res)=>{
 }
 
 const getPost = async (req,res)=>{
-    // console.log(req.params.id)
-    let id = req.params.id
+    if (!req.body.token) {
+        const data = {status:false,msg:"Token is required",data:null}
+        res.status(200).json(data)
+    }
+    const token = req.body.token;
+    const logged_in_user = await User.findOne({where: {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
+
+    let id = req.body.id
     if (id) {
         let post = await Post.findOne({where : {id:id}})
-        
+        var myfrndsids = await myFrndsIds(token)
+        var is_friend = myfrndsids.includes(post.created_by);
+
         typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
         const allComments = post.comments
         let commentData = []; 
@@ -175,6 +187,7 @@ const getPost = async (req,res)=>{
                         image: item.image,
                         info: null,
                         active: true,
+                        is_friend: is_friend,
                         createdAt: item.createdAt,
                         updatedAt: item.updatedAt
                     }
@@ -457,6 +470,16 @@ const removeCommentOnPost = async (req, res)=>{
 
 
 const getAllPost = async (req,res)=>{
+    if (!req.body.token) {
+        const data = {status:false,msg:"Token is required",data:null}
+        res.status(200).json(data)
+    }
+    const token = req.body.token;
+    const logged_in_user = await User.findOne({where: {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
     //for all data
     let posts = await Post.findAll({});
     let postData = []; 
@@ -465,7 +488,8 @@ const getAllPost = async (req,res)=>{
         for (const item of posts) {
             var user = await User.findOne({where : {id:item.created_by}});
             var loopCmtData = []
-            
+            var myfrndsids = await myFrndsIds(token)
+            var is_friend = myfrndsids.includes(item.created_by);
             var cmtDatas = []
             // console.log(item)
             // item ? "": console.log(item)
@@ -520,6 +544,7 @@ const getAllPost = async (req,res)=>{
                 image: item.image,
                 info: null,
                 active: true,
+                is_friend: is_friend,
                 createdAt: item.createdAt,
                 updatedAt: item.updatedAt
             }

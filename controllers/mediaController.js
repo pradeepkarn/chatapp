@@ -9,7 +9,6 @@ const addMedia = async (req, res)=>{
     let imageName = null;
     if (req.file) {
         imageName = req.file.filename;
-        console.log(req.file.filename, "File name")
     }else{
         imageName = null;
     }
