@@ -323,10 +323,9 @@ const addLikeOnPost = async (req, res)=>{
                        && (arguments.length > 2 && arr[i][attr] === value ) ){ 
                        arr.splice(i,1);
                        return true;
-                   }else{
-                    return false;
                    }
                 }
+                return false;
                 
             }
             if (removeLike(allLikes,'userid',userid)==false) {
@@ -417,10 +416,9 @@ const removeCommentOnPost = async (req, res)=>{
                        && (arguments.length > 2 && arr[i][attr] === value ) ){ 
                        arr.splice(i,1);
                        return true;
-                   }else{
-                    return false;
                    }
                 }
+                return false;
                 
             }
 

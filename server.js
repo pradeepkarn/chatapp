@@ -417,21 +417,21 @@ if (postid) {
         // }
         
         let removeCmt = function(arr, attr, value){
-            let i = arr.length;
+            var i = arr.length;
             if (i==0) {
                 console.log(i+" arr length ")
                 return false;
             }
             while(i--){
+              console.log(arr[i][attr],value)
                if( arr[i] 
                    && arr[i].hasOwnProperty(attr) 
                    && (arguments.length > 2 && arr[i][attr] === value ) ){ 
                    arr.splice(i,1);
                    return true;
-               }else{
-                return false;
                }
             }
+            return false;
             
         }
       
