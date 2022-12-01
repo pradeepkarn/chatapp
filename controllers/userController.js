@@ -195,6 +195,53 @@ const profilePasswordReset = async (req,res)=>{
     
 }
 
+const coverUpload = async (req,res)=>{
+    const User = db.users
+    const token = req.body.token;
+    const imageName = req.file.filename;
+    
+    if (token) {
+      let user = await User.findOne({where : {token:token}})
+      if (user) {
+          //create response user
+          const updateUserData = {
+              cover_image: imageName?imageName:user.cover_image
+          }
+          //update user if not null
+          
+          //json data after success sign in
+          User.update(updateUserData, {where : {token:token}})
+          if (user) {
+            try {
+              var fs = require('fs');
+              var filePathToUnlink = __dirname+`/../static/media/covers/${user.cover_image}`; 
+              fs.unlinkSync(filePathToUnlink);
+            } catch (error) {
+              console.error('there was an error:', error.message);
+            }
+              const data = {status:true,msg:"Updated",data:imageName}
+              res.status(200).json(data)
+          }else{
+            try {
+              var fs = require('fs');
+              var filePathToUnlink = __dirname+`/../static/media/covers/${imageName}`; 
+              fs.unlinkSync(filePathToUnlink);
+            } catch (error) {
+              console.error('there was an error:', error.message);
+            }
+              const data = {status:false,msg:"Not updated",data:null}
+              res.status(200).json(data)
+          }
+          return;
+      }else{
+        const data = {status:true,msg:"Invalid token",data:null}
+        return res.status(200).json(data)
+      }
+    }
+    const data = {status:true,msg:"You are not logged in",data:null}
+    return res.status(200).json(data)
+}
+
 
 // const addFriend = async (req,res)=>{
 //     let token = req.body.token
@@ -274,5 +321,6 @@ module.exports = {
     logIn,
     logInViaToken,
     signUp,
-    profileEdit
+    profileEdit,
+    coverUpload
 }

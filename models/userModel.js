@@ -30,8 +30,13 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT
         },
         image: {
-            type: DataTypes.TEXT()
+            type: DataTypes.TEXT(),
+            allowNull : true
             // type: DataTypes.BLOB('long'),
+        },
+        cover_image: {
+            type: DataTypes.TEXT(),
+            allowNull : true
         },
         friend_list : {
             type: DataTypes.JSON,
