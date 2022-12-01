@@ -23,6 +23,7 @@
                   <div class="card">
                     <div class="card-body">
                       <p class="card-text py-3">Comment: <b><%= cmt.message %></b></p>
+                      Commented_by: <%= cmt.first_name %>
                       <div class="d-grid gap-2 d-md-block">
                         <a href="/all-posts/comments/remove/<%= postid %>/<%= cmt.comment_id %>" class="btn-sm btn btn-danger">Delete</a>
                       </div>

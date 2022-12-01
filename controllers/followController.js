@@ -1,5 +1,5 @@
 const db = require("../models/index.js");
-const Follow = db.follows
+const Follow = db.friends
 const User = db.users
 //main works
 
@@ -27,12 +27,12 @@ const requestFollow = async (req,res)=>{
             try {
                 const addfollowListData = {
                     myid: user.id,
-                    follower_id: follow_to_id,
+                    friend_id: follow_to_id,
                     group: "follow",
                     status: "accepted"
                 }
                 // let FollowRequestExists = await Follow.findOne({where : {myid: user.id, follower_id:user.id, group:"follow"}})
-                let FollowExists = await Follow.findOne({where : {myid: follow_to_id, follower_id: user.id, group:"follow"}})
+                let FollowExists = await Follow.findOne({where : {myid: follow_to_id, friend_id: user.id, group:"follow"}})
                 // if (FollowRequestExists) {
                 //     var status = FollowRequestExists.status
                 //     await Follow.update({updatedAt: dateText}, {where : {id:FollowRequestExists.id}})
@@ -75,9 +75,6 @@ const requestFollow = async (req,res)=>{
     
 }
    
-
-
-
 
 
   
