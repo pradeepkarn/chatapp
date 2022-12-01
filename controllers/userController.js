@@ -114,6 +114,41 @@ const logInViaToken = async (req,res)=>{
     
 }
 
+const getProfileById = async (req,res)=>{
+    let token = req.body.id
+    if (token) {
+        let user = await User.findOne({where : {id:id}})
+        if (user) {
+            //create response user
+            const responeUser = {
+                id: user.id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                mobile: user.mobile,
+                image: user.image,
+                cover_image: user.cover_image,
+                gender: user.gender,
+                dob: user.dob,
+                country: user.country,
+                bio: user.bio,
+                level: user.level
+            }
+            //create response object
+            const data = {status:true,msg:"User found",data:responeUser}
+            //json data after success sign in
+            res.status(200).json(data)
+        }else{
+            //json data after failed sign in
+            const data = {status:false,msg:"User not found",data:null}
+            res.status(200).json(data)
+        }
+        
+    }else{
+        res.status(200).json("All fields are mandetory")
+    }
+    
+}
+
 const profileEdit = async (req,res)=>{
     let token = req.body.token
     const edit = req.body;
