@@ -91,6 +91,49 @@ const myFollowingIds = async (token)=>{
     
 }
 
+const frndsById = async (id)=>{
+    var msg = "";
+    const me = await User.findOne({where : {id:id}})
+    if (me) {
+            let friendsIds = []; 
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+           
+            if (my_friends.length>0) {
+                const my_loopFriends = async ()=>{
+                for (const item of my_friends) {
+                    var userFrnd = await User.findOne({where : {id:item.friend_id}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await my_loopFriends()
+                
+            }
+            let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
+            // console.log(im_as_friend)
+            if ((im_as_friend).length>0) {
+                const im_loopFriends = async ()=>{
+                for (const item of im_as_friend) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFriends()
+            }
+          
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+            // return friendsIds;
+            
+    }
+    else{
+        return []
+    }
+    
+}
+
 const followingIds = async (id)=>{
     var msg = "";
     const me = await User.findOne({where : {id:id}})
@@ -272,7 +315,8 @@ const getProfileById = async (req,res)=>{
     if (any_user_id) {
         const followers = (await followersIds(any_user_id)).length
         const followings = (await followingIds(any_user_id)).length
-
+        const frnds = (await frndsById(any_user_id)).length
+        
         let myfrndsids = await myFrndsIds(token);
         let is_friend = myfrndsids.includes(any_user_id);
 
@@ -297,6 +341,7 @@ const getProfileById = async (req,res)=>{
                 is_following: is_following,
                 followers: followers,
                 followings: followings,
+                friends: frnds,
                 level: user.level
             }
             //create response object
