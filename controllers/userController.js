@@ -163,7 +163,7 @@ const profileEdit = async (req,res)=>{
                 gender: edit.gender?edit.gender:user.gender,
                 dob: edit.dob?edit.dob:user.dob,
                 country: edit.country?edit.country:user.country,
-                bio: edit.bio?edit.country:user.bio,
+                bio: edit.bio?edit.bio:user.bio,
             }
             //update user if not null
             
