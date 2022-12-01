@@ -26,8 +26,8 @@ const requestFollow = async (req,res)=>{
         if (user) {
             try {
                 const addfollowListData = {
-                    myid: user.id,
-                    friend_id: follow_to_id,
+                    myid: follow_to_id,
+                    friend_id: user.id,
                     group: "follow",
                     status: "accepted"
                 }
