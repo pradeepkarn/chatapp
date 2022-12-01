@@ -6,6 +6,147 @@ const jwt = require('jsonwebtoken')
 const User = db.users
 //main works
 
+
+
+function search(attr,attrValue,myArray){
+    for (let i=0; i < myArray.length; i++) {
+        if (myArray[i].attr === attrValue) {
+            return myArray[i];
+        }
+    }
+}
+
+function uuidv4(any="") {
+    return any+"_"+Date.now()+"_"+Math.random()
+}
+//   console.log(uuidv4())
+const myFrndsIds = async (token)=>{
+    var msg = "";
+    const me = await User.findOne({where : {token:token}})
+    if (me) {
+            let friendsIds = []; 
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+           
+            if (my_friends.length>0) {
+                const my_loopFriends = async ()=>{
+                for (const item of my_friends) {
+                    var userFrnd = await User.findOne({where : {id:item.friend_id}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await my_loopFriends()
+                
+            }
+            let im_as_friend = await Friend.findAll({where : {friend_id: me.id, group:"friendship",status:"accepted"}})
+            // console.log(im_as_friend)
+            if ((im_as_friend).length>0) {
+                const im_loopFriends = async ()=>{
+                for (const item of im_as_friend) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFriends()
+            }
+          
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+            // return friendsIds;
+            
+    }
+    else{
+        return []
+    }
+    
+}
+
+const myFollowingIds = async (token)=>{
+    var msg = "";
+    const me = await User.findOne({where : {token:token}})
+    if (me) {
+            let friendsIds = []; 
+            let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
+            if ((im_as_follower).length>0) {
+                const im_loopFollowing = async ()=>{
+                for (const item of im_as_follower) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFollowing()
+            }
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+    }
+    else{
+        return []
+    }
+    
+}
+
+const followingIds = async (id)=>{
+    var msg = "";
+    const me = await User.findOne({where : {id:id}})
+    if (me) {
+            let friendsIds = []; 
+            let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
+            if ((im_as_follower).length>0) {
+                const im_loopFollowing = async ()=>{
+                for (const item of im_as_follower) {
+                    var userFrnd = await User.findOne({where : {id:item.myid}})
+                     friendsIds.push(userFrnd.id)
+                   }
+                }
+                await im_loopFollowing()
+            }
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+    }
+    else{
+        return []
+    }
+    
+}
+
+const followersIds = async (id)=>{
+    var msg = "";
+    const me = await User.findOne({where : {id:id}})
+    if (me) {
+            let friendsIds = []; 
+            let im_being_followed = await Friend.findAll({where : {myid: me.id, group:"follow",status:"accepted"}})
+            if ((im_being_followed).length>0) {
+                const im_loopFollowing = async ()=>{
+                for (const item of im_being_followed) {
+                    var follower = await User.findOne({where : {id:item.friend_id}})
+                     friendsIds.push(follower.id)
+                   }
+                }
+                await im_loopFollowing()
+            }
+            try {
+                return [...new Set(friendsIds)];
+            } catch (error) {
+                return friendsIds;
+            }
+    }
+    else{
+        return []
+    }
+    
+}
+
+
+
+
 // sign up
 const signUp = async (req, res)=>{
     const signUpData = {
@@ -115,9 +256,28 @@ const logInViaToken = async (req,res)=>{
 }
 
 const getProfileById = async (req,res)=>{
-    let token = req.body.id
-    if (token) {
-        let user = await User.findOne({where : {id:id}})
+    if (!(req.body.token && req.body.any_user_id)) {
+        const data = {status:false,msg:"Missing required fields",data:null}
+        res.status(200).json(data)
+    }
+    const logged_in_user = await User.findOne({where : {token:token}})
+    if (!logged_in_user) {
+        const data = {status:false,msg:"Invalid token, you are not logged in",data:null}
+        res.status(200).json(data)
+    }
+    let token = req.body.token
+    let any_user_id = req.body.any_user_id
+    if (any_user_id) {
+        const followers = (await followersIds(any_user_id)).length
+        const followings = (await followingIds(any_user_id)).length
+
+        let myfrndsids = await myFrndsIds(token);
+        let is_friend = myfrndsids.includes(any_user_id);
+
+        let following = await myFollowingIds(token);
+        let is_following = following.includes(any_user_id);
+
+        let user = await User.findOne({where : {id:any_user_id}})
         if (user) {
             //create response user
             const responeUser = {
@@ -131,6 +291,10 @@ const getProfileById = async (req,res)=>{
                 dob: user.dob,
                 country: user.country,
                 bio: user.bio,
+                is_friend: is_friend,
+                is_following: is_following,
+                followers: followers,
+                followings: followings,
                 level: user.level
             }
             //create response object
@@ -360,5 +524,6 @@ module.exports = {
     logInViaToken,
     signUp,
     profileEdit,
-    coverUpload
+    coverUpload,
+    getProfileById
 }

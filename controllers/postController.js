@@ -559,7 +559,7 @@ const getMyFriendsPost = async (req,res)=>{
        const loopPost = async ()=>{
 
         for (const item of posts) {
-            console.log(item)
+            // console.log(item)
             var user = await User.findOne({where : {id:item.created_by}});
             var loopCmtData = []
             
