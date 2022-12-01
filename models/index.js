@@ -41,7 +41,7 @@ db.friends = require('./friendModel.js')(sequelize, DataTypes)
 db.follows = require('./followModel.js')(sequelize, DataTypes)
 db.medias = require('./mediaModel.js')(sequelize, DataTypes)
 
-db.sequelize.sync( {force: false} )
+db.sequelize.sync( {force: true} )
 .then(()=>{
     // console.log('Yes re-sync done!')
 })
