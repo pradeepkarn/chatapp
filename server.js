@@ -54,7 +54,7 @@ const roomRouter = require("./routes/roomRouter.js");
 const postRouter = require("./routes/postRouter.js");
 const friendRouter = require("./routes/friendRouter.js");
 const mediaRouterApi = require("./routes/mediaRouterApi.js");
-// const followRouter = require("./routes/followRouter.js");
+const followRouter = require("./routes/followRouter.js");
 
 
 const roomController = require("./controllers/roomController.js");
@@ -416,7 +416,7 @@ if (postid) {
         //     commented_by = 0;
         // }
         
-        let removeCmt = function(arr, attr, value){
+        let removeCmt = async function(arr, attr, value){
             var i = arr.length;
             if (i==0) {
                 console.log(i+" arr length ")
@@ -435,7 +435,7 @@ if (postid) {
             
         }
       
-        if(removeCmt(allCmts,'comment_id',commentid)){
+        if(await removeCmt(allCmts,'comment_id',commentid)){
             await Post.update({comments:allCmts}, {where : {id:postid}})
             res.redirect("back");
             return;
@@ -652,7 +652,7 @@ app.get('/rooms', async (req, res) => {
   app.use("/api/posts",postRouter);
   app.use("/api/friends",friendRouter);
   app.use("/api/gallery",mediaRouterApi);
-  // app.use("/api/followers",followRouter);
+  app.use("/api/followers",followRouter);
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
