@@ -4,6 +4,7 @@ const multer = require("multer")
 //create main models
 const jwt = require('jsonwebtoken')
 const User = db.users
+const Friend = db.friends
 //main works
 
 
