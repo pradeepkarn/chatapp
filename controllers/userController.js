@@ -90,9 +90,11 @@ const logInViaToken = async (req,res)=>{
                 last_name: user.last_name,
                 mobile: user.mobile,
                 image: user.image,
+                cover_image: user.cover_image,
                 gender: user.gender,
                 dob: user.dob,
                 country: user.country,
+                bio: user.bio,
                 level: user.level,
                 token: token
             }
@@ -126,6 +128,7 @@ const profileEdit = async (req,res)=>{
                 gender: edit.gender?edit.gender:user.gender,
                 dob: edit.dob?edit.dob:user.dob,
                 country: edit.country?edit.country:user.country,
+                bio: edit.bio?edit.country:user.bio,
             }
             //update user if not null
             
