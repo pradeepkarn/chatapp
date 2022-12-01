@@ -139,7 +139,7 @@ const getFriendshipList = async (req,res)=>{
             // console.log(me.id)
             try {
                 let friendsData = []; 
-                let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+                let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship",status: "accepted"}})
                 // console.log(my_friends)
                 if (my_friends.length>0) {
                     const my_loopFriends = async ()=>{
