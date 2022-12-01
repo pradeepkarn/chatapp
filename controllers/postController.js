@@ -403,7 +403,7 @@ const removeCommentOnPost = async (req, res)=>{
                 commented_by = 0;
             }
             
-            var removeCmnt = function(arr, attr, value){
+            var removeCmnt = async function(arr, attr, value){
                 var i = arr.length;
                 
                 if (i==0) {
@@ -427,7 +427,7 @@ const removeCommentOnPost = async (req, res)=>{
                 res.status(200).json(data)
                 return;
             }
-            if(removeCmnt(allCmts,'comment_id',commentid)){
+            if(await removeCmnt(allCmts,'comment_id',commentid)){
                 await Post.update({comments:allCmts}, {where : {id:postid}})
                 const data = {status:true,msg:"Deleted",data:null}
                 res.status(200).json(data)
