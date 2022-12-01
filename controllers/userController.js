@@ -260,12 +260,13 @@ const getProfileById = async (req,res)=>{
         const data = {status:false,msg:"Missing required fields",data:null}
         res.status(200).json(data)
     }
+    let token = req.body.token
     const logged_in_user = await User.findOne({where : {token:token}})
     if (!logged_in_user) {
         const data = {status:false,msg:"Invalid token, you are not logged in",data:null}
         res.status(200).json(data)
     }
-    let token = req.body.token
+    
     let any_user_id = req.body.any_user_id
     if (any_user_id) {
         const followers = (await followersIds(any_user_id)).length
