@@ -6,28 +6,25 @@
   
 <main id="main">
     <div class="pagetitle">
-        <h1>All Posts</h1>
+        <h1>All Comments</h1>
         <nav>
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/all-posts">All Posts</a></li>
+            <li class="breadcrumb-item"><a href="/all-posts">All Comments</a></li>
           </ol>
         </nav>
       </div><!-- End Page Title -->
     <section style="min-height: 100vh;">
-     <h5 class="card-title text-prime">All Posts</h5>
+     <h5 class="card-title text-prime">All Comments</h5>
               
               <div class="row">
-                <% for (const pst of allPosts) { %>
+                <% for (const cmt of allComments) { %>
                 <div class="col-sm-4">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title"><%= pst.title %> </h5>
-                      <p class="card-text">Content: <b><%= pst.body %></b></p>
-                     
+                      <p class="card-text py-3">Comment: <b><%= cmt.message %></b></p>
                       <div class="d-grid gap-2 d-md-block">
-                        <a href="/all-posts/remove/<%= pst.id %>" class="btn-sm btn btn-danger">Delete</a>
-                        <a href="/all-posts/comments/<%= pst.id %>" class="btn-sm btn btn-primary">Comments</a>
+                        <a href="/all-posts/comments/remove/<%= postid %>/<%= cmt.comment_id %>" class="btn-sm btn btn-danger">Delete</a>
                       </div>
                     </div>
                   </div>

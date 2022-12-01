@@ -26,7 +26,7 @@ const myFrndsIds = async (token)=>{
     const me = await User.findOne({where : {token:token}})
     if (me) {
             let friendsIds = []; 
-            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship",status:"accepted"}})
            
             if (my_friends.length>0) {
                 const my_loopFriends = async ()=>{

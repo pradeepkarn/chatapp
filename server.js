@@ -357,6 +357,101 @@ app.get("/all-posts/remove/:id", async (req,res)=>{
   }
   res.redirect("/all-posts");
 })
+//comments by post id
+app.get("/all-posts/comments/:postid", async (req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  if (!req.params.postid) {
+    res.redirect("/all-posts");
+  }
+  const postid = req.params.postid;
+  const Post = db.posts;
+  const singlePost = await Post.findOne({ where: {id: postid} })
+  if (singlePost) {
+    try {
+      typeof(singlePost.comments)=="string"?singlePost.comments=JSON.parse(singlePost.comments):""
+      let comments = singlePost.comments;
+      res.render('pages/all-comments-by-post',{allComments:comments,postid:postid});
+      return;
+    } catch (error) {
+      console.log('there was an error:', error.message);
+      res.redirect("/all-posts");
+      return;
+    }
+  }
+  res.redirect("/all-posts");
+})
+//comments by post id
+app.get("/all-posts/comments/remove/:postid/:commentid", async (req,res)=>{
+  if (!req.session.token) {
+    res.redirect("/")
+    res.end();
+    return;
+  }
+  if (!req.params.postid || !req.params.commentid) {
+    res.redirect("back")
+    return;
+  }
+const postid = req.params.postid;
+const commentid = req.params.commentid;
+const Post = db.posts
+
+// console.log("This is post: "+ postid)
+if (postid) {
+    try {
+        let post = await Post.findOne({where : {id:postid}})
+        if (!post) {
+          res.redirect("back")
+        }
+        typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
+        let allCmts = post.comments
+        
+        // let commented_by;
+        // try {
+        //     commented_by = search("comment_id",commentid).userid;
+        // } catch (error) {
+        //     commented_by = 0;
+        // }
+        
+        let removeCmt = function(arr, attr, value){
+            let i = arr.length;
+            if (i==0) {
+                console.log(i+" arr length ")
+                return false;
+            }
+            while(i--){
+               if( arr[i] 
+                   && arr[i].hasOwnProperty(attr) 
+                   && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+                   arr.splice(i,1);
+                   return true;
+               }else{
+                return false;
+               }
+            }
+            
+        }
+      
+        if(removeCmt(allCmts,'comment_id',commentid)){
+            await Post.update({comments:allCmts}, {where : {id:postid}})
+            res.redirect("back");
+            return;
+        }else{
+            res.redirect("back");
+            return;
+        }
+        
+    } catch (error) {
+      res.redirect("back");
+      return;
+    }
+}
+res.redirect("back");
+return;
+})
 //todays members
 app.get("/todays-members",(req,res)=>{
   if (!req.session.token) {

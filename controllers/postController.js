@@ -21,7 +21,7 @@ const myFrndsIds = async (token)=>{
     const me = await User.findOne({where : {token:token}})
     if (me) {
             let friendsIds = []; 
-            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship"}})
+            let my_friends = await Friend.findAll({where : {myid: me.id, group:"friendship",status:"accepted"}})
             // console.log(my_friends)
             if (my_friends.length>0) {
                 const my_loopFriends = async ()=>{
@@ -932,11 +932,6 @@ const getAllPostWithFrnds = async (req,res)=>{
     const data = {status:true,msg:"Post found",data:postData}
     res.status(200).json(data)
 }
-
-
-
-
-
 
 
 
