@@ -83,17 +83,17 @@ const unFollow = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let i_had_requested = await Follow.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
-                if (i_had_requested) {
-                    await Follow.destroy({where : {id:i_had_requested.id}})
-                    msg = "removed him/her from your"
-                    const data = {status:true,msg: `You have ${msg} follower list`,data:null}
-                    res.status(200).json(data)
-                    return;
-                }
-                let i_was_requested = await Follow.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
-                if (i_was_requested) {
-                    await Follow.destroy({where : {id:i_was_requested.id}})
+                // let i_had_requested = await Follow.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
+                // if (i_had_requested) {
+                //     await Follow.destroy({where : {id:i_had_requested.id}})
+                //     msg = "removed him/her from your"
+                //     const data = {status:true,msg: `You have ${msg} follower list`,data:null}
+                //     res.status(200).json(data)
+                //     return;
+                // }
+                let i_am_following = await Follow.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
+                if (i_am_following) {
+                    await Follow.destroy({where : {id:i_am_following.id}})
                     msg = "left out from his/her"
                     const data = {status:true, msg: `You have ${msg} follower list`,data:null}
                     res.status(200).json(data)
@@ -122,8 +122,58 @@ const unFollow = async (req,res)=>{
     }
     
 }
-  
+ 
+const removeFollower = async (req,res)=>{
+    const token = req.body.token
+    const follow_id = req.body.follow_id;
+    var msg = "";
+    if (token && follow_id) {
+        const me = await User.findOne({where : {token:token}})
+        if (me) {
+            try {
+                let i_am_being_followed = await Follow.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
+                if (i_am_being_followed) {
+                    await Follow.destroy({where : {id:i_am_being_followed.id}})
+                    msg = "removed him/her from your"
+                    const data = {status:true,msg: `You have ${msg} follower list`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }
+                // let i_was_requested = await Follow.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
+                // if (i_was_requested) {
+                //     await Follow.destroy({where : {id:i_was_requested.id}})
+                //     msg = "left out from his/her"
+                //     const data = {status:true, msg: `You have ${msg} follower list`,data:null}
+                //     res.status(200).json(data)
+                //     return;
+                // }
+                else{
+                    const data = {status:false, msg: `following does not exist`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }
+                
+            } catch (error) {
+                console.log(error)
+                const data = {status:false, msg:"Something went wrong",data:null}
+                res.status(200).json(data)
+                return;
+            }
+        }else{
+            const data = {status:false, msg:"You are not logged in",data:null}
+            res.status(200).json(data)
+            return;
+        }
+        
+    }else{
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
+    
+}
+
 module.exports = {
     requestFollow,
-    unFollow
+    unFollow,
+    removeFollower
 }
