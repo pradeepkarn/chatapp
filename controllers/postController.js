@@ -536,7 +536,7 @@ const getPostByUserId = async (req,res)=>{
         return;
     }
     let userId = req.body.userid;
-    let posts = await Post.findAll({where: {created_by:req.body.userId}});
+    let posts = await Post.findAll({where: {created_by:userId}});
     let postData = []; 
        const loopPost = async ()=>{
 
