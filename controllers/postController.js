@@ -46,18 +46,19 @@ const myFrndsIds = async (token)=>{
                 // console.log(im_as_friend+ " i m as frnd")
             }
           
-            let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
-            // console.log(im_as_friend)
-            if ((im_as_follower).length>0) {
-                const im_loopFollowing = async ()=>{
-                for (const item of im_as_follower) {
-                    var userFrnd = await User.findOne({where : {id:item.myid}})
-                     friendsIds.push(userFrnd.id)
-                   }
-                }
-                await im_loopFollowing()
-                // console.log(im_as_friend+ " i m as frnd")
-            }
+            // let im_as_follower = await Friend.findAll({where : {friend_id: me.id, group:"follow",status:"accepted"}})
+           
+            // if ((im_as_follower).length>0) {
+            //     const im_loopFollowing = async ()=>{
+            //     for (const item of im_as_follower) {
+            //         var userFrnd = await User.findOne({where : {id:item.myid}})
+            //          friendsIds.push(userFrnd.id)
+            //        }
+            //     }
+            //     await im_loopFollowing()
+                
+            // }
+
             try {
                 return [...new Set(friendsIds)];
             } catch (error) {

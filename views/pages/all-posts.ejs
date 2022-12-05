@@ -23,6 +23,12 @@
                   <div class="card">
                     <div class="card-body">
                       <h5 class="card-title"><%= pst.title %> </h5>
+                      <% if(pst.image){ %> 
+                        <img style="width: 100%; height: 200px; object-fit: contain;" src="/media/posts/<%= pst.image %>" alt="<%= pst.image %>">
+                      <% } %>
+                      <% if(!pst.image){ %> 
+                        <div style="width: 100%; height: 200px; object-fit: contain;"></div>
+                      <% } %>
                       <p class="card-text">Content: <b><%= pst.body %></b></p>
                      
                       <div class="d-grid gap-2 d-md-block">

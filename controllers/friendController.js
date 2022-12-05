@@ -84,7 +84,7 @@ const responseFriendship = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let friendship = await Friend.findOne({where : {myid: requested_by, friend_id:me.id,group:"friendship"}})
+                let friendship = await Friend.findOne({where : {myid: requested_by, friend_id:me.id,group:"friendship", status: "pending"}})
                 if (!friendship) {
                     const data = {status:false,msg:"Friendship does not exist",data:null}
                     res.status(200).json(data)
@@ -360,7 +360,7 @@ const removeFriendship = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: friend_id}})
+                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: friend_id, group:"friendship"}})
                 if (i_had_requested) {
                     await Friend.destroy({where : {id:i_had_requested.id}})
                     msg = "removed him/her from your"
