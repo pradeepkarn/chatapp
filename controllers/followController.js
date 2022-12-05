@@ -74,10 +74,56 @@ const requestFollow = async (req,res)=>{
     }
     
 }
-   
 
-
+const unFollow = async (req,res)=>{
+    const token = req.body.token
+    const follow_to_id = req.body.follow_to_id;
+    var msg = "";
+    if (token && follow_to_id) {
+        const me = await User.findOne({where : {token:token}})
+        if (me) {
+            try {
+                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: follow_to_id, group:"follow"}})
+                if (i_had_requested) {
+                    await Friend.destroy({where : {id:i_had_requested.id}})
+                    msg = "removed him/her from your"
+                    const data = {status:true,msg: `You have ${msg} follower list`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }
+                let i_was_requested = await Friend.findOne({where : {myid: follow_to_id, friend_id:me.id}})
+                if (i_was_requested) {
+                    await Friend.destroy({where : {id:i_was_requested.id}})
+                    msg = "left out from his/her"
+                    const data = {status:true, msg: `You have ${msg} follower list`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }else{
+                    const data = {status:false, msg: `following does not exist`,data:null}
+                    res.status(200).json(data)
+                    return;
+                }
+                
+            } catch (error) {
+                console.log(error)
+                const data = {status:false, msg:"Something went wrong",data:null}
+                res.status(200).json(data)
+                return;
+            }
+        }else{
+            const data = {status:false, msg:"You are not logged in",data:null}
+            res.status(200).json(data)
+            return;
+        }
+        
+    }else{
+        const data = {status:false,msg:"Invalid token",data:null}
+        res.status(200).json(data)
+    }
+    
+}
   
 module.exports = {
-    requestFollow
+    requestFollow,
+    unFollow
 }
