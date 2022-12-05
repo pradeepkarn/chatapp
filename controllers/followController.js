@@ -83,17 +83,17 @@ const unFollow = async (req,res)=>{
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
+                let i_had_requested = await Follow.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
                 if (i_had_requested) {
-                    await Friend.destroy({where : {id:i_had_requested.id}})
+                    await Follow.destroy({where : {id:i_had_requested.id}})
                     msg = "removed him/her from your"
                     const data = {status:true,msg: `You have ${msg} follower list`,data:null}
                     res.status(200).json(data)
                     return;
                 }
-                let i_was_requested = await Friend.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
+                let i_was_requested = await Follow.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
                 if (i_was_requested) {
-                    await Friend.destroy({where : {id:i_was_requested.id}})
+                    await Follow.destroy({where : {id:i_was_requested.id}})
                     msg = "left out from his/her"
                     const data = {status:true, msg: `You have ${msg} follower list`,data:null}
                     res.status(200).json(data)
