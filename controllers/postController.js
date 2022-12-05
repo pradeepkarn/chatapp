@@ -529,7 +529,7 @@ const getAllPost = async (req,res)=>{
 }
 
 
-const getPostBYUserId = async (req,res)=>{
+const getPostByUserId = async (req,res)=>{
     if (!req.body.userid) {
         const data = {status:false,msg:"user id is required",data:null}
         res.status(200).json(data)
@@ -946,5 +946,5 @@ module.exports = {
     getMyFriendsPost,
     getAllPostWithFrnds,
     getPostWithFrnds,
-    getPostBYUserId
+    getPostByUserId
 }
