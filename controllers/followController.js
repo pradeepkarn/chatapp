@@ -77,13 +77,13 @@ const requestFollow = async (req,res)=>{
 
 const unFollow = async (req,res)=>{
     const token = req.body.token
-    const follow_to_id = req.body.follow_to_id;
+    const follow_id = req.body.follow_id;
     var msg = "";
-    if (token && follow_to_id) {
+    if (token && follow_id) {
         const me = await User.findOne({where : {token:token}})
         if (me) {
             try {
-                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: follow_to_id, group:"follow"}})
+                let i_had_requested = await Friend.findOne({where : {myid: me.id, friend_id: follow_id, group:"follow"}})
                 if (i_had_requested) {
                     await Friend.destroy({where : {id:i_had_requested.id}})
                     msg = "removed him/her from your"
@@ -91,7 +91,7 @@ const unFollow = async (req,res)=>{
                     res.status(200).json(data)
                     return;
                 }
-                let i_was_requested = await Friend.findOne({where : {myid: follow_to_id, friend_id:me.id}})
+                let i_was_requested = await Friend.findOne({where : {myid: follow_id, friend_id:me.id, group:"follow"}})
                 if (i_was_requested) {
                     await Friend.destroy({where : {id:i_was_requested.id}})
                     msg = "left out from his/her"
