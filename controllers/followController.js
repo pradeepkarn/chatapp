@@ -19,7 +19,7 @@ const requestFollow = async (req,res)=>{
             return;
         }
         if (follow_to_id==user.id) {
-            const data = {status:true,msg:"You can not send follow request to yourself",data:null}
+            const data = {status:false,msg:"You can not send follow request to yourself",data:null}
             res.status(200).json(data)
             return;
         }
