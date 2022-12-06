@@ -397,11 +397,11 @@ const removeCommentOnPost = async (req, res)=>{
             }
             typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
             let allCmts = post.comments
+            console.log(allCmts);
             let commented_by;
             try {
                 commented_by = search("comment_id",commentid).userid;
             } catch (commented_by) {
-                console.log("err: ",error)
                 commented_by = 0;
             }
             
