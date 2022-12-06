@@ -401,10 +401,11 @@ const removeCommentOnPost = async (req, res)=>{
             let commented_by;
             try {
                 commented_by = await search("comment_id",commentid).userid;
+                console.log("comment map ",commented_by, logged_in_user.id);
             } catch (commented_by) {
                 commented_by = 0;
             }
-            console.log("comment map ",commented_by, logged_in_user.id);
+            
             var removeCmnt = async function(arr, attr, value){
                 var i = arr.length;
                 
