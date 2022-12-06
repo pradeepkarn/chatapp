@@ -400,11 +400,11 @@ const removeCommentOnPost = async (req, res)=>{
             console.log(allCmts);
             let commented_by;
             try {
-                commented_by = search("comment_id",commentid).userid;
+                commented_by = await search("comment_id",commentid).userid;
             } catch (commented_by) {
                 commented_by = 0;
             }
-            
+            console.log("comment map ",commented_by, logged_in_user.id);
             var removeCmnt = async function(arr, attr, value){
                 var i = arr.length;
                 
@@ -423,8 +423,8 @@ const removeCommentOnPost = async (req, res)=>{
                 return false;
                 
             }
-            console.log("comment map ",commented_by, logged_in_user.id);
-            if (post.created_by!=logged_in_user.id && !commented_by!=logged_in_user.id) {
+            
+            if (post.created_by!=logged_in_user.id && commented_by!=logged_in_user.id) {
                 const data = {status:false, msg:"You are not post author or commentetor, you can not delete this comment", data:null}
                 res.status(200).json(data)
                 return;
