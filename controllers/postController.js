@@ -398,13 +398,14 @@ const removeCommentOnPost = async (req, res)=>{
             typeof(post.comments)=="string"?post.comments=JSON.parse(post.comments):""
             let allCmts = post.comments
             console.log(allCmts);
-            let commented_by;
-            try {
-                commented_by = await search("comment_id",commentid).userid;
-                console.log("comment map ",commented_by, logged_in_user.id);
-            } catch (commented_by) {
-                commented_by = 0;
-            }
+            const commented_by = search("comment_id",commentid).userid;
+            console.log("comment map ",commented_by, logged_in_user.id);
+            // try {
+            //     commented_by = search("comment_id",commentid).userid;
+                
+            // } catch (commented_by) {
+            //     commented_by = 0;
+            // }
             
             var removeCmnt = async function(arr, attr, value){
                 var i = arr.length;
