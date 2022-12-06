@@ -409,7 +409,7 @@ const removeCommentOnPost = async (req, res)=>{
             // console.log(commentObj);
             let commented_by = 0;
             try {
-                commented_by = search("comment_id",commentid).userid;
+                commented_by = commentObj.userid;
                 
             } catch (commented_by) {
                 commented_by = 0;
