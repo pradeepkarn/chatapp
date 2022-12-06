@@ -422,7 +422,7 @@ const removeCommentOnPost = async (req, res)=>{
                 return false;
                 
             }
-
+            console.log("comment map ",commented_by, logged_in_user.id);
             if (post.created_by!=logged_in_user.id && !commented_by!=logged_in_user.id) {
                 const data = {status:false, msg:"You are not post author or commentetor, you can not delete this comment", data:null}
                 res.status(200).json(data)
