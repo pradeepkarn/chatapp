@@ -406,7 +406,6 @@ const removeCommentOnPost = async (req, res)=>{
                 }
             }
             let commentObj = search_cmt(commentid,allCmts)
-            // console.log(commentObj);
             let commented_by = 0;
             try {
                 commented_by = commentObj.userid;
@@ -414,7 +413,6 @@ const removeCommentOnPost = async (req, res)=>{
             } catch (commented_by) {
                 commented_by = 0;
             }
-            console.log("comment id map : ", commented_by, logged_in_user.id)
             var removeCmnt = async function(arr, attr, value){
                 var i = arr.length;
                 
