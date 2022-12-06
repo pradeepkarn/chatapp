@@ -400,7 +400,8 @@ const removeCommentOnPost = async (req, res)=>{
             let commented_by;
             try {
                 commented_by = search("comment_id",commentid).userid;
-            } catch (error) {
+            } catch (commented_by) {
+                console.log("err: ",error)
                 commented_by = 0;
             }
             
