@@ -892,15 +892,7 @@ app.get('/rooms', async (req, res) => {
     res.status(200).json(data)
     return;
   }
-  const roomDetail = {
-    id: chatRoom.id,
-    room_name: chatRoom.room_name,
-    image: chatRoom.image,
-    created_by: chatRoom.created_by,
-    first_name: roomadmin.first_name,
-    last_name: roomadmin.last_name,
-    creator_image: roomadmin.image
-  }
+
 
 
   typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
@@ -915,9 +907,18 @@ app.get('/rooms', async (req, res) => {
       image: member.image
     })
   }
+  const roomDetail = {
+    id: chatRoom.id,
+    room_name: chatRoom.room_name,
+    users: chatMembers,
+    image: chatRoom.image,
+    created_by: chatRoom.created_by,
+    first_name: roomadmin.first_name,
+    last_name: roomadmin.last_name,
+    creator_image: roomadmin.image
+  }
   
-  
-          const myData ={ chatRoom: roomDetail, chatMembers: chatMembers }
+          const myData ={ chatRoom: roomDetail }
                 const data = {status:true,msg:"Room found",data:myData}
                 //json data after success sign in
                 res.status(200).json(data)
