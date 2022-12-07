@@ -814,7 +814,7 @@ app.get('/rooms', async (req, res) => {
               last_name: roomAdmin.last_name,
               creator_image: roomAdmin.image
             }
-            const data = {status:true,msg:"This room is already registered",data:roomDetail}
+            const data = {status:false,msg:"This room is already registered",data:roomDetail}
             res.status(200).json(data)
             return;
         }
