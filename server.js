@@ -936,6 +936,46 @@ app.get('/rooms', async (req, res) => {
   })
 
 
+  app.post("/api/rooms/chat",(req,res)=>{
+    const roomid = req.body.roomid
+    const senderid = req.body.senderid
+    const message = req.body.message
+
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+    const Chat = db.chats
+
+  const getRoom = async ()=>{
+      if (roomid) {
+        let chatRoom = await Room.findOne({where : {id:roomid}})
+          if (chatRoom) {
+              const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
+              try {
+                const msg = await Chat.create({
+                  sender_id: senderid,
+                  room_id: roomid,
+                  message: message
+                })
+                const data = {status:true,msg:"message sent",data:msg}
+                res.status(200).json(data)
+              } catch (error) {
+                const data = {status:false,msg:"message not sent",data:null}
+                res.status(200).json(data)
+              }
+              
+          }
+          else{
+            const data = {status:false,msg:"room not found",data:null}
+            res.status(200).json(data)
+          }
+        }else{
+          const data = {status:false,msg:"room id is invalid",data:null}
+          res.status(200).json(data)
+        }
+      }
+    getRoom()
+  })
 
 
 
