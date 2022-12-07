@@ -948,8 +948,8 @@ app.get('/rooms', async (req, res) => {
     const getAllRooms = async ()=>{
       //for all data
       let roomsApi = await Room.findAll({});
-      roomsApi.forEach(chatRoom => {
-        var roomAdmin = User.findOne({where : {id:chatRoom.created_by}});
+      for (const chatRoom of roomsApi) {
+        var roomAdmin = await User.findOne({where : {id:chatRoom.created_by}});
         if (roomAdmin) {
           allRooms.push({
             id: chatRoom.id,
@@ -962,13 +962,25 @@ app.get('/rooms', async (req, res) => {
             creator_image: roomAdmin.image
           })
         }
+      }
+      // roomsApi.forEach(chatRoom => {
         
-        // if (rooms[item.room_name] == null) {
-        //   io.emit('room-created', item.room_name)
-        //   rooms[item.room_name] = { users: {} }
-        // }
+      //   if (roomAdmin) {
+      //     allRooms.push({
+      //       id: chatRoom.id,
+      //       room_name: chatRoom.room_name,
+      //       users: chatRoom.users,
+      //       image: chatRoom.image,
+      //       created_by: chatRoom.created_by,
+      //       first_name: roomAdmin.first_name,
+      //       last_name: roomAdmin.last_name,
+      //       creator_image: roomAdmin.image
+      //     })
+      //   }
+        
+      
        
-      });
+      // });
 
       const data = {status:true,msg:"Room found",data:allRooms}
       res.status(200).json(data)
