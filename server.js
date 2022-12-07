@@ -910,7 +910,7 @@ app.get('/rooms', async (req, res) => {
   const roomDetail = {
     id: chatRoom.id,
     room_name: chatRoom.room_name,
-    users: chatMembers,
+    users: null,
     image: chatRoom.image,
     created_by: chatRoom.created_by,
     first_name: roomadmin.first_name,
@@ -918,8 +918,8 @@ app.get('/rooms', async (req, res) => {
     creator_image: roomadmin.image
   }
   
-          const myData ={ chatRoom: roomDetail }
-                const data = {status:true,msg:"Room found",data:myData}
+          const myData = { chatRoom: roomDetail }
+                const data = {status:true,msg:"Room found",data:roomDetail}
                 //json data after success sign in
                 res.status(200).json(data)
             }else{
