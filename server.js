@@ -696,7 +696,7 @@ app.get('/rooms', async (req, res) => {
         socket.join(room)
         // console.log(rooms)
         // console.log(name)
-        rooms[room].users[socket.id] = name
+        // rooms[room].users[socket.id] = name
         socket.to(room).emit('user-connected', name)
       })
     } catch (error) {
@@ -705,11 +705,14 @@ app.get('/rooms', async (req, res) => {
     socket.on('send-chat-message', (room, message) => {
       socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     })
-    socket.on('disconnect', () => {
-      getUserRooms(socket).forEach(room => {
-        socket.to(room).emit('user-disconnected', rooms[room].users[socket.id])
-        delete rooms[room].users[socket.id]
-      })
+    // socket.on('disconnect', () => {
+    //   getUserRooms(socket).forEach(room => {
+    //     socket.to(room).emit('user-disconnected', rooms[room].users[socket.id])
+    //     delete rooms[room].users[socket.id]
+    //   })
+    // })
+    socket.on('disconnect', (user) => {
+      socket.emit('user-disconnected', user)
     })
 
     socket.on('room-message', (msg)=>{
