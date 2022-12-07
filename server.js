@@ -897,16 +897,16 @@ app.get('/rooms', async (req, res) => {
 
   typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
   let chatMembers = [];
-  for (const usr of chatRoom.users) {
-    let member = await User.findOne({where : {id:usr}})
-    chatMembers.push({
-      room_id: chatRoom.id,
-      user_id: member.id,
-      first_name: member.first_name,
-      last_name: member.last_name,
-      image: member.image
-    })
-  }
+  // for (const usr of chatRoom.users) {
+  //   let member = await User.findOne({where : {id:usr}})
+  //   chatMembers.push({
+  //     room_id: chatRoom.id,
+  //     user_id: member.id,
+  //     first_name: member.first_name,
+  //     last_name: member.last_name,
+  //     image: member.image
+  //   })
+  // }
   const roomDetail = {
     id: chatRoom.id,
     room_name: chatRoom.room_name,
@@ -918,7 +918,7 @@ app.get('/rooms', async (req, res) => {
     creator_image: roomadmin.image
   }
   
-          const myData = { chatRoom: roomDetail }
+          // const myData = { chatRoom: roomDetail }
                 const data = {status:true,msg:"Room found",data:roomDetail}
                 //json data after success sign in
                 res.status(200).json(data)
