@@ -976,7 +976,7 @@ app.get('/rooms', async (req, res) => {
 
 
 
-      const data = {status:true,msg:"Room found",data:roomsApi}
+      const data = {status:true,msg:"Room found",data:allRooms}
       res.status(200).json(data)
   }
     getAllRooms()
