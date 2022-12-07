@@ -929,7 +929,47 @@ app.get('/rooms', async (req, res) => {
     getAllRooms()
   })
   
+  app.get("/api/rooms/get-v2",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    let allRooms = []
+    const getAllRooms = async ()=>{
+      //for all data
+      let roomsApi = await Room.findAll({});
+      roomsApi.forEach(async chatRoom => {
+        var roomAdmin = await User.findOne({where : {id:chatRoom.created_by}});
+        if (roomAdmin) {
+          allRooms.push({
+            id: chatRoom.id,
+            room_name: chatRoom.room_name,
+            users: chatRoom.users,
+            image: chatRoom.image,
+            created_by: chatRoom.created_by,
+            first_name: roomAdmin.first_name,
+            last_name: roomAdmin.last_name,
+            creator_image: roomAdmin.image
+          })
+        }
+        
+        // if (rooms[item.room_name] == null) {
+        //   io.emit('room-created', item.room_name)
+        //   rooms[item.room_name] = { users: {} }
+        // }
+       
+      });
 
+
+
+
+      
+
+
+
+      const data = {status:true,msg:"Room found",data:roomsApi}
+      res.status(200).json(data)
+  }
+    getAllRooms()
+  })
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
