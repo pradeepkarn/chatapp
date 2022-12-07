@@ -936,9 +936,17 @@ app.get('/rooms', async (req, res) => {
   })
 
 
-  app.post("/api/rooms/chat",(req,res)=>{
+  app.post("/api/rooms/chat", async (req,res)=>{
     const roomid = req.body.roomid
-    const senderid = req.body.senderid
+    const token = req.body.token
+    let loggedin = await User.findOne({where : {token:req.body.token}})
+        if (!loggedin) {
+          const data = {status:false,msg:"Invalid token",data:null}
+          res.status(200).json(data)
+          return;
+      }
+      
+    const senderid  = loggedin.id
     const message = req.body.message
 
     const db = require("./models/index.js");
