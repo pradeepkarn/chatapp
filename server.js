@@ -875,6 +875,83 @@ app.get('/rooms', async (req, res) => {
   })
   
 
+
+  app.get("/api/rooms/get-v2/:roomid",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+      const getRoom = async ()=>{
+        let id = req.params.roomid
+        if (id) {
+            let room = await Room.findOne({where : {id:id}})
+            if (room) {
+                
+  let chatRoom = room;
+  const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
+  if (!roomadmin) {
+    const data = {status:false,msg:"Room admin not found",data:null}
+                //json data after success sign in
+    res.status(200).json(data)
+    return;
+  }
+  const roomDetail = {
+    id: chatRoom.id,
+    room_name: chatRoom.room_name,
+    image: chatRoom.image,
+    created_by: chatRoom.created_by,
+    first_name: roomadmin.first_name,
+    last_name: roomadmin.last_name,
+    creator_image: roomadmin.image
+  }
+
+
+  typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
+  let chatMembers = [];
+  for (const usr of chatRoom.users) {
+    let member = await User.findOne({where : {id:usr}})
+    chatMembers.push({
+      room_id: chatRoom.id,
+      user_id: member.id,
+      first_name: member.first_name,
+      last_name: member.last_name,
+      image: member.image
+    })
+  }
+  
+  
+          const myData ={ chatRoom: roomDetail, chatMembers: chatMembers }
+                const data = {status:true,msg:"Room found",data:myData}
+                //json data after success sign in
+                res.status(200).json(data)
+            }else{
+                //json data after failed sign in
+                const data = {status:false,msg:"room not found",data:null}
+                res.status(200).json(data)
+            }
+            
+        }else{
+            res.status(200).json("All fields are mandetory")
+        }
+    }
+    getRoom()
+  })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   app.delete("/api/rooms/delete/:id",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
