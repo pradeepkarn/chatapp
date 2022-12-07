@@ -883,10 +883,8 @@ app.get('/rooms', async (req, res) => {
       const getRoom = async ()=>{
         let id = req.params.roomid
         if (id) {
-            let room = await Room.findOne({where : {id:id}})
-            if (room) {
-                
-  let chatRoom = room;
+            let chatRoom = await Room.findOne({where : {id:id}})
+            if (chatRoom) {
   const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
   if (!roomadmin) {
     const data = {status:false,msg:"Room admin not found",data:null}
