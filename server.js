@@ -794,10 +794,7 @@ app.get('/rooms', async (req, res) => {
         const db = require("./models/index.js");
         const Room = db.rooms
         const User = db.users
-        let singleRoom = await Room.findOne({where: {room_name: req.body.room_name}})
-        if (singleRoom) {
-          return res.redirect('/rooms')
-        }
+        
         let roomAdmin = await User.findOne({where : {token:req.body.token}})
         if (!roomAdmin) {
           const data = {status:false,msg:"Invalid token",data:null}
@@ -810,9 +807,14 @@ app.get('/rooms', async (req, res) => {
             res.status(200).json(data)
             return;
         }
-          // let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
+        let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
+        if (userHasAlreadyRoomCreated) {
+          const data = {status:false,msg:"You can create only one room",data:null}
+          res.status(200).json(data)
+          return;
+        }
         const chatRoom = await Room.create({
-          room_name: req.body.room, 
+          room_name: req.body.room_name, 
           users: [roomAdmin.id], 
           created_by: roomAdmin.id
         })
