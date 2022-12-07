@@ -963,25 +963,6 @@ app.get('/rooms', async (req, res) => {
           })
         }
       }
-      // roomsApi.forEach(chatRoom => {
-        
-      //   if (roomAdmin) {
-      //     allRooms.push({
-      //       id: chatRoom.id,
-      //       room_name: chatRoom.room_name,
-      //       users: chatRoom.users,
-      //       image: chatRoom.image,
-      //       created_by: chatRoom.created_by,
-      //       first_name: roomAdmin.first_name,
-      //       last_name: roomAdmin.last_name,
-      //       creator_image: roomAdmin.image
-      //     })
-      //   }
-        
-      
-       
-      // });
-
       const data = {status:true,msg:"Room found",data:allRooms}
       res.status(200).json(data)
   }
