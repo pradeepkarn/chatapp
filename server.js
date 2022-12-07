@@ -712,10 +712,7 @@ app.get('/rooms', async (req, res) => {
       })
     })
 
-    socket.on('room-message', { 
-      roomid: msg.room_id,
-      message: msg.message
-    })
+    socket.on('room-message', msg);
 
   })
 
