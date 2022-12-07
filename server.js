@@ -711,8 +711,8 @@ app.get('/rooms', async (req, res) => {
     //     delete rooms[room].users[socket.id]
     //   })
     // })
-    socket.on('disconnect', (user) => {
-      socket.emit('user-disconnected', user)
+    socket.on('disconnect', () => {
+      socket.emit('user-disconnected', "User disconnected")
     })
 
     socket.on('room-message', (msg)=>{
