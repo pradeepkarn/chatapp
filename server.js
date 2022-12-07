@@ -918,7 +918,7 @@ app.get('/rooms', async (req, res) => {
   
   
           const myData ={ chatRoom: roomDetail, chatMembers: chatMembers }
-                const data = {status:true,msg:"Room found",data:roomDetail}
+                const data = {status:true,msg:"Room found",data:myData}
                 //json data after success sign in
                 res.status(200).json(data)
             }else{
