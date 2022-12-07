@@ -923,7 +923,7 @@ app.get('/rooms', async (req, res) => {
                 res.status(200).json(data)
             }else{
                 //json data after failed sign in
-                const data = {status:false,msg:"room not found",data:null}
+                const data = {status:false,msg:"room not found",data:roomDetail}
                 res.status(200).json(data)
             }
             
