@@ -794,7 +794,7 @@ app.get('/rooms', async (req, res) => {
         const db = require("./models/index.js");
         const Room = db.rooms
         const User = db.users
-        let singleRoom = await Room.findOne({where: {room_name: req.body.room}})
+        let singleRoom = await Room.findOne({where: {room_name: req.body.room_name}})
         if (singleRoom) {
           return res.redirect('/rooms')
         }
@@ -822,6 +822,7 @@ app.get('/rooms', async (req, res) => {
         const roomDetail = {
           id: chatRoom.id,
           room_name: chatRoom.room_name,
+          users: chatRoom.users, 
           image: chatRoom.image,
           created_by: chatRoom.created_by,
           first_name: roomAdmin.first_name,
