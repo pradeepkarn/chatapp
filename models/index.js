@@ -42,7 +42,7 @@ db.follows = require('./followModel.js')(sequelize, DataTypes)
 db.medias = require('./mediaModel.js')(sequelize, DataTypes)
 db.chats = require('./chatModel.js')(sequelize, DataTypes)
 
-db.sequelize.sync( {force: true} )
+db.sequelize.sync( {force: false} )
 .then(()=>{
     // console.log('Yes re-sync done!')
 })
