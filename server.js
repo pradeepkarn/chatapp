@@ -989,12 +989,22 @@ app.get('/rooms', async (req, res) => {
               }
 
               try {
+                const sender = await User.findOne({where : {id:senderid}})
                 const msg = await Chat.create({
                   sender_id: senderid,
                   room_id: roomid,
                   message: message
                 })
-                const data = {status:true,msg:"message sent",data:msg}
+                const responseData = {
+                  sender_id :msg.sender_id,
+                  first_name : sender.first_name,
+                  last_name : sender.last_name,
+                  sender_image : sender.image,
+                  room_id :msg.room_id,
+                  message :msg.message,
+                  date :msg.createdAt
+                }
+                const data = {status:true,msg:"message sent",data:responseData}
                 res.status(200).json(data)
               } catch (error) {
                 const data = {status:false,msg:"message not sent",data:null}
