@@ -935,30 +935,59 @@ app.get('/rooms', async (req, res) => {
     getRoom()
   })
 
-
+//chatting 
   app.post("/api/rooms/chat", async (req,res)=>{
+   
+    if (!req.body.token || !req.body.roomid || !req.body.token) {
+      const data = {status:false,msg:"Missing required field",data:null}
+      res.status(200).json(data)
+      return;
+    }
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+    const Chat = db.chats
     const roomid = req.body.roomid
     const token = req.body.token
-    let loggedin = await User.findOne({where : {token:req.body.token}})
+
+    let loggedin = await User.findOne({where : {token:token}})
         if (!loggedin) {
           const data = {status:false,msg:"Invalid token",data:null}
           res.status(200).json(data)
           return;
       }
-      
+
     const senderid  = loggedin.id
+    
     const message = req.body.message
 
-    const db = require("./models/index.js");
-    const Room = db.rooms
-    const User = db.users
-    const Chat = db.chats
+   
 
   const getRoom = async ()=>{
       if (roomid) {
         let chatRoom = await Room.findOne({where : {id:roomid}})
           if (chatRoom) {
               const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
+              if (!roomadmin) {
+                const data = {status:false,msg:"Room admin not found",data:null}
+                res.status(200).json(data)
+                return;
+              }
+              typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
+
+              const search_sndr =  (vl,myArray)=>{
+                for (let i=0; i < myArray.length; i++) {
+                    if (myArray[i] === vl) {
+                        return true;
+                    }
+                }
+                return false;
+              }
+              if(!search_sndr(senderid,chatRoom.users)){
+                chatRoom.users.push(senderid);
+                await Room.update({users: chatRoom.users}, {where : {id: chatRoom.id}})
+              }
+
               try {
                 const msg = await Chat.create({
                   sender_id: senderid,
