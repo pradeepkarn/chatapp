@@ -938,7 +938,7 @@ app.get('/rooms', async (req, res) => {
 //chatting 
   app.post("/api/rooms/chat", async (req,res)=>{
    
-    if (!req.body.token || !req.body.roomid || !req.body.token) {
+    if (!req.body.token || !req.body.roomid || !req.body.message) {
       const data = {status:false,msg:"Missing required field",data:null}
       res.status(200).json(data)
       return;
