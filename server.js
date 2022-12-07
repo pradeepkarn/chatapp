@@ -803,7 +803,18 @@ app.get('/rooms', async (req, res) => {
         }
           let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
           if (roomExist) {
-            const data = {status:false,msg:"This room is already registered",data:null}
+            let chatRoom = roomExist;
+            const roomDetail = {
+              id: chatRoom.id,
+              room_name: chatRoom.room_name,
+              users: chatRoom.users, 
+              image: chatRoom.image,
+              created_by: chatRoom.created_by,
+              first_name: roomAdmin.first_name,
+              last_name: roomAdmin.last_name,
+              creator_image: roomAdmin.image
+            }
+            const data = {status:true,msg:"This room is already registered",data:roomDetail}
             res.status(200).json(data)
             return;
         }
