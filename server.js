@@ -943,12 +943,13 @@ app.get('/rooms', async (req, res) => {
   app.get("/api/rooms/get-v2",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
+    const User = db.users
     let allRooms = []
     const getAllRooms = async ()=>{
       //for all data
       let roomsApi = await Room.findAll({});
-      roomsApi.forEach(chatRoom => {
-        var roomAdmin = User.findOne({where : {id:chatRoom.created_by}});
+      roomsApi.forEach(async chatRoom => {
+        var roomAdmin = await User.findOne({where : {id:chatRoom.created_by}});
         if (roomAdmin) {
           allRooms.push({
             id: chatRoom.id,
