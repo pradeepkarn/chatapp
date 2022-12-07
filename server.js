@@ -712,8 +712,11 @@ app.get('/rooms', async (req, res) => {
       })
     })
 
-    socket.on('message', (message) => {
-      socket.emit('chat-message', { message: message })
+    socket.on('room-message', (msg) => {
+      socket.emit('chat-message', { 
+        roomid: msg.room_id,
+        message: msg.message
+      })
     })
 
   })
@@ -1012,7 +1015,7 @@ app.get('/rooms', async (req, res) => {
                   message :msg.message,
                   date :msg.createdAt
                 }
-                io.emit('message', responseData)
+                io.emit('room-message', responseData)
                 const data = {status:true,msg:"message sent",data:responseData}
                 res.status(200).json(data)
               } catch (error) {
