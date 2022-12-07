@@ -947,8 +947,8 @@ app.get('/rooms', async (req, res) => {
     const getAllRooms = async ()=>{
       //for all data
       let roomsApi = await Room.findAll({});
-      roomsApi.forEach(async chatRoom => {
-        var roomAdmin = await User.findOne({where : {id:chatRoom.created_by}});
+      roomsApi.forEach(chatRoom => {
+        var roomAdmin = User.findOne({where : {id:chatRoom.created_by}});
         if (roomAdmin) {
           allRooms.push({
             id: chatRoom.id,
@@ -968,13 +968,6 @@ app.get('/rooms', async (req, res) => {
         // }
        
       });
-
-
-
-
-      
-
-
 
       const data = {status:true,msg:"Room found",data:allRooms}
       res.status(200).json(data)
