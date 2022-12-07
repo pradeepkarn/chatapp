@@ -756,8 +756,8 @@ app.get('/rooms', async (req, res) => {
             return;
         }else{
           if (roomAdmin.is_admin==false && userHasAlreadyRoomCreated) {
-            console.log(userHasAlreadyRoomCreated.room_name+" Already")
-            console.log(roomAdmin.is_admin+" is Admin")
+            // console.log(userHasAlreadyRoomCreated.room_name+" Already")
+            // console.log(roomAdmin.is_admin+" is Admin")
             const data = {status:false,msg:"You can create only one room",data:userHasAlreadyRoomCreated}
             if (rooms[userHasAlreadyRoomCreated.room_name]==undefined || rooms[userHasAlreadyRoomCreated.room_name]=="" || rooms[userHasAlreadyRoomCreated.room_name]==null) {
               rooms[userHasAlreadyRoomCreated.room_name] = { users: {} }
@@ -820,7 +820,7 @@ app.get('/rooms', async (req, res) => {
         }
         let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
         if (userHasAlreadyRoomCreated) {
-          const data = {status:false,msg:"You can create only one room",data:null}
+          const data = {status:false,msg:"You can create only one room",data:userHasAlreadyRoomCreated}
           res.status(200).json(data)
           return;
         }
