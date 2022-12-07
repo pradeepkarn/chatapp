@@ -811,13 +811,24 @@ app.get('/rooms', async (req, res) => {
             return;
         }
           // let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
-        await Room.create({
+        const chatRoom = await Room.create({
           room_name: req.body.room, 
           users: [roomAdmin.id], 
           created_by: roomAdmin.id
         })
-        let  roomsObj = await User.findAll({})
-        const data = {status:true,msg:"Room Created",data:roomsObj}
+
+        // let  roomsObj = await User.findAll({})
+
+        const roomDetail = {
+          id: chatRoom.id,
+          room_name: chatRoom.room_name,
+          image: chatRoom.image,
+          created_by: chatRoom.created_by,
+          first_name: roomAdmin.first_name,
+          last_name: roomAdmin.last_name,
+          creator_image: roomAdmin.image
+        }
+        const data = {status:true,msg:"Room Created",data:roomDetail}
         res.status(200).json(data)
     }
     addRoom()
