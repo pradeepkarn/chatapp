@@ -5,7 +5,7 @@
     
   <section style="min-height: 100vh;">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <form id="form" action="" method="post">
           <div class="row">
           <div class="col-8">
@@ -18,10 +18,21 @@
         </form>
       
         <h3>Avalable Rooms</h3>
-        <div id="room-container">
-          <% Object.keys(roomsObj).forEach(room => { %>
-            <a href="/chat/<%= room %>"><%= room %></a> <br>
-          <% }) %>
+        <div class="row" id="room-container">
+    
+          <% for (const room of roomsObj) { %>
+            <div class="col-sm-4">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-text py-3">Room Name: <b><%= room.room_name %></b></p>
+                  Room Admin Id : <%= room.first_name %> <%= room.created_by %>
+                  <div class="d-grid gap-2 d-md-block">
+                    <a href="/chat-v2/<%= room.id %>" class="btn-sm btn btn-danger">Enter</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
         </div>
       </div>
     </div>

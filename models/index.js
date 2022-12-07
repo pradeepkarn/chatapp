@@ -40,6 +40,7 @@ db.posts = require('./postModel.js')(sequelize, DataTypes)
 db.friends = require('./friendModel.js')(sequelize, DataTypes)
 db.follows = require('./followModel.js')(sequelize, DataTypes)
 db.medias = require('./mediaModel.js')(sequelize, DataTypes)
+db.chats = require('./chatModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync( {force: false} )
 .then(()=>{

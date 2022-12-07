@@ -556,42 +556,117 @@ app.get('/rooms', async (req, res) => {
   const db = require("./models/index.js");
   const Room = db.rooms
   let allRooms = await Room.findAll({})
-      for (const rm of allRooms) {
-        if (rooms[rm.room_name]==undefined || rooms[rm.room_name]==null) {
-          rooms[rm.room_name] = { users: { } }
-          io.emit('room-created', rm.room_name)
-        }
-      }
-      // console.log(rooms)
-      res.render('create-room', { roomsObj: rooms });
+      // for (const rm of allRooms) {
+      //   if (rooms[rm.room_name]==undefined || rooms[rm.room_name]==null) {
+      //     rooms[rm.room_name] = { users: { } }
+      //     io.emit('room-created', rm.room_name)
+      //   }
+      // }
+      
+      res.render('create-room', { roomsObj: allRooms });
   
-    
-    // let roomsObj = await allrooms()
-    // console.log(roomsObj)
     
   });
   
   app.post('/rooms', async (req, res) => {
+    if (!req.session.token) {
+      const msg = `<script>location.href="/";</script>`;
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
     const db = require("./models/index.js");
     const Room = db.rooms
+    const User = db.users
     let singleRoom = await Room.findOne({where: {room_name: req.body.room}})
     if (singleRoom) {
       return res.redirect('/rooms')
     }
-    await Room.create({room_name: req.body.room, users: [], created_by: 1})
-
-    if (rooms[req.body.room] != undefined || rooms[req.body.room] != null) {
-      return res.redirect('/rooms')
-    }
-    //fill romm object with posted room name as property and put empty object containing users empty object
-    rooms[req.body.room] = { users: { } }
-    //run an socket event to emit room name
-    io.emit('room-created', req.body.room)
-    //render room object
-    // console.log(rooms)
-    res.render('create-room', { roomsObj: rooms });
+    let roomAdmin = await User.findOne({where : {token:req.session.token}})
+      // let roomExist = await Room.findOne({where : {room_name:valiRooName}})
+      // let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
+    await Room.create({
+      room_name: req.body.room, 
+      users: [roomAdmin.id], 
+      created_by: roomAdmin.id
+    })
+    // let  roomsObj = await User.findAll({})
+    // res.render('create-room', { roomsObj: roomsObj });
+    return res.redirect('/rooms');
   });
   
+  app.get("/chat-v2/:roomid", async (req, res) => {
+    if (!req.session.token) {
+      const msg = `<script>location.href="/";</script>`;
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+    let singleRoom = await Room.findOne({where: {id: req.params['roomid']}})
+    let member = await User.findOne({where : {token:req.session.token}})
+    
+    if (!singleRoom) {
+      return res.redirect('/rooms')
+    }
+    typeof(singleRoom.users)=="string"?singleRoom.users=JSON.parse(singleRoom.users):""
+
+    const search_mmbr =  (vl,myArray)=>{
+      for (let i=0; i < myArray.length; i++) {
+          if (myArray[i] === vl) {
+              return true;
+          }
+      }
+      return false;
+    }
+    if(!search_mmbr(member.id,singleRoom.users)){
+      singleRoom.users.push(member.id);
+      await Room.update({users: singleRoom.users}, {where : {id: singleRoom.id}})
+    }
+    let chatRoom = await Room.findOne({where: {id: req.params['roomid']}})
+    const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
+    if (!roomadmin) {
+      const msg = `<script>alert('Room admin not exist');location.href="/";</script>`;
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
+    const roomDetail = {
+      id: chatRoom.id,
+      room_name: chatRoom.room_name,
+      image: chatRoom.image,
+      created_by: chatRoom.created_by,
+      first_name: roomadmin.first_name,
+      last_name: roomadmin.last_name,
+      creator_image: roomadmin.image
+    }
+
+
+    typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
+    let chatMembers = [];
+    for (const usr of chatRoom.users) {
+      let member = await User.findOne({where : {id:usr}})
+      chatMembers.push({
+        room_id: chatRoom.id,
+        user_id: member.id,
+        first_name: member.first_name,
+        last_name: member.last_name,
+        image: member.image
+      })
+    }
+    
+    
+    res.render('chat-page', { chatRoom: roomDetail, chatMembers: chatMembers, sender: member })
+  })
+
+
+  
+//old
   app.get("/chat/:room", async (req, res) => {
     console.log(rooms," all rooms")
 
@@ -653,6 +728,7 @@ app.get('/rooms', async (req, res) => {
   app.use("/api/friends",friendRouter);
   app.use("/api/gallery",mediaRouterApi);
   app.use("/api/followers",followRouter);
+  //old
   app.post("/api/rooms/add-room",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
@@ -708,6 +784,46 @@ app.get('/rooms', async (req, res) => {
     addRoom()
   })
   
+
+  app.post("/api/rooms/add-room-v2",(req,res)=>{
+    const db = require("./models/index.js");
+    const Room = db.rooms
+    const User = db.users
+      const addRoom = async ()=>{
+        
+        const db = require("./models/index.js");
+        const Room = db.rooms
+        const User = db.users
+        let singleRoom = await Room.findOne({where: {room_name: req.body.room}})
+        if (singleRoom) {
+          return res.redirect('/rooms')
+        }
+        let roomAdmin = await User.findOne({where : {token:req.body.token}})
+        if (!roomAdmin) {
+          const data = {status:false,msg:"Invalid token",data:null}
+          res.status(200).json(data)
+          return;
+        }
+          let roomExist = await Room.findOne({where : {room_name:req.body.room_name}})
+          if (roomExist) {
+            const data = {status:false,msg:"This room is already registered",data:null}
+            res.status(200).json(data)
+            return;
+        }
+          // let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:roomAdmin.id}})
+        await Room.create({
+          room_name: req.body.room, 
+          users: [roomAdmin.id], 
+          created_by: roomAdmin.id
+        })
+        let  roomsObj = await User.findAll({})
+        const data = {status:true,msg:"Room Created",data:roomsObj}
+        res.status(200).json(data)
+    }
+    addRoom()
+  })
+
+
   app.get("/api/rooms/get/:id",(req,res)=>{
     const db = require("./models/index.js");
     const Room = db.rooms
