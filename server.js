@@ -707,6 +707,7 @@ app.get('/rooms', async (req, res) => {
         //   rooms[roomObj.room_name].users[socket.id] = name
         // }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
+        roomObj.users
         socket.to(roomObj.room_name).emit('user-connected', name)
         console.log(`user ${name} connected in`, roomObj.room_name)
     })
