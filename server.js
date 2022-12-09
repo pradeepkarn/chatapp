@@ -741,7 +741,7 @@ app.get('/rooms', async (req, res) => {
       //   const roomObj = await getRoom(roomid);
       //   console.log(`user ${name} disconnected from`, roomObj.room_name)
       // })
-      console.log(socket.id, "dis connetced")
+      console.log(socket.id, "disconnetced");
     })
 
   })
