@@ -711,15 +711,15 @@ app.get('/rooms', async (req, res) => {
     //     delete rooms[room].users[socket.id]
     //   })
     // })
-    socket.on('disconnect', () => {
-      socket.emit('user-disconnected', ()=>{
+  
+      socket.on('disconnect', ()=>{
         const data = {
           roomid : msg.room_id,
           sender_id : socket.id
         }
         return data;
       })
-    })
+ 
 
     socket.on('room-message', (msg)=>{
       const data = {
