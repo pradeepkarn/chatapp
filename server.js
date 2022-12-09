@@ -687,7 +687,7 @@ app.get('/rooms', async (req, res) => {
   })
 
   
-
+  
   const rooms = { }
   io.on('connection', socket => {
 
@@ -1029,6 +1029,7 @@ app.get('/rooms', async (req, res) => {
                   message :msg.message,
                   date :msg.createdAt
                 }
+                io.emit('new-user', roomid, sender.first_name);
                 io.emit('room-message', responseData)
                 const data = {status:true,msg:"message sent",data:responseData}
                 res.status(200).json(data)
