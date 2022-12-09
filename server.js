@@ -737,7 +737,7 @@ app.get('/rooms', async (req, res) => {
 
     socket.on('dis', async (roomid, name) => {
       const roomObj = await getRoom(roomid);
-      console.log(`user ${name} connected in`, roomObj.room_name)
+      console.log(`user ${name} disconnected from`, roomObj.room_name)
     })
 
   })
