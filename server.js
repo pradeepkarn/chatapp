@@ -715,7 +715,7 @@ app.get('/rooms', async (req, res) => {
       }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
         // roomObj.users
-        socket.to(roomid).emit('user-connected', data)
+        socket.emit('user-connected', data)
         console.log(`user ${userObj.first_name} connected in`, roomObj.room_name)
         socket.id = data
     })
@@ -724,14 +724,14 @@ app.get('/rooms', async (req, res) => {
       const data = {
           roomid : msg.room_id,
           message : msg.message,
-          sender_id : socket.id
+          sender_id : msg.sender_id
         }
         return data;
     });
 
     socket.on('disconnect', () => {
       // console.log(socket.id.first_name, " disconnetced");
-      socket.to(roomid).emit('user-disconnected', socket.id.first_name + socket.id.last_name)
+      socket.emit('user-disconnected', socket.id.first_name + socket.id.last_name)
     })
 
   })
