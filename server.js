@@ -698,23 +698,22 @@ app.get('/rooms', async (req, res) => {
         let roomObj = await Room.findOne({where : {id:roomid}})
         socket.join(roomObj.room_name)
         // rooms[roomObj.room_name].users[socket.id] = name
-        // rooms[roomObj.room_name].users[socket.id] = name
         socket.to(roomObj.room_name).emit('user-connected', name)
         console.log("user connected", roomObj.room_name)
       })
     } catch (error) {
       console.log(error)
     }
-    socket.on('send-chat-message', (room, message) => {
-      socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
-    })
+    // socket.on('send-chat-message', (room, message) => {
+    //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
+    // })
     // socket.on('disconnect', () => {
     //   getUserRooms(socket).forEach(room => {
     //     socket.to(room).emit('user-disconnected', rooms[room].users[socket.id])
     //     delete rooms[room].users[socket.id]
     //   })
     // })
-    socket.on('room-message', (room, msg) => {
+    socket.on('send-chat-message', (room, msg) => {
       // socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
       socket.to(room).emit('chat-message', msg)
     })
@@ -740,7 +739,12 @@ app.get('/rooms', async (req, res) => {
   })
 
  
-
+  function getUserRoomsDb(senderid,roomid) {
+    return Object.entries(rooms).reduce((names, [name, room]) => {
+      if (room.users[socket.id] != null) names.push(name)
+      return names
+    }, [])
+  }
 
   function getUserRooms(socket) {
     return Object.entries(rooms).reduce((names, [name, room]) => {
@@ -1033,8 +1037,8 @@ app.get('/rooms', async (req, res) => {
                   message :msg.message,
                   date :msg.createdAt
                 }
-                io.emit('new-user', roomid, sender.first_name);
-                io.emit('room-message', responseData)
+                io.emit('user-connected', roomid, sender.first_name);
+                io.emit('send-chat-message', responseData)
                 const data = {status:true,msg:"message sent",data:responseData}
                 res.status(200).json(data)
               } catch (error) {
