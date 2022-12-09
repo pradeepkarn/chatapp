@@ -727,12 +727,12 @@ app.get('/rooms', async (req, res) => {
       console.log(msg, `${room} msg me aa raha hai`)
     })
     socket.on('disconnect', () => {
-      getUserRooms(socket).forEach(room => {
+      
         const usr = "User";
         console.log(`user ${usr} disconnected`)
-        socket.to(room).emit('user-disconnected', usr)
+        socket.emit('user-disconnected', usr)
         // delete rooms[room].users[socket.id]
-      })
+     
     })
    
     //   socket.on('disconnect', (msg)=>{
