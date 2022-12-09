@@ -695,18 +695,26 @@ app.get('/rooms', async (req, res) => {
     const Room = db.rooms;
     return await Room.findOne({where : {id:roomid}})
   }
+  async function getUser(userid) {
+    const db = require("./models/index.js");
+    const User = db.users;
+    return await User.findOne({where : {id:roomid}})
+  }
   io.on('connection', socket => {
-      socket.on('new-user', async (roomid, name) => {
+      socket.on('new-user', async (roomid, userid) => {
        const roomObj = await getRoom(roomid);
+       const userObj = await getUser(userid);
         // socket.join(roomObj.room_name);
       const data = {
         roomid: roomid,
-        user: name
+        userid: userObj.id,
+        first_name: userObj.first_name,
+        last_name: userObj.last_name
       }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
         // roomObj.users
         socket.emit('user-connected', data)
-        console.log(`user ${name} connected in`, roomObj.room_name)
+        console.log(`user ${userObj.first_name} connected in`, roomObj.room_name)
         socket.id = data
     })
     
