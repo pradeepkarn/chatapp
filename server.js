@@ -718,23 +718,6 @@ app.get('/rooms', async (req, res) => {
         socket.id = data
     })
     
-
-    // socket.on('send-chat-message', (room, message) => {
-    //   console.log(rooms[room].users[socket.id])
-    //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
-    // })
-    // socket.emit('chat-message', (msg)=>{ 
-    //   const data = {
-    //           message: msg.message, name: msg.name
-    //         }
-    //     return data;
-    //  })
-    // socket.on('send-chat-message', (room, msg) => {
-    //   socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
-    //   console.log(msg, `${room} msg me aa raha hai`)
-    // })
-
-
     socket.on('room-message', (msg)=>{
       const data = {
           roomid : msg.room_id,
