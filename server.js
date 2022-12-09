@@ -721,7 +721,7 @@ app.get('/rooms', async (req, res) => {
     //     return data;
     //  })
     socket.on('send-chat-message', (room, msg) => {
-      socket.to(room).emit('chat-message', { message: msg.message, name: msg.name, room: room })
+      socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
     })
     socket.on('disconnect', () => {
       getUserRooms(socket).forEach(room => {
