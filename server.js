@@ -690,11 +690,12 @@ app.get('/rooms', async (req, res) => {
   
   const rooms = { }
   io.on('connection', socket => {
-    const db = require("./models/index.js");
-    const Room = db.rooms
+    // const db = require("./models/index.js");
+    // const Room = db.rooms
       socket.on('new-user', async (roomid, name) => {
         console.log(roomid)
-        var roomObj = await Room.findOne({where : {id:roomid}})
+        // var roomObj = await Room.findOne({where : {id:roomid}})
+        var roomObj = {room_name:"myroom"}
         socket.join(roomObj.room_name)
         socket.to(roomObj.room_name).emit('user-connected', name)
         console.log("user connected", roomObj.room_name)
