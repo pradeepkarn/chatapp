@@ -698,7 +698,7 @@ app.get('/rooms', async (req, res) => {
   io.on('connection', socket => {
       socket.on('new-user', async (roomid, name) => {
        const roomObj = await getRoom(roomid);
-        // socket.join(roomObj.room_name);
+        socket.join(roomObj.room_name);
         // if (rooms[roomObj.room_name]==null || rooms[roomObj.room_name]==undefined) {
         //   rooms[roomObj.room_name] = { users: {} }
         //   rooms[roomObj.room_name].users[socket.id] = name
