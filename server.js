@@ -697,7 +697,8 @@ app.get('/rooms', async (req, res) => {
         const Room = db.rooms
         let roomObj = await Room.findOne({where : {id:roomid}})
         socket.join(roomObj.room_name)
-        rooms[roomObj.room_name].users[socket.id] = name
+        // rooms[roomObj.room_name].users[socket.id] = name
+        // rooms[roomObj.room_name].users[socket.id] = name
         socket.to(roomObj.room_name).emit('user-connected', name)
         console.log("user connected", roomObj.room_name)
       })
@@ -713,7 +714,10 @@ app.get('/rooms', async (req, res) => {
     //     delete rooms[room].users[socket.id]
     //   })
     // })
-  
+    socket.on('room-message', (room, msg) => {
+      // socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
+      socket.to(room).emit('chat-message', msg)
+    })
       socket.on('disconnect', ()=>{
         const data = {
           roomid : msg.room_id,
@@ -724,14 +728,14 @@ app.get('/rooms', async (req, res) => {
       })
  
 
-    socket.on('room-message', (msg)=>{
-      const data = {
-          roomid : msg.room_id,
-          message : msg.message,
-          sender_id : socket.id
-        }
-        return data;
-    });
+    // socket.on('room-message', (msg)=>{
+    //   const data = {
+    //       roomid : msg.room_id,
+    //       message : msg.message,
+    //       sender_id : socket.id
+    //     }
+    //     return data;
+    // });
 
   })
 
@@ -855,7 +859,7 @@ app.get('/rooms', async (req, res) => {
           created_by: roomAdmin.id,
           group:"protected"
         })
-
+        // rooms[chatRoom.room_name] = { users: {  } }
         // let  roomsObj = await User.findAll({})
 
         const roomDetail = {
