@@ -712,7 +712,13 @@ app.get('/rooms', async (req, res) => {
     //   })
     // })
     socket.on('disconnect', () => {
-      socket.emit('user-disconnected', "User disconnected")
+      socket.emit('user-disconnected', ()=>{
+        const data = {
+          roomid : msg.room_id,
+          sender_id : socket.id
+        }
+        return data;
+      })
     })
 
     socket.on('room-message', (msg)=>{
@@ -843,7 +849,8 @@ app.get('/rooms', async (req, res) => {
         const chatRoom = await Room.create({
           room_name: req.body.room_name, 
           users: [roomAdmin.id], 
-          created_by: roomAdmin.id
+          created_by: roomAdmin.id,
+          group:"protected"
         })
 
         // let  roomsObj = await User.findAll({})
@@ -871,7 +878,7 @@ app.get('/rooms', async (req, res) => {
       const getRoom = async ()=>{
         let id = req.params.id
         if (id) {
-            let room = await Room.findOne({where : {id:id}})
+            let room = await Room.findOne({where : {id:id,group:"protected"}})
             if (room) {
                 //create response object
                 const data = {status:true,msg:"Room found",data:room}
@@ -899,7 +906,7 @@ app.get('/rooms', async (req, res) => {
       const getRoom = async ()=>{
         let id = req.params.roomid
         if (id) {
-            let chatRoom = await Room.findOne({where : {id:id}})
+            let chatRoom = await Room.findOne({where : {id:id,group:"protected"}})
             if (chatRoom) {
   const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
   if (!roomadmin) {
@@ -974,10 +981,8 @@ app.get('/rooms', async (req, res) => {
       }
 
     const senderid  = loggedin.id
-    
     const message = req.body.message
 
-   
 
   const getRoom = async ()=>{
       if (roomid) {
@@ -1006,6 +1011,7 @@ app.get('/rooms', async (req, res) => {
 
               try {
                 const sender = await User.findOne({where : {id:senderid}})
+                
                 const msg = await Chat.create({
                   sender_id: senderid,
                   room_id: roomid,
@@ -1040,17 +1046,6 @@ app.get('/rooms', async (req, res) => {
       }
     getRoom()
   })
-
-
-
-
-
-
-
-
-
-
-
 
 
 

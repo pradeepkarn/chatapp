@@ -29,6 +29,10 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true
         },
+        group: {
+            type: DataTypes.STRING,
+            defaultValue: "protected"
+        },
         active: {
             type: DataTypes.BOOLEAN,
             defaultValue: 1
