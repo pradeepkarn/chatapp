@@ -701,7 +701,7 @@ app.get('/rooms', async (req, res) => {
         // socket.join(roomObj.room_name);
       const data = {
         roomid: roomid,
-        sender: name
+        user: name
       }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
         // roomObj.users
