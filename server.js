@@ -699,7 +699,7 @@ app.get('/rooms', async (req, res) => {
         socket.join(roomObj.room_name)
         rooms[roomObj.room_name].users[socket.id] = name
         socket.to(roomObj.room_name).emit('user-connected', name)
-        console.log("connected ", roomObj.room_name)
+        console.log("user connected", roomObj.room_name)
       })
     } catch (error) {
       console.log(error)
