@@ -709,6 +709,7 @@ app.get('/rooms', async (req, res) => {
         console.log(`user ${name} connected in`, roomObj.room_name)
     })
     
+
     // socket.on('send-chat-message', (room, message) => {
     //   console.log(rooms[room].users[socket.id])
     //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
@@ -733,6 +734,11 @@ app.get('/rooms', async (req, res) => {
         }
         return data;
     });
+
+    socket.on('disconnect', async (roomid, name) => {
+      const roomObj = await getRoom(roomid);
+      console.log(`user ${name} connected in`, roomObj.room_name)
+    })
 
   })
 
