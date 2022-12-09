@@ -463,6 +463,7 @@ app.get("/todays-members",(req,res)=>{
 })
 
 const mediaRouter = require("./routes/mediaRouter.js");
+const { users } = require('./models/index.js');
 app.use("/gallery",mediaRouter);
 
 //website signup
@@ -549,7 +550,7 @@ app.post("/register",(req,res)=>{
 signUp()
 })
 //website signup end
-
+const rooms = { }
 // const users = { }
 const roomsApi = [];
 app.get('/rooms', async (req, res) => {
@@ -591,6 +592,7 @@ app.get('/rooms', async (req, res) => {
       users: [roomAdmin.id], 
       created_by: roomAdmin.id
     })
+    
     // let  roomsObj = await User.findAll({})
     // res.render('create-room', { roomsObj: roomsObj });
     return res.redirect('/rooms');
@@ -650,16 +652,15 @@ app.get('/rooms', async (req, res) => {
     typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
     let chatMembers = [];
     for (const usr of chatRoom.users) {
-      let member = await User.findOne({where : {id:usr}})
+      let room_member = await User.findOne({where : {id:usr}})
       chatMembers.push({
         room_id: chatRoom.id,
-        user_id: member.id,
-        first_name: member.first_name,
-        last_name: member.last_name,
-        image: member.image
+        user_id: room_member.id,
+        first_name: room_member.first_name,
+        last_name: room_member.last_name,
+        image: room_member.image
       })
     }
-    
     
     res.render('chat-page', { chatRoom: roomDetail, chatMembers: chatMembers, sender: member })
   })
@@ -688,42 +689,52 @@ app.get('/rooms', async (req, res) => {
 
   
   
-  const rooms = { }
+ 
+  async function getRoom(roomid) {
+    const db = require("./models/index.js");
+    const Room = db.rooms;
+    return await Room.findOne({where : {id:roomid}})
+  }
   io.on('connection', socket => {
-    // const db = require("./models/index.js");
-    // const Room = db.rooms
       socket.on('new-user', async (roomid, name) => {
-        console.log(roomid)
-        // var roomObj = await Room.findOne({where : {id:roomid}})
-        var roomObj = {room_name:"myroom"}
-        socket.join(roomObj.room_name)
-        socket.to(roomObj.room_name).emit('user-connected', name)
-        console.log("user connected", roomObj.room_name)
-      })
-    
-      
+       const roomObj = await getRoom(roomid);
+        // socket.join(roomObj.room_name);
+        // if (rooms[roomObj.room_name]==null || rooms[roomObj.room_name]==undefined) {
+        //   rooms[roomObj.room_name] = { users: {} }
+        //   rooms[roomObj.room_name].users[socket.id] = name
+        //   console.log(rooms)
+        // }else{
+        //   rooms[roomObj.room_name].users[socket.id] = name
+        // }
+        socket.emit('user-connected', name)
+        console.log(`user ${name} connected in`, roomObj.room_name)
+    })
     
     // socket.on('send-chat-message', (room, message) => {
+    //   console.log(rooms[room].users[socket.id])
     //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     // })
-    // socket.on('disconnect', () => {
-    //   getUserRooms(socket).forEach(room => {
-    //     socket.to(room).emit('user-disconnected', rooms[room].users[socket.id])
-    //     delete rooms[room].users[socket.id]
-    //   })
-    // })
+  
     socket.on('send-chat-message', (room, msg) => {
-      // socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
-      socket.to(room).emit('chat-message', msg)
+      socket.emit('chat-message', { message: msg.message, name: msg.name, room: room })
     })
-      socket.on('disconnect', ()=>{
-        const data = {
-          roomid : msg.room_id,
-          sender_id : socket.id
-        }
-        console.log(data, "disconnect data")
-        return data;
+    socket.on('disconnect', () => {
+      getUserRooms(socket).forEach(room => {
+        const usr = rooms[room].users[socket.id];
+        console.log(`user ${usr} disconnected`)
+        socket.to(room).emit('user-disconnected', rooms[room].users[socket.id])
+        delete rooms[room].users[socket.id]
       })
+    })
+   
+    //   socket.on('disconnect', (msg)=>{
+    //     const data = {
+    //       roomid : msg.room_id,
+    //       sender_id : msg.sender_id
+    //     }
+    //   console.log(data, "disconnect data")
+    //   return data;
+    // })
  
 
     // socket.on('room-message', (msg)=>{
@@ -736,14 +747,10 @@ app.get('/rooms', async (req, res) => {
     // });
 
   })
-io.emit('user-connected')
- 
-  function getUserRoomsDb(senderid,roomid) {
-    return Object.entries(rooms).reduce((names, [name, room]) => {
-      if (room.users[socket.id] != null) names.push(name)
-      return names
-    }, [])
-  }
+
+
+
+
 
   function getUserRooms(socket) {
     return Object.entries(rooms).reduce((names, [name, room]) => {
@@ -1036,8 +1043,7 @@ io.emit('user-connected')
                   message :msg.message,
                   date :msg.createdAt
                 }
-                io.emit('user-connected', roomid, sender.first_name);
-                io.emit('send-chat-message', responseData)
+                io.emit('room-message', responseData)
                 const data = {status:true,msg:"message sent",data:responseData}
                 res.status(200).json(data)
               } catch (error) {
