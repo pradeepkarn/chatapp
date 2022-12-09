@@ -717,6 +717,7 @@ app.get('/rooms', async (req, res) => {
           roomid : msg.room_id,
           sender_id : socket.id
         }
+        console.log(data, "disconnect data")
         return data;
       })
  
