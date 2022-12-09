@@ -690,20 +690,18 @@ app.get('/rooms', async (req, res) => {
   
   const rooms = { }
   io.on('connection', socket => {
-
-    try {
+    const db = require("./models/index.js");
+    const Room = db.rooms
       socket.on('new-user', async (roomid, name) => {
-        const db = require("./models/index.js");
-        const Room = db.rooms
-        let roomObj = await Room.findOne({where : {id:roomid}})
+        console.log(roomid)
+        var roomObj = await Room.findOne({where : {id:roomid}})
         socket.join(roomObj.room_name)
-        // rooms[roomObj.room_name].users[socket.id] = name
         socket.to(roomObj.room_name).emit('user-connected', name)
         console.log("user connected", roomObj.room_name)
       })
-    } catch (error) {
-      console.log(error)
-    }
+    
+      
+    
     // socket.on('send-chat-message', (room, message) => {
     //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     // })
@@ -737,7 +735,7 @@ app.get('/rooms', async (req, res) => {
     // });
 
   })
-
+io.emit('user-connected')
  
   function getUserRoomsDb(senderid,roomid) {
     return Object.entries(rooms).reduce((names, [name, room]) => {
