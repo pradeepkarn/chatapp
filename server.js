@@ -722,6 +722,7 @@ app.get('/rooms', async (req, res) => {
     //  })
     socket.on('send-chat-message', (room, msg) => {
       socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
+      console.log(msg, " msg me aa raha hai")
     })
     socket.on('disconnect', () => {
       getUserRooms(socket).forEach(room => {
