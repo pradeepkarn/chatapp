@@ -698,17 +698,11 @@ app.get('/rooms', async (req, res) => {
   io.on('connection', socket => {
       socket.on('new-user', async (roomid, name) => {
        const roomObj = await getRoom(roomid);
-        socket.join(roomObj.room_name);
-        // if (rooms[roomObj.room_name]==null || rooms[roomObj.room_name]==undefined) {
-        //   rooms[roomObj.room_name] = { users: {} }
-        //   rooms[roomObj.room_name].users[socket.id] = name
-        //   console.log(rooms)
-        // }else{
-        //   rooms[roomObj.room_name].users[socket.id] = name
-        // }
+        // socket.join(roomObj.room_name);
+      
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
-        roomObj.users
-        socket.to(roomObj.room_name).emit('user-connected', name)
+        // roomObj.users
+        socket.emit('user-connected', name)
         console.log(`user ${name} connected in`, roomObj.room_name)
     })
     
@@ -722,37 +716,21 @@ app.get('/rooms', async (req, res) => {
     //         }
     //     return data;
     //  })
-    socket.on('send-chat-message', (room, msg) => {
-      socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
-      console.log(msg, `${room} msg me aa raha hai`)
-    })
-    socket.on('disconnect', () => {
-      
-        const usr = "User";
-        console.log(`user ${usr} disconnected`)
-        socket.emit('user-disconnected', usr)
-        // delete rooms[room].users[socket.id]
-     
-    })
-   
-    //   socket.on('disconnect', (msg)=>{
-    //     const data = {
-    //       roomid : msg.room_id,
-    //       sender_id : msg.sender_id
-    //     }
-    //   console.log(data, "disconnect data")
-    //   return data;
+    // socket.on('send-chat-message', (room, msg) => {
+    //   socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
+    //   console.log(msg, `${room} msg me aa raha hai`)
     // })
- 
+  
+   
 
-    // socket.on('room-message', (msg)=>{
-    //   const data = {
-    //       roomid : msg.room_id,
-    //       message : msg.message,
-    //       sender_id : socket.id
-    //     }
-    //     return data;
-    // });
+    socket.on('room-message', (msg)=>{
+      const data = {
+          roomid : msg.room_id,
+          message : msg.message,
+          sender_id : socket.id
+        }
+        return data;
+    });
 
   })
 
