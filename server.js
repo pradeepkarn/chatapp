@@ -702,6 +702,7 @@ app.get('/rooms', async (req, res) => {
   }
   io.on('connection', socket => {
       socket.on('new-user', async (roomid, userid) => {
+        console.log(userid, " user id")
        const roomObj = await getRoom(roomid);
        const userObj = await getUser(userid);
         // socket.join(roomObj.room_name);
