@@ -735,23 +735,19 @@ app.get('/rooms', async (req, res) => {
         return data;
     });
 
-    socket.on('disconnect', async (roomid, name) => {
+    socket.on('dis', async (roomid, name) => {
       const roomObj = await getRoom(roomid);
       console.log(`user ${name} connected in`, roomObj.room_name)
     })
 
   })
 
-
-
-
-
-  function getUserRooms(socket) {
-    return Object.entries(rooms).reduce((names, [name, room]) => {
-      if (room.users[socket.id] != null) names.push(name)
-      return names
-    }, [])
-  }
+  // function getUserRooms(socket) {
+  //   return Object.entries(rooms).reduce((names, [name, room]) => {
+  //     if (room.users[socket.id] != null) names.push(name)
+  //     return names
+  //   }, [])
+  // }
 
 
   //api
