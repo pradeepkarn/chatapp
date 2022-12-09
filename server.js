@@ -714,7 +714,12 @@ app.get('/rooms', async (req, res) => {
     //   console.log(rooms[room].users[socket.id])
     //   socket.to(room).emit('chat-message', { message: message, name: rooms[room].users[socket.id] })
     // })
-  
+    // socket.emit('chat-message', (msg)=>{ 
+    //   const data = {
+    //           message: msg.message, name: msg.name
+    //         }
+    //     return data;
+    //  })
     socket.on('send-chat-message', (room, msg) => {
       socket.emit('chat-message', { message: msg.message, name: msg.name, room: room })
     })
