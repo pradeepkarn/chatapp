@@ -730,7 +730,7 @@ app.get('/rooms', async (req, res) => {
 
     socket.on('disconnect', () => {
       // console.log(socket.id.first_name, " disconnetced");
-      socket.emit('user-connected', socket.id.first_name + " disconnetced")
+      socket.emit('user-disconnected', socket.id.first_name + socket.id.last_name+ " disconnetced")
     })
 
   })
