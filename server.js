@@ -709,7 +709,8 @@ app.get('/rooms', async (req, res) => {
         roomid: roomid,
         userid: userObj.id,
         first_name: userObj.first_name,
-        last_name: userObj.last_name
+        last_name: userObj.last_name,
+        image: userObj.image
       }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
         // roomObj.users
@@ -732,7 +733,7 @@ app.get('/rooms', async (req, res) => {
       //   const roomObj = await getRoom(roomid);
       //   console.log(`user ${name} disconnected from`, roomObj.room_name)
       // })
-      console.log(socket.id, "disconnetced");
+      console.log(socket.id.first_name, "disconnetced");
     })
 
   })
