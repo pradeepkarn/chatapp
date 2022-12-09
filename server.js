@@ -706,7 +706,7 @@ app.get('/rooms', async (req, res) => {
         // }else{
         //   rooms[roomObj.room_name].users[socket.id] = name
         // }
-        socket.emit('user-connected', name)
+        socket.to(roomObj.room_name).emit('user-connected', name)
         console.log(`user ${name} connected in`, roomObj.room_name)
     })
     
