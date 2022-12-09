@@ -549,7 +549,7 @@ app.post("/register",(req,res)=>{
 signUp()
 })
 //website signup end
-const rooms = { }
+
 // const users = { }
 const roomsApi = [];
 app.get('/rooms', async (req, res) => {
@@ -688,16 +688,18 @@ app.get('/rooms', async (req, res) => {
 
   
 
-  
+  const rooms = { }
   io.on('connection', socket => {
 
     try {
-      socket.on('new-user', (room, name) => {
-        socket.join(room)
-        // console.log(rooms)
-        // console.log(name)
-        // rooms[room].users[socket.id] = name
-        socket.to(room).emit('user-connected', name)
+      socket.on('new-user', async (roomid, name) => {
+        const db = require("./models/index.js");
+        const Room = db.rooms
+        let roomObj = await Room.findOne({where : {id:roomid}})
+        socket.join(roomObj.room_name)
+        rooms[roomObj.room_name].users[socket.id] = name
+        socket.to(roomObj.room_name).emit('user-connected', name)
+        console.log("connected ", roomObj.room_name)
       })
     } catch (error) {
       console.log(error)
