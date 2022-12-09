@@ -699,10 +699,13 @@ app.get('/rooms', async (req, res) => {
       socket.on('new-user', async (roomid, name) => {
        const roomObj = await getRoom(roomid);
         // socket.join(roomObj.room_name);
-      
+      const data = {
+        roomid: roomid,
+        sender: name
+      }
         typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
         // roomObj.users
-        socket.emit('user-connected', name)
+        socket.emit('user-connected', data)
         console.log(`user ${name} connected in`, roomObj.room_name)
     })
     
@@ -720,8 +723,7 @@ app.get('/rooms', async (req, res) => {
     //   socket.to(room).emit('chat-message', { message: msg.message, name: msg.name })
     //   console.log(msg, `${room} msg me aa raha hai`)
     // })
-  
-   
+
 
     socket.on('room-message', (msg)=>{
       const data = {
