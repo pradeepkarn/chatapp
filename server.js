@@ -696,11 +696,11 @@ app.get('/rooms', async (req, res) => {
     const Room = db.rooms;
     return await Room.findOne({where : {id:roomid}})
   }
-  async function getUser(userid) {
-    const db = require("./models/index.js");
-    const User = db.users;
-    return await User.findOne({where : {id:userid}})
-  }
+  // async function getUser(userid) {
+  //   const db = require("./models/index.js");
+  //   const User = db.users;
+  //   return await User.findOne({where : {id:userid}})
+  // }
   // io.on('connection', socket => {
   //     socket.on('new-user', async (roomid, userid) => {
   //       console.log(userid, " user id")
