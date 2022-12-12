@@ -703,14 +703,14 @@ const { addUser, getUser, deleteUser, getUsers } = require('./users')
 
 io.on('connection', (socket) => {
     socket.on('join-chat-room', ( name, room ) => {
-        const { user, error } = addUser(socket.id, name, room)
+        const { user } = addUser(socket.id, name, room)
         // if (error) return callback(error)
         socket.join(user.room)
         socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
         io.in(room).emit('users', getUsers(room))
         console.log(room)
         // callback()
-        
+
     })
     socket.on('sendMessage', message => {
         const user = getUser(socket.id)
