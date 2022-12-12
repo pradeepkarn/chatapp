@@ -5,7 +5,6 @@ const path = require("path")
 var multer  = require('multer')
 const jwt = require('jsonwebtoken')
 const db = require("./models/index.js");
-const { addUser, getUser, deleteUser, getUsers } = require('./users')
 // const bcrypt = require("bcrypt");
 // const passport = require('passport');
 // const flash = require('express-flash')
@@ -696,46 +695,46 @@ app.get('/rooms', async (req, res) => {
     const Room = db.rooms;
     return await Room.findOne({where : {id:roomid}})
   }
-  // async function getUser(userid) {
-  //   const db = require("./models/index.js");
-  //   const User = db.users;
-  //   return await User.findOne({where : {id:userid}})
-  // }
-  // io.on('connection', socket => {
-  //     socket.on('new-user', async (roomid, userid) => {
-  //       console.log(userid, " user id")
-  //      const roomObj = await getRoom(roomid);
-  //      const userObj = await getUser(userid);
-  //       // socket.join(roomObj.room_name);
-  //     const data = {
-  //       roomid: roomid,
-  //       userid: userObj.id,
-  //       first_name: userObj.first_name,
-  //       last_name: userObj.last_name,
-  //       image: userObj.image
-  //     }
-  //       typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
-  //       // roomObj.users
-  //       socket.emit('user-connected', data)
-  //       console.log(`user ${userObj.first_name} connected in`, roomObj.room_name)
-  //       socket.id = data
-  //   })
+  async function getUser(userid) {
+    const db = require("./models/index.js");
+    const User = db.users;
+    return await User.findOne({where : {id:userid}})
+  }
+  io.on('connection', socket => {
+      socket.on('new-user', async (roomid, userid) => {
+        console.log(userid, " user id")
+       const roomObj = await getRoom(roomid);
+       const userObj = await getUser(userid);
+        // socket.join(roomObj.room_name);
+      const data = {
+        roomid: roomid,
+        userid: userObj.id,
+        first_name: userObj.first_name,
+        last_name: userObj.last_name,
+        image: userObj.image
+      }
+        typeof(roomObj.users)=="string"?roomObj.users=JSON.parse(roomObj.users):""
+        // roomObj.users
+        socket.emit('user-connected', data)
+        console.log(`user ${userObj.first_name} connected in`, roomObj.room_name)
+        socket.id = data
+    })
     
-  //   socket.on('room-message', (msg)=>{
-  //     const data = {
-  //         roomid : msg.room_id,
-  //         message : msg.message,
-  //         sender_id : msg.sender_id
-  //       }
-  //       return data;
-  //   });
+    socket.on('room-message', (msg)=>{
+      const data = {
+          roomid : msg.room_id,
+          message : msg.message,
+          sender_id : msg.sender_id
+        }
+        return data;
+    });
 
-  //   socket.on('disconnect', () => {
-  //     // console.log(socket.id.first_name, " disconnetced");
-  //     socket.emit('user-disconnected', socket.id.first_name + socket.id.last_name)
-  //   })
+    socket.on('disconnect', () => {
+      // console.log(socket.id.first_name, " disconnetced");
+      socket.emit('user-disconnected', socket.id.first_name + socket.id.last_name)
+    })
 
-  // })
+  })
 
   // function getUserRooms(socket) {
   //   return Object.entries(rooms).reduce((names, [name, room]) => {
@@ -744,33 +743,6 @@ app.get('/rooms', async (req, res) => {
   //   }, [])
   // }
 
-
-  io.on('connection', (socket) => {
-    socket.on('login', ({ name, room }, callback) => {
-        const { user, error } = addUser(socket.id, name, room)
-        if (error) return callback(error)
-        socket.join(user.room)
-        socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
-        io.in(room).emit('users', getUsers(room))
-        console.log(room)
-        callback()
-    })
-
-    socket.on('sendMessage', message => {
-        const user = getUser(socket.id)
-        io.in(user.room).emit('message', { user: user.name, text: message });
-        console.log(message)
-    })
-
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-        const user = deleteUser(socket.id)
-        if (user) {
-            io.in(user.room).emit('notification', { title: 'Someone just left', description: `${user.name} just left the room` })
-            io.in(user.room).emit('users', getUsers(user.room))
-        }
-    })
-})
 
   //api
   app.use("/api/users",userRouter);
@@ -800,7 +772,6 @@ app.get('/rooms', async (req, res) => {
         let userHasAlreadyRoomCreated = await Room.findOne({where : {created_by:req.body.created_by}})
 
        
-        
         
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
