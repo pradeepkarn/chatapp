@@ -689,12 +689,10 @@ app.get('/rooms', async (req, res) => {
 
  //get user by id
   async function getDbRoom(roomid) {
-    const db = require("./models/index.js");
     const Room = db.rooms;
     return await Room.findOne({where : {id:roomid}})
   }
   async function getDbUser(userid) {
-    const db = require("./models/index.js");
     const User = db.users;
     return await User.findOne({where : {id:userid}})
   }
@@ -704,16 +702,16 @@ const { addUser, getUser, deleteUser, getUsers } = require('./users')
 io.on('connection', (socket) => {
     socket.on('join-chat-room', async ( roomid, userid ) => {
         const roomDb = await getDbRoom(roomid);
-        console.log(roomDb)
-        // const userDb = getDbRoom(userid);
-        // const { user } = addUser(socket.id, userDb.id, roomDb.id)
+        console.log(roomDb,"room")
+        const userDb = await getDbUser(userid);
+        const { user } = addUser(socket.id, userDb.id, roomDb.id)
         // // if (error) return callback(error)
-        // socket.join(user.room)
-        // socket.in(roomDb.id).emit('notification', { title: 'Someone\'s here', description: `${userDb.first_name} ${userDb.last_name} just entered the room` })
-        // io.in(roomDb.id).emit('users', getUsers(roomDb.id))
-        // console.log(roomDb.id)
-        // console.log(socket.users)
-        // callback()
+        socket.join(user.room)
+        socket.in(roomDb.id).emit('notification', { title: 'Someone\'s here', description: `${userDb.first_name} ${userDb.last_name} just entered the room` })
+        io.in(roomDb.id).emit('users', getUsers(roomDb.id))
+        console.log(roomDb.id)
+        console.log(socket.users)
+        callback()
 
     })
     socket.on('sendMessage', message => {
