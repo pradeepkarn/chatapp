@@ -701,10 +701,10 @@ app.get('/rooms', async (req, res) => {
     return await User.findOne({where : {id:userid}})
   }
 
-  const { addUser, getUser, deleteUser, getUsers } = require('./users')
+const { addUser, getUser, deleteUser, getUsers } = require('./users')
 
 io.on('connection', (socket) => {
-    socket.on('login', ({ name, room }, callback) => {
+    socket.on('join-chat-room', ({ name, room }, callback) => {
         const { user, error } = addUser(socket.id, name, room)
         if (error) return callback(error)
         socket.join(user.room)
@@ -714,7 +714,7 @@ io.on('connection', (socket) => {
         callback()
     })
 
-    
+
     socket.on('sendMessage', message => {
         const user = getUser(socket.id)
         io.in(user.room).emit('message', { user: user.name, text: message });
