@@ -801,6 +801,7 @@ app.get('/rooms', async (req, res) => {
 
        
         
+        
         if (roomExist) {
             const data = {status:false,msg:"This room is already registered",data:null}
             res.status(200).json(data)
