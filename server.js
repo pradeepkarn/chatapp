@@ -702,13 +702,16 @@ app.get('/rooms', async (req, res) => {
 const { addUser, getUser, deleteUser, getUsers } = require('./users')
 
 io.on('connection', (socket) => {
-    socket.on('join-chat-room', ( name, room ) => {
-        const { user } = addUser(socket.id, name, room)
+    socket.on('join-chat-room', ( roomid, userid ) => {
+        const roomDb = getDbRoom(roomid);
+        const userDb = getDbRoom(userid);
+        const { user } = addUser(socket.id, userDb.id, roomDb.id)
         // if (error) return callback(error)
         socket.join(user.room)
-        socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
-        io.in(room).emit('users', getUsers(room))
-        console.log(room)
+        socket.in(roomDb.id).emit('notification', { title: 'Someone\'s here', description: `${userDb.first_name} ${userDb.last_name} just entered the room` })
+        io.in(roomDb.id).emit('users', getUsers(roomDb.id))
+        console.log(roomDb.id)
+        console.log(socket.users)
         // callback()
 
     })
