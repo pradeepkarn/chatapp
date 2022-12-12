@@ -710,7 +710,7 @@ io.on('connection', (socket) => {
         socket.in(roomDb.id).emit('notification', { title: 'Someone\'s here', description: `${userDb.first_name} ${userDb.last_name} just entered the room` })
         io.in(roomDb.id).emit('users', getUsers(roomDb.id))
         console.log(roomDb.id)
-        console.log(socket.users)
+        console.log(getUsers(user.room));
         callback()
 
     })
