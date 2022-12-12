@@ -710,6 +710,7 @@ io.on('connection', (socket) => {
         io.in(room).emit('users', getUsers(room))
         console.log(room)
         // callback()
+        
     })
     socket.on('sendMessage', message => {
         const user = getUser(socket.id)
