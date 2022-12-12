@@ -702,8 +702,8 @@ app.get('/rooms', async (req, res) => {
 const { addUser, getUser, deleteUser, getUsers } = require('./users')
 
 io.on('connection', (socket) => {
-    socket.on('join-chat-room', ( roomid, userid ) => {
-        const roomDb = getDbRoom(roomid);
+    socket.on('join-chat-room', async ( roomid, userid ) => {
+        const roomDb = await getDbRoom(roomid);
         console.log(roomDb)
         // const userDb = getDbRoom(userid);
         // const { user } = addUser(socket.id, userDb.id, roomDb.id)
