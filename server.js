@@ -85,40 +85,57 @@ const io = require("socket.io")(http, {
 //   return any+"_"+Date.now()+"_"+Math.random()
 // }
 // console.log(uuidv4(1))
-app.get("/",(req,res)=>{
+app.get("/",async (req,res)=>{
   if (!req.session.token) {
     res.redirect("/login")
     res.end();
     return;
   }
+  // console.log(await getDbUserByToken(req.session.token)," User");
+  if (!(await getDbUserByToken(req.session.token))) {
+    res.redirect("/login")
+    res.end();
+    return;
+  }
+
   res.render('index',{});
 })
 
 
 //website login
-app.get("/login",(req,res)=>{
+app.get("/login", async (req,res)=>{
   if (req.session.token) {
-    const msg = `<script>location.href="/";</script>`;
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(msg);
-    res.end();
-    return;
+    if(await getDbUserByToken(req.session.token)){
+      res.redirect("/");
+      return;
+    }
   }
   res.render('login',{});
 })
 //logic on post
-app.post("/login",(req,res)=>{
+app.post("/login", async (req,res)=>{
   if (req.session.token) {
-    const msg = `<script>location.href="/";</script>`;
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(msg);
-    res.end();
-    return;
+    if(await getDbUserByToken(req.session.token)){
+      const msg = `<script>location.href="/";</script>`;
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
   }
   // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
   const login = async ()=>{
+    if (req.session.token) {
+      if(await getDbUserByToken(req.session.token)){
+        const msg = `<script>location.href="/";</script>`;
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(msg);
+        res.end();
+        return;
+      }
+    }
     let mobile = req.body.mobile
     let password = req.body.password
     if (mobile && password) {
@@ -187,7 +204,7 @@ app.get("/register",(req,res)=>{
 //all members
 app.get("/all-members", async (req,res)=>{
   if (!req.session.token) {
-    res.redirect("/")
+    res.redirect("/login")
     res.end();
     return;
   }
