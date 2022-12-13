@@ -500,14 +500,16 @@ app.use("/gallery",mediaRouter);
 app.get("/register",(req,res)=>{
   res.render('register',{});
 })
-app.post("/register",(req,res)=>{
+app.post("/register", async (req,res)=>{
   if (req.session.token) {
-        const msg = `<script>location.href="/";</script>`;
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(msg);
-        res.end();
-        return;
-      }
+    if(await getDbUserByToken(req.session.token)){
+      const msg = `<script>location.href="/";</script>`;
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(msg);
+      res.end();
+      return;
+    }
+  }
   // console.log(req.body)
   const db = require("./models/index.js");
   const User = db.users
