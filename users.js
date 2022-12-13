@@ -9,7 +9,7 @@ const addUser = (id, name, room, userDb) => {
     if (!name) return { error: "Username is required" }
     if (!room) return { error: "Room is required" }
 
-    const user = { id, name, room }
+    const user = { id, name, room, userDb }
     users.push(user)
     return { user }
 }
