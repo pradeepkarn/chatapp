@@ -728,7 +728,7 @@ io.on('connection', (socket) => {
             io.in(user.room).emit('users', getUsers(user.room))
         }
     })
-})
+  })
 
   // io.on('connection', socket => {
   //     socket.on('new-user', async (roomid, userid) => {
