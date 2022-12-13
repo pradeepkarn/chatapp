@@ -1,6 +1,6 @@
 const users = []
 
-const addUser = (id, name, room) => {
+const addUser = (id, name, room, userDb) => {
     const existingUser = users.find(user => user.name === name)
     // const existingUser = users.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase())
 
