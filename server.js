@@ -193,11 +193,12 @@ app.get("/signout",(req,res)=>{
   return;
 })
 //website signup
-app.get("/register",(req,res)=>{
+app.get("/register",async (req,res)=>{
   if (req.session.token) {
-    res.redirect("/")
-    res.end();
-    return;
+    if(await getDbUserByToken(req.session.token)){
+      res.redirect("/")
+      return;
+    }
   }
   res.render('register',{});
 })
