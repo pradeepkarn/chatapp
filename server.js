@@ -8,7 +8,19 @@ const db = require("./models/index.js");
 // const bcrypt = require("bcrypt");
 // const passport = require('passport');
 // const flash = require('express-flash')
-
+//get user by id
+async function getDbRoom(roomid) {
+  const Room = db.rooms;
+  return await Room.findOne({where : {id:roomid}})
+}
+async function getDbUser(userid) {
+  const User = db.users;
+  return await User.findOne({where : {id:userid}})
+}
+async function getDbUserByToken(token) {
+  const User = db.users;
+  return await User.findOne({where : {token:token}})
+}
 
 // const initializePassport = require('./passport-config')
 // initializePassport(
@@ -554,7 +566,14 @@ const rooms = { }
 // const users = { }
 const roomsApi = [];
 app.get('/rooms', async (req, res) => {
-  const db = require("./models/index.js");
+  if (!req.session.token) {
+    const msg = `<script>location.href="/";</script>`;
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(msg);
+    res.end();
+    return;
+  }
+const loggedInUser = await getDbUserByToken(req.session.token)
   const Room = db.rooms
   let allRooms = await Room.findAll({})
       // for (const rm of allRooms) {
@@ -564,8 +583,7 @@ app.get('/rooms', async (req, res) => {
       //   }
       // }
       
-      res.render('create-room', { roomsObj: allRooms });
-  
+      res.render('create-room', { roomsObj: allRooms, loggedInUser: loggedInUser });
     
   });
   
@@ -598,93 +616,85 @@ app.get('/rooms', async (req, res) => {
     return res.redirect('/rooms');
   });
   
-  app.get("/chat-v2/:roomid", async (req, res) => {
-    if (!req.session.token) {
-      const msg = `<script>location.href="/";</script>`;
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(msg);
-      res.end();
-      return;
-    }
-    const db = require("./models/index.js");
-    const Room = db.rooms
-    const User = db.users
-    let singleRoom = await Room.findOne({where: {id: req.params['roomid']}})
-    let member = await User.findOne({where : {token:req.session.token}})
+  // app.get("/chat-v2/:roomid", async (req, res) => {
+  //   if (!req.session.token) {
+  //     const msg = `<script>location.href="/";</script>`;
+  //     res.writeHead(200, {'Content-Type': 'text/html'});
+  //     res.write(msg);
+  //     res.end();
+  //     return;
+  //   }
+  //   const db = require("./models/index.js");
+  //   const Room = db.rooms
+  //   const User = db.users
+  //   let singleRoom = await Room.findOne({where: {id: req.params['roomid']}})
+  //   let member = await User.findOne({where : {token:req.session.token}})
     
-    if (!singleRoom) {
-      return res.redirect('/rooms')
-    }
-    typeof(singleRoom.users)=="string"?singleRoom.users=JSON.parse(singleRoom.users):""
+  //   if (!singleRoom) {
+  //     return res.redirect('/rooms')
+  //   }
+  //   typeof(singleRoom.users)=="string"?singleRoom.users=JSON.parse(singleRoom.users):""
 
-    const search_mmbr =  (vl,myArray)=>{
-      for (let i=0; i < myArray.length; i++) {
-          if (myArray[i] === vl) {
-              return true;
-          }
-      }
-      return false;
-    }
-    if(!search_mmbr(member.id,singleRoom.users)){
-      singleRoom.users.push(member.id);
-      await Room.update({users: singleRoom.users}, {where : {id: singleRoom.id}})
-    }
-    let chatRoom = await Room.findOne({where: {id: req.params['roomid']}})
-    const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
-    if (!roomadmin) {
-      const msg = `<script>alert('Room admin not exist');location.href="/";</script>`;
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(msg);
-      res.end();
-      return;
-    }
-    const roomDetail = {
-      id: chatRoom.id,
-      room_name: chatRoom.room_name,
-      image: chatRoom.image,
-      created_by: chatRoom.created_by,
-      first_name: roomadmin.first_name,
-      last_name: roomadmin.last_name,
-      creator_image: roomadmin.image
-    }
+  //   const search_mmbr =  (vl,myArray)=>{
+  //     for (let i=0; i < myArray.length; i++) {
+  //         if (myArray[i] === vl) {
+  //             return true;
+  //         }
+  //     }
+  //     return false;
+  //   }
+  //   if(!search_mmbr(member.id,singleRoom.users)){
+  //     singleRoom.users.push(member.id);
+  //     await Room.update({users: singleRoom.users}, {where : {id: singleRoom.id}})
+  //   }
+  //   let chatRoom = await Room.findOne({where: {id: req.params['roomid']}})
+  //   const roomadmin = await User.findOne({where : {id:chatRoom.created_by}})
+  //   if (!roomadmin) {
+  //     const msg = `<script>alert('Room admin not exist');location.href="/";</script>`;
+  //     res.writeHead(200, {'Content-Type': 'text/html'});
+  //     res.write(msg);
+  //     res.end();
+  //     return;
+  //   }
+  //   const roomDetail = {
+  //     id: chatRoom.id,
+  //     room_name: chatRoom.room_name,
+  //     image: chatRoom.image,
+  //     created_by: chatRoom.created_by,
+  //     first_name: roomadmin.first_name,
+  //     last_name: roomadmin.last_name,
+  //     creator_image: roomadmin.image
+  //   }
 
 
-    typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
-    let chatMembers = [];
-    for (const usr of chatRoom.users) {
-      let room_member = await User.findOne({where : {id:usr}})
-      chatMembers.push({
-        room_id: chatRoom.id,
-        user_id: room_member.id,
-        first_name: room_member.first_name,
-        last_name: room_member.last_name,
-        image: room_member.image
-      })
-    }
+  //   typeof(chatRoom.users)=="string"?chatRoom.users=JSON.parse(chatRoom.users):""
+  //   let chatMembers = [];
+  //   for (const usr of chatRoom.users) {
+  //     let room_member = await User.findOne({where : {id:usr}})
+  //     chatMembers.push({
+  //       room_id: chatRoom.id,
+  //       user_id: room_member.id,
+  //       first_name: room_member.first_name,
+  //       last_name: room_member.last_name,
+  //       image: room_member.image
+  //     })
+  //   }
     
-    res.render('chat-page', { chatRoom: roomDetail, chatMembers: chatMembers, sender: member })
-  })
+  //   res.render('chat-page', { chatRoom: roomDetail, chatMembers: chatMembers, sender: member })
+  // })
 //chat version v3
-  app.post("/chat", async (req, res) => {
-    console.log(rooms," all rooms")
-    if (!req.roomid || !req.userid) {
+  app.post("/chatting", async (req, res) => {
+    if (!req.body.roomid || !req.body.userid) {
       return res.redirect('/rooms')
     }
-
-    const db = require("./models/index.js");
-    const Room = db.rooms
-    let singleRoom = await Room.findOne({where: {id: req.body.roomid}})
-    // console.log(singleRoom.room_name, "single")
-    // console.log(rooms, "Roomsvh j")
+    const roomid = req.body.roomid;
+    const userid = req.body.userid;
+    let singleRoom = await getDbRoom(roomid);
+    let user = await getDbUser(userid);
     if (!singleRoom) {
       return res.redirect('/rooms')
     }
-    // console.log(rooms)
-    if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
-      return res.redirect('/rooms')
-    }
-    // render chat page with clicked room
-    res.render('room', { roomName: req.params['room'] })
+    res.render('chatting', { room: singleRoom, user: user })
   })
   
 //old
@@ -707,15 +717,7 @@ app.get('/rooms', async (req, res) => {
   //   res.render('room', { roomName: req.params['room'] })
   // })
 
- //get user by id
-  async function getDbRoom(roomid) {
-    const Room = db.rooms;
-    return await Room.findOne({where : {id:roomid}})
-  }
-  async function getDbUser(userid) {
-    const User = db.users;
-    return await User.findOne({where : {id:userid}})
-  }
+ 
 
 const { addUser, getUser, deleteUser, getUsers } = require('./users')
 

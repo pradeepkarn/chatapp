@@ -1,0 +1,109 @@
+<%- include('inc/header.ejs') %>
+<%- include('inc/nav.ejs') %>
+<%- include('inc/sidebar.ejs') %>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+</script>
+  <style>
+    /* body {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    } */
+
+    /* #message-container {
+      width: 80%;
+      max-width: 1200px;
+    }
+
+    #message-container div {
+      background-color: #CCC;
+      padding: 5px;
+    }
+
+    #message-container div:nth-child(2n) {
+      background-color: #FFF;
+    }
+
+    #send-container {
+      position: fixed;
+      padding-bottom: 30px;
+      bottom: 0;
+      background-color: white;
+      max-width: 1200px;
+      width: 80%;
+      display: flex;
+    }
+
+    #message-input {
+      flex-grow: 1;
+    } */
+  </style>
+
+  <main id="main">
+    <section style="min-height: 100vh;">
+    <button id="startChatBtn" onclick="joinChat()">Start</button>
+
+          <div id="msgContainer" style="display: none;" >
+            Room Name: <%= room.room_name %> <br>
+            Member: <%= user.first_name %> <br>
+            <input type="text" name="msg" value="" id="sendmsg">
+            <input type="button" value="send" id="sendmsgbtn">
+            <ul id="chatmsg"></ul>
+          </div>
+     
+          <script>
+          
+          
+          function joinChat() {
+            const userid = parseInt(`<%= user.id %>`);
+            const roomid = parseInt(`<%= room.id %>`);
+                socket.emit('join-chat-room',roomid,userid);
+                document.querySelector("#startChatBtn").style.display= "none";
+                document.querySelector("#msgContainer").style.display= "block";
+                socket.on("notification", notif => {
+                    console.log( notif.title, notif.description)
+            })
+          }
+               
+         
+        
+          const sendMsgs = ()=>{
+              socket.emit('sendMessage', document.querySelector("#sendmsg").value, () => {
+              console.log(message)
+              })
+              document.querySelector("#sendmsg").value = "";
+          }
+          
+          document.querySelector("#sendmsgbtn").addEventListener('click',sendMsgs)
+  
+          socket.on("message", msg => {
+              console.log(msg)
+              var ul = document.querySelector("#chatmsg");
+              var msg = `${msg.user} : ${msg.text}`
+              appendMsg(ul,msg)
+          })
+          function appendMsg(myListObj,msg) {
+  
+              // Create an "li" node:
+              const node = document.createElement("li");
+  
+              // Create a text node:
+              const textnode = document.createTextNode(msg);
+  
+              // Append the text node to the "li" node:
+              node.appendChild(textnode);
+  
+              // Append the "li" node to the list:
+              myListObj.appendChild(node);
+              }
+
+              
+      </script>
+    
+    </section>
+  </main>
+
+<%- include('inc/footer.ejs') %>

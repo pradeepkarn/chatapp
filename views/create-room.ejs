@@ -27,7 +27,11 @@
                   <p class="card-text py-3">Room Name: <b><%= room.room_name %></b></p>
                   Room Admin Id : <%= room.first_name %> <%= room.created_by %>
                   <div class="d-grid gap-2 d-md-block">
-                    <a href="/chat-v2/<%= room.id %>" class="btn-sm btn btn-danger">Enter</a>
+                    <form action="/chatting" method="post">
+                      <button type="submit" class="btn btn-primary">Enter</button>
+                      <input type="hidden" name="roomid" value="<%= room.id %>">
+                      <input type="hidden" name="userid" value="<%= loggedInUser.id %>">
+                    </form>
                   </div>
                 </div>
               </div>
@@ -38,24 +42,7 @@
     </div>
   </section>
 
-  <script src="/socket.io/socket.io.js"></script>
-    
-  <script>
-    const socket = io()
-    
-    const roomContainer = document.getElementById('room-container')
-  
-    socket.on('room-created', room => {
-    // const roomElement = document.createElement('div')
-    // roomElement.innerText = room
-    const roomLink = document.createElement('a')
-    roomLink.href = `/chat/${room}`
-    roomLink.innerText = room
-    // roomContainer.append(roomElement)
-    roomContainer.append(roomLink)
-    roomContainer.append(document.createElement('br'))
-  })
-  </script>
+ 
 </main>
 
 <%- include('inc/footer.ejs') %>
