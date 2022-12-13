@@ -729,8 +729,7 @@ io.on('connection', (socket) => {
         console.log("User disconnected");
         const user = deleteUser(socket.id)
         if (user) {
-            const userDb = await getDbUser(user.name);
-            io.in(user.room).emit('notification', { title: 'Just left', description: `${userDb.first_name} ${userDb.last_name}` })
+            io.in(user.room).emit('notification', { title: 'Just left', description: `${user.userDb.first_name} ${user.userDb.last_name}` })
             io.in(user.room).emit('users', getUsers(user.room))
         }
     })
