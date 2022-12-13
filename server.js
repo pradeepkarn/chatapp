@@ -664,16 +664,16 @@ app.get('/rooms', async (req, res) => {
     
     res.render('chat-page', { chatRoom: roomDetail, chatMembers: chatMembers, sender: member })
   })
-
-
-  
-//old
-  app.get("/chat/:room", async (req, res) => {
+//chat version v3
+  app.post("/chat", async (req, res) => {
     console.log(rooms," all rooms")
+    if (!req.roomid || !req.userid) {
+      return res.redirect('/rooms')
+    }
 
     const db = require("./models/index.js");
     const Room = db.rooms
-    let singleRoom = await Room.findOne({where: {room_name: req.params['room']}})
+    let singleRoom = await Room.findOne({where: {id: req.body.roomid}})
     // console.log(singleRoom.room_name, "single")
     // console.log(rooms, "Roomsvh j")
     if (!singleRoom) {
@@ -686,6 +686,26 @@ app.get('/rooms', async (req, res) => {
     // render chat page with clicked room
     res.render('room', { roomName: req.params['room'] })
   })
+  
+//old
+  // app.get("/chat/:room", async (req, res) => {
+  //   console.log(rooms," all rooms")
+
+  //   const db = require("./models/index.js");
+  //   const Room = db.rooms
+  //   let singleRoom = await Room.findOne({where: {room_name: req.params['room']}})
+  //   // console.log(singleRoom.room_name, "single")
+  //   // console.log(rooms, "Roomsvh j")
+  //   if (!singleRoom) {
+  //     return res.redirect('/rooms')
+  //   }
+  //   // console.log(rooms)
+  //   if (rooms[singleRoom.room_name] == undefined || !rooms[singleRoom.room_name]) {
+  //     return res.redirect('/rooms')
+  //   }
+  //   // render chat page with clicked room
+  //   res.render('room', { roomName: req.params['room'] })
+  // })
 
  //get user by id
   async function getDbRoom(roomid) {
@@ -704,13 +724,19 @@ io.on('connection', (socket) => {
         const roomDb = await getDbRoom(roomid);
         console.log(roomDb,"room")
         const userDb = await getDbUser(userid);
+        const socketRoom = {
+          id: roomDb.id,
+          room_name: roomDb.room_name,
+          image: roomDb.image,
+          created_by: roomDb.created_by
+        }
         const socketUser = {
           id: userDb.id,
           first_name: userDb.first_name,
           last_name: userDb.last_name,
           image: userDb.image
         }
-        const { user } = addUser(socket.id, userDb.id, roomDb.id, socketUser)
+        const { user } = addUser(socket.id, userDb.id, roomDb.id, socketUser, socketRoom)
         // // if (error) return callback(error)
         socket.join(user.room)
         socket.in(roomDb.id).emit('notification', { title: 'Just entered in the room', description: `${userDb.first_name} ${userDb.last_name}` })

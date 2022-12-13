@@ -1,6 +1,6 @@
 const users = []
 
-const addUser = (id, name, room, userDb) => {
+const addUser = (id, name, room, userDb, socketRoom) => {
     const existingUser = users.find(user => user.name === name)
     // const existingUser = users.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase())
 
@@ -9,7 +9,7 @@ const addUser = (id, name, room, userDb) => {
     if (!name) return { error: "Username is required" }
     if (!room) return { error: "Room is required" }
 
-    const user = { id, name, room, userDb }
+    const user = { id, name, room, userDb, socketRoom }
     users.push(user)
     return { user }
 }
