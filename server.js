@@ -704,13 +704,13 @@ io.on('connection', (socket) => {
         const roomDb = await getDbRoom(roomid);
         console.log(roomDb,"room")
         const userDb = await getDbUser(userid);
-        const storeuser = {
+        const socketUser = {
           id: userDb.id,
           first_name: userDb.first_name,
           last_name: userDb.last_name,
           image: userDb.image
         }
-        const { user } = addUser(socket.id, userDb.id, roomDb.id, storeuser)
+        const { user } = addUser(socket.id, userDb.id, roomDb.id, socketUser)
         // // if (error) return callback(error)
         socket.join(user.room)
         socket.in(roomDb.id).emit('notification', { title: 'Just entered in the room', description: `${userDb.first_name} ${userDb.last_name}` })
