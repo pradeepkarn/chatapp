@@ -711,7 +711,7 @@ io.on('connection', (socket) => {
         io.in(roomDb.id).emit('users', getUsers(roomDb.id))
         console.log(roomDb.id)
         console.log(getUsers(user.room));
-        callback()
+        // callback()
 
     })
     socket.on('sendMessage', message => {
