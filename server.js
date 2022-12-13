@@ -707,7 +707,7 @@ io.on('connection', (socket) => {
         const { user } = addUser(socket.id, userDb.id, roomDb.id)
         // // if (error) return callback(error)
         socket.join(user.room)
-        socket.in(roomDb.id).emit('notification', { title: 'Someone\'s here', description: `${userDb.first_name} ${userDb.last_name} just entered the room` })
+        socket.in(roomDb.id).emit('notification', { title: 'Just entered in the room', description: `${userDb.first_name} ${userDb.last_name}` })
         io.in(roomDb.id).emit('users', getUsers(roomDb.id))
         console.log(roomDb.id)
         console.log(getUsers(user.room));
@@ -720,11 +720,12 @@ io.on('connection', (socket) => {
         console.log(message)
     })
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
         console.log("User disconnected");
         const user = deleteUser(socket.id)
         if (user) {
-            io.in(user.room).emit('notification', { title: 'Someone just left', description: `${user.name} just left the room` })
+            const userDb = await getDbUser(user.name);
+            io.in(user.room).emit('notification', { title: 'Just left', description: `${userDb.first_name} ${userDb.last_name}` })
             io.in(user.room).emit('users', getUsers(user.room))
         }
     })
