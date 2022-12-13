@@ -704,6 +704,7 @@ io.on('connection', (socket) => {
         const roomDb = await getDbRoom(roomid);
         console.log(roomDb,"room")
         const userDb = await getDbUser(userid);
+
         const { user } = addUser(socket.id, userDb.id, roomDb.id, userDb)
         // // if (error) return callback(error)
         socket.join(user.room)
@@ -716,7 +717,7 @@ io.on('connection', (socket) => {
     })
     socket.on('sendMessage', message => {
         const user = getUser(socket.id)
-        io.in(user.room).emit('message', { user: `${user.userDb.first_name} ${user.userDb.last_name}`, text: message });
+        io.in(user.room).emit('message', { user: `${user.userDb.first_name} ${user.userDb.last_name}`, profile: user.userDb.image, text: message, file: null, image: null });
         console.log(message)
     })
     socket.on("disconnect", async () => {
