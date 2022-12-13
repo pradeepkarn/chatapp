@@ -719,7 +719,6 @@ io.on('connection', (socket) => {
         io.in(user.room).emit('message', { user: user.name, text: message });
         console.log(message)
     })
-
     socket.on("disconnect", async () => {
         console.log("User disconnected");
         const user = deleteUser(socket.id)
